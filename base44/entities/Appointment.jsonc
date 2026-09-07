@@ -1,0 +1,102 @@
+{
+  "name": "Appointment",
+  "type": "object",
+  "properties": {
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "matter_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "consultation",
+        "document_review",
+        "submission_prep",
+        "office_followup",
+        "video",
+        "authority",
+        "tie_fingerprint",
+        "payment"
+      ]
+    },
+    "date_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "location": {
+      "type": "string"
+    },
+    "video_link": {
+      "type": "string"
+    },
+    "assigned_staff": {
+      "type": "string"
+    },
+    "required_documents": {
+      "type": "string"
+    },
+    "interpreter_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show"
+      ],
+      "default": "scheduled"
+    },
+    "result": {
+      "type": "string"
+    },
+    "client_language": {
+      "type": "string"
+    },
+    "portal_user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_id",
+    "type",
+    "date_time"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.portal_user_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

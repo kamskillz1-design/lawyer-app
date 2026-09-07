@@ -1,0 +1,177 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "legal_name": {
+      "type": "string"
+    },
+    "preferred_name": {
+      "type": "string"
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date"
+    },
+    "country_of_birth": {
+      "type": "string"
+    },
+    "nationalities": {
+      "type": "string"
+    },
+    "passport_number": {
+      "type": "string"
+    },
+    "passport_expiry": {
+      "type": "string",
+      "format": "date"
+    },
+    "nie_number": {
+      "type": "string"
+    },
+    "tie_number": {
+      "type": "string"
+    },
+    "permit_type": {
+      "type": "string"
+    },
+    "permit_expiry": {
+      "type": "string",
+      "format": "date"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "preferred_channel": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "email",
+        "whatsapp",
+        "portal"
+      ]
+    },
+    "interface_language": {
+      "type": "string"
+    },
+    "written_language": {
+      "type": "string"
+    },
+    "spoken_language": {
+      "type": "string"
+    },
+    "interpreter_required": {
+      "type": "boolean",
+      "default": false
+    },
+    "interpreter_language": {
+      "type": "string"
+    },
+    "reads_spanish": {
+      "type": "boolean"
+    },
+    "reads_english": {
+      "type": "boolean"
+    },
+    "language_notes": {
+      "type": "string"
+    },
+    "portal_user_id": {
+      "type": "string"
+    },
+    "portal_email": {
+      "type": "string"
+    },
+    "engagement_status": {
+      "type": "string",
+      "enum": [
+        "prospect",
+        "consulted",
+        "engaged",
+        "inactive",
+        "archived"
+      ]
+    },
+    "assigned_lawyer": {
+      "type": "string"
+    },
+    "assigned_caseworker": {
+      "type": "string"
+    },
+    "service_package": {
+      "type": "string"
+    },
+    "referral_source": {
+      "type": "string"
+    },
+    "legacy_dropbox_path": {
+      "type": "string"
+    },
+    "legacy_reference": {
+      "type": "string"
+    },
+    "legacy_notes": {
+      "type": "string"
+    },
+    "retention_review_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "archived"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "legal_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.portal_user_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.portal_user_id": "{{user.id}}"
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

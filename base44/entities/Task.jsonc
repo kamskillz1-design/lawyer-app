@@ -1,0 +1,98 @@
+{
+  "name": "Task",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "matter_id": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "matter_number": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "legal_deadline",
+        "authority_deadline",
+        "client_document",
+        "internal_review",
+        "permit_expiry",
+        "passport_expiry",
+        "tie_expiry",
+        "appointment",
+        "payment",
+        "renewal",
+        "archive_review",
+        "general"
+      ],
+      "default": "general"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "todo",
+        "in_progress",
+        "blocked",
+        "done"
+      ],
+      "default": "todo"
+    },
+    "instructions": {
+      "type": "string"
+    },
+    "completion_note": {
+      "type": "string"
+    },
+    "requires_lawyer_approval": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

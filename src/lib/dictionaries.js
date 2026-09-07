@@ -1,0 +1,68 @@
+// Client-facing UI dictionaries. Staff-facing screens are Spanish by design.
+// Any key missing for a chosen language falls back to English.
+export const DICT = {
+  en: {
+    nav_home: "Home", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "My profile", logout: "Log out", language: "Language",
+    loading: "Loading…", save: "Save", saved: "Saved", cancel: "Cancel", send: "Send", submit: "Submit", upload: "Upload", deadline: "Deadline", view_details: "View details",
+    welcome: "Welcome", my_cases: "My cases", next_step: "What happens next", appointments: "Appointments", no_cases: "You have no active cases yet.", payments: "Payments", outstanding: "Outstanding", paid: "Paid",
+    s_docs_requested: "We are waiting for some documents from you", s_docs_review: "We are checking the documents you sent", s_prep: "We are preparing your application", s_lawyer: "Your application is being reviewed", s_ready: "Your application is ready for final checks", s_submitted: "Your application has been submitted", s_awaiting: "We are waiting for a response from the authorities", s_further: "Additional documents or information are needed", s_resolution: "There is an update on your case — please read the office message", s_completed: "This stage of your case has been completed",
+    checklist_title: "Document checklist", cl_needed: "Needed", cl_uploaded: "Uploaded", cl_checking: "Being checked", cl_accepted: "Accepted", cl_correction: "Needs correction", cl_not_required: "Not required",
+    upload_hint: "Accepted formats: PDF, JPG, PNG. If the document is not in Spanish, we will check whether a translation is required.", why_required: "Why is this needed?", who_provides: "Who provides it", original_req: "Original required", translation_req: "Translation required", apostille_req: "Apostille / legalisation required",
+    messages_title: "Messages", message_placeholder: "Write your message in your language…", sent_success: "Message sent", office_reply: "Office reply", your_message: "Your message", no_messages: "No messages yet.",
+    profile_title: "My profile", contact_section: "Contact details", language_section: "Language preferences", interpreter_question: "I need an interpreter",
+    hero_title: "Immigration law, in your language", hero_sub: "Expert immigration legal services in Bilbao. Track your case, upload documents and speak with us in your own language.",
+    services_title: "Our services", enquiry_title: "Send us an enquiry", thanks: "Thank you — we have received your enquiry and will contact you shortly.",
+    faq_title: "Frequently asked questions", contact_title: "Contact & office hours",
+    required_mark: "required", full_name: "Full name", email_l: "Email", phone_l: "Phone", nationality_l: "Nationality", message_l: "Your message", privacy_ok: "I agree that my data may be used to respond to my enquiry.",
+    sv_consult: "Initial legal consultation", sv_permits: "Residence permits & renewals", sv_work: "Work authorisations", sv_family: "Family reunification", sv_nationality: "Spanish nationality", sv_tie: "NIE / TIE card assistance",
+    doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due"
+  },
+  es: {
+    nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
+    loading: "Cargando…", save: "Guardar", saved: "Guardado", cancel: "Cancelar", send: "Enviar", submit: "Enviar", upload: "Subir", deadline: "Fecha límite", view_details: "Ver detalles",
+    welcome: "Bienvenido/a", my_cases: "Mis expedientes", next_step: "Próximo paso", appointments: "Citas", no_cases: "Todavía no tiene expedientes activos.", payments: "Pagos", outstanding: "Pendiente", paid: "Pagado",
+    s_docs_requested: "Estamos esperando algunos documentos suyos", s_docs_review: "Estamos revisando los documentos que envió", s_prep: "Estamos preparando su solicitud", s_lawyer: "Su solicitud está siendo revisada", s_ready: "Su solicitud está lista para la comprobación final", s_submitted: "Su solicitud ha sido presentada", s_awaiting: "Estamos esperando la respuesta de las autoridades", s_further: "Se necesitan documentos o información adicional", s_resolution: "Hay una novedad en su expediente — lea el mensaje del despacho", s_completed: "Esta fase de su expediente se ha completado",
+    checklist_title: "Lista de documentos", cl_needed: "Pendiente", cl_uploaded: "Subido", cl_checking: "En revisión", cl_accepted: "Aceptado", cl_correction: "Requiere corrección", cl_not_required: "No necesario",
+    upload_hint: "Formatos aceptados: PDF, JPG, PNG. Si el documento no está en español, comprobaremos si necesita traducción.", why_required: "¿Por qué se necesita?", who_provides: "Quién lo aporta", original_req: "Original requerido", translation_req: "Traducción requerida", apostille_req: "Apostilla / legalización requerida",
+    messages_title: "Mensajes", message_placeholder: "Escriba su mensaje en su idioma…", sent_success: "Mensaje enviado", office_reply: "Respuesta del despacho", your_message: "Su mensaje", no_messages: "Todavía no hay mensajes.",
+    profile_title: "Mi perfil", contact_section: "Datos de contacto", language_section: "Preferencias de idioma", interpreter_question: "Necesito intérprete",
+    hero_title: "Extranjería, en su idioma", hero_sub: "Servicios jurídicos de extranjería en Bilbao. Siga su expediente, suba documentos y hable con nosotros en su propio idioma.",
+    services_title: "Nuestros servicios", enquiry_title: "Envíenos su consulta", thanks: "Gracias — hemos recibido su consulta y le contactaremos en breve.",
+    faq_title: "Preguntas frecuentes", contact_title: "Contacto y horario",
+    required_mark: "obligatorio", full_name: "Nombre completo", email_l: "Correo electrónico", phone_l: "Teléfono", nationality_l: "Nacionalidad", message_l: "Su mensaje", privacy_ok: "Acepto que mis datos se usen para responder a mi consulta.",
+    sv_consult: "Consulta legal inicial", sv_permits: "Permisos de residencia y renovaciones", sv_work: "Autorizaciones de trabajo", sv_family: "Reagrupación familiar", sv_nationality: "Nacionalidad española", sv_tie: "Gestión de NIE / TIE",
+    doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento"
+  },
+  fr: {
+    nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
+    loading: "Chargement…", save: "Enregistrer", saved: "Enregistré", cancel: "Annuler", send: "Envoyer", submit: "Envoyer", upload: "Téléverser", deadline: "Échéance", view_details: "Voir les détails",
+    welcome: "Bienvenue", my_cases: "Mes dossiers", next_step: "Prochaine étape", appointments: "Rendez-vous", no_cases: "Vous n'avez pas encore de dossier actif.", payments: "Paiements", outstanding: "À payer", paid: "Payé",
+    s_docs_requested: "Nous attendons certains documents de votre part", s_docs_review: "Nous vérifions les documents que vous avez envoyés", s_prep: "Nous préparons votre demande", s_lawyer: "Votre demande est en cours de vérification", s_ready: "Votre demande est prête pour la vérification finale", s_submitted: "Votre demande a été envoyée", s_awaiting: "Nous attendons la réponse des autorités", s_further: "Des documents ou informations supplémentaires sont nécessaires", s_resolution: "Il y a une actualité sur votre dossier — veuillez lire le message du cabinet", s_completed: "Cette étape de votre dossier est terminée",
+    checklist_title: "Liste des documents", cl_needed: "Nécessaire", cl_uploaded: "Téléversé", cl_checking: "En vérification", cl_accepted: "Accepté", cl_correction: "À corriger", cl_not_required: "Non requis",
+    upload_hint: "Formats acceptés : PDF, JPG, PNG. Si le document n'est pas en espagnol, nous vérifierons si une traduction est nécessaire.", why_required: "Pourquoi est-ce nécessaire ?", who_provides: "Qui le fournit", original_req: "Original requis", translation_req: "Traduction requise", apostille_req: "Apostille / légalisation requise",
+    messages_title: "Messages", message_placeholder: "Écrivez votre message dans votre langue…", sent_success: "Message envoyé", office_reply: "Réponse du cabinet", your_message: "Votre message", no_messages: "Aucun message pour le moment.",
+    profile_title: "Mon profil", contact_section: "Coordonnées", language_section: "Préférences linguistiques", interpreter_question: "J'ai besoin d'un interprète",
+    hero_title: "Droit de l'immigration, dans votre langue", hero_sub: "Services juridiques d'immigration à Bilbao. Suivez votre dossier, téléversez vos documents et parlez-nous dans votre langue.",
+    services_title: "Nos services", enquiry_title: "Envoyez-nous votre demande", thanks: "Merci — nous avons bien reçu votre demande et vous contacterons rapidement.",
+    faq_title: "Questions fréquentes", contact_title: "Contact et horaires",
+    required_mark: "obligatoire", full_name: "Nom complet", email_l: "E-mail", phone_l: "Téléphone", nationality_l: "Nationalité", message_l: "Votre message", privacy_ok: "J'accepte que mes données soient utilisées pour répondre à ma demande.",
+    sv_consult: "Consultation juridique initiale", sv_permits: "Permis de séjour et renouvellements", sv_work: "Autorisations de travail", sv_family: "Regroupement familial", sv_nationality: "Nationalité espagnole", sv_tie: "Assistance NIE / TIE",
+    doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance"
+  },
+  ar: {
+    nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
+    loading: "جارٍ التحميل…", save: "حفظ", saved: "تم الحفظ", cancel: "إلغاء", send: "إرسال", submit: "إرسال", upload: "تحميل", deadline: "الموعد النهائي", view_details: "عرض التفاصيل",
+    welcome: "مرحباً", my_cases: "ملفاتي", next_step: "الخطوة التالية", appointments: "المواعيد", no_cases: "ليس لديك ملفات نشطة بعد.", payments: "المدفوعات", outstanding: "مستحق", paid: "مدفوع",
+    s_docs_requested: "نحن في انتظار بعض المستندات منكم", s_docs_review: "نراجع المستندات التي أرسلتموها", s_prep: "نحن نجهّز طلبكم", s_lawyer: "طلبكم قيد المراجعة", s_ready: "طلبكم جاهز للتحقق النهائي", s_submitted: "تم تقديم طلبكم", s_awaiting: "نحن في انتظار رد الجهات الرسمية", s_further: "يلزم تقديم مستندات أو معلومات إضافية", s_resolution: "هناك مستجد بشأن ملفكم — يُرجى قراءة رسالة المكتب", s_completed: "اكتملت هذه المرحلة من ملفكم",
+    checklist_title: "قائمة المستندات", cl_needed: "مطلوب", cl_uploaded: "تم تحميله", cl_checking: "قيد المراجعة", cl_accepted: "مقبول", cl_correction: "يحتاج إلى تصحيح", cl_not_required: "غير مطلوب",
+    upload_hint: "الصيغ المقبولة: PDF، JPG، PNG. إذا لم يكن المستند باللغة الإسبانية، سنتحقق مما إذا كانت الترجمة ضرورية.", why_required: "لماذا هو مطلوب؟", who_provides: "من يقدمه", original_req: "الأصل مطلوب", translation_req: "الترجمة مطلوبة", apostille_req: "التصديق / الترجمة القانونية مطلوب",
+    messages_title: "الرسائل", message_placeholder: "اكتب رسالتك بلغتك…", sent_success: "تم إرسال الرسالة", office_reply: "رد المكتب", your_message: "رسالتك", no_messages: "لا توجد رسائل بعد.",
+    profile_title: "ملفي الشخصي", contact_section: "بيانات الاتصال", language_section: "تفضيلات اللغة", interpreter_question: "أحتاج إلى مترجم فوري",
+    hero_title: "قانون الهجرة، بلغتك", hero_sub: "خدمات قانونية في الهجرة في بلباو. تابع ملفك، ارفع مستنداتك وتواصل معنا بلغتك الأم.",
+    services_title: "خدماتنا", enquiry_title: "أرسل استفسارك", thanks: "شكراً — تلقينا استفسارك وسنتواصل معك قريباً.",
+    faq_title: "الأسئلة الشائعة", contact_title: "الاتصال وساعات العمل",
+    required_mark: "مطلوب", full_name: "الاسم الكامل", email_l: "البريد الإلكتروني", phone_l: "الهاتف", nationality_l: "الجنسية", message_l: "رسالتك", privacy_ok: "أوافق على استخدام بياناتي للرد على استفساري.",
+    sv_consult: "استشارة قانونية أولية", sv_permits: "تصاريح الإقامة والتجديدات", sv_work: "تصاريح العمل", sv_family: "لمّ شمل العائلة", sv_nationality: "الجنسية الإسبانية", sv_tie: "المساعدة في NIE / TIE",
+    doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق"
+  }
+};

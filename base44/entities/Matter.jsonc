@@ -1,0 +1,151 @@
+{
+  "name": "Matter",
+  "type": "object",
+  "properties": {
+    "matter_number": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "portal_user_id": {
+      "type": "string"
+    },
+    "procedure_family": {
+      "type": "string"
+    },
+    "procedure_type": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "string"
+    },
+    "province": {
+      "type": "string"
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "new_enquiry",
+        "consultation_pending",
+        "consultation_completed",
+        "awaiting_engagement",
+        "open_documents_requested",
+        "documents_under_review",
+        "preparation_in_progress",
+        "awaiting_lawyer_approval",
+        "ready_to_submit",
+        "submitted",
+        "awaiting_decision",
+        "further_info_requested",
+        "resolution_received",
+        "post_resolution",
+        "completed",
+        "closed_not_proceeding",
+        "archived"
+      ],
+      "default": "open_documents_requested"
+    },
+    "status_reason": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal"
+    },
+    "assigned_lawyer": {
+      "type": "string"
+    },
+    "assigned_caseworker": {
+      "type": "string"
+    },
+    "next_action": {
+      "type": "string"
+    },
+    "next_action_owner": {
+      "type": "string",
+      "enum": [
+        "staff",
+        "lawyer",
+        "client",
+        "authority",
+        "third_party"
+      ]
+    },
+    "next_deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "target_submission_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "submission_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "government_ref": {
+      "type": "string"
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "renewal_due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "legacy_dropbox_path": {
+      "type": "string"
+    },
+    "opened_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "closed_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "client_id",
+    "procedure_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.portal_user_id": "{{user.id}}"
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

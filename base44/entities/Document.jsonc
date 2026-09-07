@@ -1,0 +1,188 @@
+{
+  "name": "Document",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "client_id": {
+      "type": "string"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "matter_id": {
+      "type": "string"
+    },
+    "matter_number": {
+      "type": "string"
+    },
+    "portal_user_id": {
+      "type": "string"
+    },
+    "checklist_item_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "passport",
+        "visa",
+        "nie_certificate",
+        "tie_card",
+        "residence_authorisation",
+        "birth_certificate",
+        "marriage_certificate",
+        "divorce_document",
+        "criminal_record",
+        "padron_certificate",
+        "proof_of_address",
+        "employment_contract",
+        "employer_evidence",
+        "payslips",
+        "social_security",
+        "tax_documentation",
+        "bank_statements",
+        "study_enrolment",
+        "health_insurance",
+        "medical_certificate",
+        "proof_of_funds",
+        "apostille",
+        "sworn_translation",
+        "power_of_attorney",
+        "official_form",
+        "fee_receipt",
+        "submission_receipt",
+        "authority_notification",
+        "appointment_confirmation",
+        "final_resolution",
+        "internal_work_product",
+        "other"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "client",
+        "staff",
+        "authority",
+        "generated",
+        "legacy_dropbox"
+      ],
+      "default": "client"
+    },
+    "original_language": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "file_name": {
+      "type": "string"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "expiry_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "translation_status": {
+      "type": "string",
+      "enum": [
+        "not_required",
+        "required",
+        "pending",
+        "done"
+      ],
+      "default": "not_required"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "not_requested",
+        "requested",
+        "uploaded",
+        "under_review",
+        "accepted",
+        "needs_correction",
+        "missing_page",
+        "incorrect_document",
+        "expired",
+        "replaced",
+        "not_applicable",
+        "archived"
+      ],
+      "default": "uploaded"
+    },
+    "reviewer": {
+      "type": "string"
+    },
+    "review_notes": {
+      "type": "string"
+    },
+    "version": {
+      "type": "integer",
+      "default": 1
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "client",
+        "staff",
+        "lawyer",
+        "accounting",
+        "archive"
+      ],
+      "default": "client"
+    },
+    "legacy_source_path": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "client_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.portal_user_id": "{{user.id}}"
+            },
+            {
+              "data.visibility": {
+                "$in": [
+                  "client"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
