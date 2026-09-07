@@ -1,11 +1,33 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { LANGUAGES, getLanguage } from "./languages";
 import { DICT } from "./dictionaries";
+import { base44 } from "@/api/base44Client";
 
 const I18nContext = createContext(null);
 
+const cacheKey = (code) => `lexpath_dict_${code}`;
+const readCachedDict = (code) => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(cacheKey(code)) || "null");
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch (e) {
+    return null;
+  }
+};
+
 export function I18nProvider({ children }) {
   const [lang, setLangState] = useState(() => localStorage.getItem("lexpath_lang") || "es");
+  const [translating, setTranslating] = useState(false);
+  const [, forceRefresh] = useState(0);
+  const dictCache = useRef(new Map());
+
+  const getDict = (code) => {
+    if (DICT[code]) return DICT[code];
+    if (dictCache.current.has(code)) return dictCache.current.get(code);
+    const parsed = readCachedDict(code);
+    if (parsed) dictCache.current.set(code, parsed);
+    return parsed;
+  };
 
   useEffect(() => {
     localStorage.setItem("lexpath_lang", lang);
@@ -15,11 +37,27 @@ export function I18nProvider({ children }) {
   }, [lang]);
 
   const setLang = (code) => {
-    if (LANGUAGES.some((l) => l.code === code)) setLangState(code);
+    if (!LANGUAGES.some((l) => l.code === code)) return;
+    setLangState(code);
+    if (!DICT[code] && code !== "en" && !getDict(code)) {
+      setTranslating(true);
+      base44.functions
+        .invoke("translateUi", { target_language: code, strings: DICT.en })
+        .then((res) => {
+          const dict = res.data && res.data.dict;
+          if (dict && typeof dict === "object") {
+            localStorage.setItem(cacheKey(code), JSON.stringify(dict));
+            dictCache.current.set(code, dict);
+            forceRefresh((n) => n + 1);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setTranslating(false));
+    }
   };
 
   const t = (key) => {
-    const dict = DICT[lang] || {};
+    const dict = getDict(lang) || DICT.en;
     return dict[key] || DICT.en[key] || key;
   };
 
@@ -53,7 +91,9 @@ export function I18nProvider({ children }) {
   };
 
   return (
-    <I18nContext.Provider value={{ lang, setLang, t, rtl: getLanguage(lang).rtl, stageText, checklistText }}>
+    <I18nContext.Provider
+      value={{ lang, setLang, t, rtl: getLanguage(lang).rtl, stageText, checklistText, translating }}
+    >
       {children}
     </I18nContext.Provider>
   );

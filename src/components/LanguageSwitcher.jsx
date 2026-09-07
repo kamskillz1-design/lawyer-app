@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Globe, ChevronDown, Search, Check } from "lucide-react";
+import { Globe, ChevronDown, Search, Check, Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LANGUAGES, getLanguage } from "@/lib/languages";
 import { cn } from "@/lib/utils";
 
 export default function LanguageSwitcher() {
-  const { lang, setLang } = useI18n();
+  const { lang, setLang, t, translating } = useI18n();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useRef(null);
@@ -23,7 +23,7 @@ export default function LanguageSwitcher() {
     <div className="relative" ref={ref}>
       <button onClick={() => setOpen(!open)}
         className="flex items-center gap-1.5 px-3 py-2 rounded-lg border bg-card text-sm hover:bg-secondary transition-colors">
-        <Globe className="w-4 h-4 text-primary" />
+        {translating ? <Loader2 className="w-4 h-4 text-primary animate-spin" /> : <Globe className="w-4 h-4 text-primary" />}
         <span className="max-w-[120px] truncate">{getLanguage(lang).native}</span>
         <ChevronDown className="w-3 h-3 text-muted-foreground" />
       </button>
@@ -45,7 +45,9 @@ export default function LanguageSwitcher() {
               </button>
             ))}
           </div>
-          <p className="px-3 pt-2 pb-1 text-[10px] text-muted-foreground">UI: es / en / fr / ar · fallback EN</p>
+          <p className="px-3 pt-2 pb-1 text-[10px] text-muted-foreground">
+            {translating ? t("translating_ui") : t("ui_all_languages")}
+          </p>
         </div>
       )}
     </div>

@@ -17,7 +17,8 @@ export const DICT = {
     sv_consult: "Initial legal consultation", sv_permits: "Residence permits & renewals", sv_work: "Work authorisations", sv_family: "Family reunification", sv_nationality: "Spanish nationality", sv_tie: "NIE / TIE card assistance",
     doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due",
     record_voice: "Record a voice message", stop_recording: "Recording… tap to stop", voice_sending: "Sending…", listen: "Listen",
-    voice_error: "We could not process your voice message. Please try again or write your message."
+    voice_error: "We could not process your voice message. Please try again or write your message.",
+    translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language."
   },
   es: {
     nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
@@ -35,7 +36,8 @@ export const DICT = {
     sv_consult: "Consulta legal inicial", sv_permits: "Permisos de residencia y renovaciones", sv_work: "Autorizaciones de trabajo", sv_family: "Reagrupación familiar", sv_nationality: "Nacionalidad española", sv_tie: "Gestión de NIE / TIE",
     doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento",
     record_voice: "Grabar un mensaje de voz", stop_recording: "Grabando… pulse para detener", voice_sending: "Enviando…", listen: "Escuchar",
-    voice_error: "No pudimos procesar su mensaje de voz. Inténtelo de nuevo o escriba su mensaje."
+    voice_error: "No pudimos procesar su mensaje de voz. Inténtelo de nuevo o escriba su mensaje.",
+    translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas."
   },
   fr: {
     nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
@@ -53,7 +55,8 @@ export const DICT = {
     sv_consult: "Consultation juridique initiale", sv_permits: "Permis de séjour et renouvellements", sv_work: "Autorisations de travail", sv_family: "Regroupement familial", sv_nationality: "Nationalité espagnole", sv_tie: "Assistance NIE / TIE",
     doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance",
     record_voice: "Enregistrer un message vocal", stop_recording: "Enregistrement… appuyez pour arrêter", voice_sending: "Envoi…", listen: "Écouter",
-    voice_error: "Nous n'avons pas pu traiter votre message vocal. Veuillez réessayer ou écrire votre message."
+    voice_error: "Nous n'avons pas pu traiter votre message vocal. Veuillez réessayer ou écrire votre message.",
+    translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues."
   },
   ar: {
     nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
@@ -71,6 +74,7 @@ export const DICT = {
     sv_consult: "استشارة قانونية أولية", sv_permits: "تصاريح الإقامة والتجديدات", sv_work: "تصاريح العمل", sv_family: "لمّ شمل العائلة", sv_nationality: "الجنسية الإسبانية", sv_tie: "المساعدة في NIE / TIE",
     doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق",
     record_voice: "تسجيل رسالة صوتية", stop_recording: "جارٍ التسجيل… اضغط للإيقاف", voice_sending: "جارٍ الإرسال…", listen: "استمع",
-    voice_error: "لم نتمكن من معالجة رسالتك الصوتية. حاول مرة أخرى أو اكتب رسالتك."
+    voice_error: "لم نتمكن من معالجة رسالتك الصوتية. حاول مرة أخرى أو اكتب رسالتك.",
+    translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات."
   }
 };
