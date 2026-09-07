@@ -25,10 +25,10 @@ export default function MatterTimeline({ matter }) {
       {events.map((ev, i) => {
         if (ev.type === "audit") {
           return (
-            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-secondary/60 text-sm">
+            <div key={i} className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3 rounded-xl bg-secondary/60 text-sm">
               <Clock className="w-4 h-4 text-muted-foreground shrink-0" />
-              <span>{ev.a.summary}</span>
-              <span className="text-xs text-muted-foreground ms-auto">{ev.a.actor_name || ""} · {formatDateTime(ev.a.created_date)}</span>
+              <span className="min-w-0 break-words basis-52 grow">{ev.a.summary}</span>
+              <span className="text-xs text-muted-foreground sm:ms-auto">{ev.a.actor_name || ""} · {formatDateTime(ev.a.created_date)}</span>
             </div>
           );
         }
