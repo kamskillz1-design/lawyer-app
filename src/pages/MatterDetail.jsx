@@ -78,16 +78,16 @@ export default function MatterDetail() {
           <ArrowLeft className="w-4 h-4" /> Expedientes
         </Link>
         <div className="flex flex-wrap items-center justify-between gap-3 mt-1">
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="font-heading text-3xl font-bold">{matter.matter_number}</h1>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm break-words">
               {matter.procedure_type} · <Link to={`/clients/${matter.client_id}`} className="hover:text-primary">{matter.client_name}</Link>
               {" · "}{matter.authority || "—"} · abierto {formatDate(matter.opened_date)}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 max-w-full">
             <select value={matter.stage} onChange={(e) => changeStage(e.target.value)}
-              className="h-10 rounded-xl border border-input bg-card px-3 text-sm font-medium">
+              className="h-10 max-w-full rounded-xl border border-input bg-card px-3 text-sm font-medium">
               {STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
             </select>
             {editing ? (
