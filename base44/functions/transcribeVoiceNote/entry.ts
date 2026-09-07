@@ -18,8 +18,9 @@ export default async function(req) {
     let lastError = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const { transcript } = await base44.asServiceRole.integrations.Core.TranscribeAudio({ audio_url: file_url });
-        const text = (transcript || '').trim();
+        const result = await base44.asServiceRole.integrations.Core.TranscribeAudio({ audio_url: file_url });
+        // The integration returns the transcript as a plain string, not an object.
+        const text = (typeof result === 'string' ? result : (result?.transcript || '')).trim();
         if (!text) {
           return Response.json({ transcript: '', error_type: 'empty_transcript' });
         }
