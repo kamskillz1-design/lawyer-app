@@ -60,7 +60,7 @@ export default function PortalDocuments() {
     }
   };
 
-  if (noAccess) return <p className="p-6 text-muted-foreground">No client profile is linked to this account yet. Please contact the office.</p>;
+  if (noAccess) return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
   if (!data) return <p className="text-muted-foreground">{t("loading")}</p>;
 
   const { matters, items, docs, client } = data;

@@ -18,7 +18,8 @@ export const DICT = {
     doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due",
     record_voice: "Record a voice message", stop_recording: "Recording… tap to stop", voice_sending: "Sending…", listen: "Listen",
     voice_error: "We could not process your voice message. Please try again or write your message.",
-    translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language."
+    translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language.",
+    no_client_profile: "No client profile is linked to this account yet. Please contact the office."
   },
   es: {
     nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
@@ -37,7 +38,8 @@ export const DICT = {
     doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento",
     record_voice: "Grabar un mensaje de voz", stop_recording: "Grabando… pulse para detener", voice_sending: "Enviando…", listen: "Escuchar",
     voice_error: "No pudimos procesar su mensaje de voz. Inténtelo de nuevo o escriba su mensaje.",
-    translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas."
+    translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas.",
+    no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho."
   },
   fr: {
     nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
@@ -56,7 +58,8 @@ export const DICT = {
     doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance",
     record_voice: "Enregistrer un message vocal", stop_recording: "Enregistrement… appuyez pour arrêter", voice_sending: "Envoi…", listen: "Écouter",
     voice_error: "Nous n'avons pas pu traiter votre message vocal. Veuillez réessayer ou écrire votre message.",
-    translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues."
+    translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues.",
+    no_client_profile: "Aucun profil client n'est encore lié à ce compte. Veuillez contacter le cabinet."
   },
   ar: {
     nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
@@ -75,6 +78,7 @@ export const DICT = {
     doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق",
     record_voice: "تسجيل رسالة صوتية", stop_recording: "جارٍ التسجيل… اضغط للإيقاف", voice_sending: "جارٍ الإرسال…", listen: "استمع",
     voice_error: "لم نتمكن من معالجة رسالتك الصوتية. حاول مرة أخرى أو اكتب رسالتك.",
-    translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات."
+    translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات.",
+    no_client_profile: "لا يوجد ملف عميل مرتبط بهذا الحساب بعد. يُرجى الاتصال بالمكتب."
   }
 };
