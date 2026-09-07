@@ -24,7 +24,7 @@ export default function PortalLayout() {
           <div className="flex items-center gap-2">
             <Scale className="w-6 h-6 text-primary" />
             <div>
-              <p className="font-heading font-bold leading-none">LexPath</p>
+              <p className="font-heading font-bold leading-none">Legal Lex</p>
               <p className="text-[11px] text-muted-foreground">{t("hero_sub").split(".")[0]}</p>
             </div>
           </div>
@@ -49,7 +49,7 @@ export default function PortalLayout() {
       <main className="flex-1 w-full max-w-5xl mx-auto px-4 py-6">
         <Outlet />
       </main>
-      <footer className="border-t py-4 text-center text-xs text-muted-foreground">LexPath · Bilbao</footer>
+      <footer className="border-t py-4 text-center text-xs text-muted-foreground">Legal Lex · Bilbao</footer>
     </div>
   );
 }

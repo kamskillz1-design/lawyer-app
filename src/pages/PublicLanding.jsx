@@ -71,7 +71,7 @@ export default function PublicLanding() {
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Scale className="w-6 h-6 text-primary" />
-            <span className="font-heading font-bold text-lg">LexPath</span>
+            <span className="font-heading font-bold text-lg">Legal Lex</span>
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -144,7 +144,7 @@ export default function PublicLanding() {
 
       <footer className="border-t py-8">
         <div className="max-w-5xl mx-auto px-4 text-sm text-muted-foreground flex flex-col md:flex-row justify-between gap-2">
-          <p>LexPath · Despacho de extranjería · Bilbao</p>
+          <p>Legal Lex · Despacho de extranjería · Bilbao</p>
           <p>Lunes–Viernes 9:00–18:00 · +34 XXX XXX XXX</p>
         </div>
       </footer>

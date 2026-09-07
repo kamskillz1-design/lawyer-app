@@ -32,7 +32,7 @@ export default function Layout() {
           <div className="flex items-center gap-2 px-5 py-5">
             <Scale className="w-6 h-6 text-amber-100/90" />
             <div>
-              <p className="font-heading font-bold text-lg leading-none">LexPath</p>
+              <p className="font-heading font-bold text-lg leading-none">Legal Lex</p>
               <p className="text-[11px] text-stone-300 mt-1">Extranjería · Bilbao</p>
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function Layout() {
         <main className="flex-1 min-w-0">
           <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-card">
             <button onClick={() => setOpen(true)}><Menu className="w-6 h-6" /></button>
-            <p className="font-heading font-bold">LexPath</p>
+            <p className="font-heading font-bold">Legal Lex</p>
             <div className="w-6" />
           </div>
           <div className="p-4 md:p-8 max-w-6xl mx-auto">
