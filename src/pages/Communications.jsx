@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Languages, Send, Gavel, CheckCircle2, ListPlus, AlertTriangle } from "lucide-react";
+import { Languages, Send, Gavel, CheckCircle2, ListPlus, AlertTriangle, Mic } from "lucide-react";
 import { SENSITIVITIES, sensitivityLabel } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
@@ -147,6 +147,7 @@ export default function Communications() {
                 <StatusBadge value={c.status} />
               </p>
               <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
+              {c.audio_url && <span className="inline-flex items-center gap-1 text-[10px] text-primary mt-0.5"><Mic className="w-3 h-3" /> nota de voz</span>}
               <p className="text-[10px] text-muted-foreground mt-1">
                 {c.original_language} · {c.channel} · {sensitivityLabel(c.sensitivity)}
               </p>
@@ -181,6 +182,13 @@ export default function Communications() {
 
                 <div dir={getLanguage(selected.original_language || "").rtl ? "rtl" : "ltr"} className="mt-4 p-4 rounded-xl bg-secondary/70">
                   <p className="text-sm">{selected.original_content}</p>
+                  {selected.audio_url && (
+                    <div className="flex items-center gap-2 mt-3">
+                      <Mic className="w-4 h-4 text-primary shrink-0" />
+                      <span className="text-[10px] text-muted-foreground">Transcrito automáticamente de la nota de voz original:</span>
+                      <audio controls src={selected.audio_url} className="h-9 w-full max-w-sm" />
+                    </div>
+                  )}
                 </div>
 
                 {selected.staff_translation ? (

@@ -54,6 +54,9 @@
     "original_content": {
       "type": "string"
     },
+    "audio_url": {
+      "type": "string"
+    },
     "staff_translation": {
       "type": "string"
     },

@@ -15,7 +15,9 @@ export const DICT = {
     faq_title: "Frequently asked questions", contact_title: "Contact & office hours",
     required_mark: "required", full_name: "Full name", email_l: "Email", phone_l: "Phone", nationality_l: "Nationality", message_l: "Your message", privacy_ok: "I agree that my data may be used to respond to my enquiry.",
     sv_consult: "Initial legal consultation", sv_permits: "Residence permits & renewals", sv_work: "Work authorisations", sv_family: "Family reunification", sv_nationality: "Spanish nationality", sv_tie: "NIE / TIE card assistance",
-    doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due"
+    doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due",
+    record_voice: "Record a voice message", stop_recording: "Recording… tap to stop", voice_sending: "Sending…", listen: "Listen",
+    voice_error: "We could not process your voice message. Please try again or write your message."
   },
   es: {
     nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
@@ -31,7 +33,9 @@ export const DICT = {
     faq_title: "Preguntas frecuentes", contact_title: "Contacto y horario",
     required_mark: "obligatorio", full_name: "Nombre completo", email_l: "Correo electrónico", phone_l: "Teléfono", nationality_l: "Nacionalidad", message_l: "Su mensaje", privacy_ok: "Acepto que mis datos se usen para responder a mi consulta.",
     sv_consult: "Consulta legal inicial", sv_permits: "Permisos de residencia y renovaciones", sv_work: "Autorizaciones de trabajo", sv_family: "Reagrupación familiar", sv_nationality: "Nacionalidad española", sv_tie: "Gestión de NIE / TIE",
-    doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento"
+    doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento",
+    record_voice: "Grabar un mensaje de voz", stop_recording: "Grabando… pulse para detener", voice_sending: "Enviando…", listen: "Escuchar",
+    voice_error: "No pudimos procesar su mensaje de voz. Inténtelo de nuevo o escriba su mensaje."
   },
   fr: {
     nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
@@ -47,7 +51,9 @@ export const DICT = {
     faq_title: "Questions fréquentes", contact_title: "Contact et horaires",
     required_mark: "obligatoire", full_name: "Nom complet", email_l: "E-mail", phone_l: "Téléphone", nationality_l: "Nationalité", message_l: "Votre message", privacy_ok: "J'accepte que mes données soient utilisées pour répondre à ma demande.",
     sv_consult: "Consultation juridique initiale", sv_permits: "Permis de séjour et renouvellements", sv_work: "Autorisations de travail", sv_family: "Regroupement familial", sv_nationality: "Nationalité espagnole", sv_tie: "Assistance NIE / TIE",
-    doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance"
+    doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance",
+    record_voice: "Enregistrer un message vocal", stop_recording: "Enregistrement… appuyez pour arrêter", voice_sending: "Envoi…", listen: "Écouter",
+    voice_error: "Nous n'avons pas pu traiter votre message vocal. Veuillez réessayer ou écrire votre message."
   },
   ar: {
     nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
@@ -63,6 +69,8 @@ export const DICT = {
     faq_title: "الأسئلة الشائعة", contact_title: "الاتصال وساعات العمل",
     required_mark: "مطلوب", full_name: "الاسم الكامل", email_l: "البريد الإلكتروني", phone_l: "الهاتف", nationality_l: "الجنسية", message_l: "رسالتك", privacy_ok: "أوافق على استخدام بياناتي للرد على استفساري.",
     sv_consult: "استشارة قانونية أولية", sv_permits: "تصاريح الإقامة والتجديدات", sv_work: "تصاريح العمل", sv_family: "لمّ شمل العائلة", sv_nationality: "الجنسية الإسبانية", sv_tie: "المساعدة في NIE / TIE",
-    doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق"
+    doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق",
+    record_voice: "تسجيل رسالة صوتية", stop_recording: "جارٍ التسجيل… اضغط للإيقاف", voice_sending: "جارٍ الإرسال…", listen: "استمع",
+    voice_error: "لم نتمكن من معالجة رسالتك الصوتية. حاول مرة أخرى أو اكتب رسالتك."
   }
 };
