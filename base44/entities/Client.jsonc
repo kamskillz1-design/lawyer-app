@@ -87,6 +87,10 @@
     "portal_email": {
       "type": "string"
     },
+    "portal_access_enabled": {
+      "type": "boolean",
+      "default": true
+    },
     "engagement_status": {
       "type": "string",
       "enum": [

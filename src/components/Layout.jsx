@@ -14,7 +14,6 @@ const NAV = [
   { to: "/documents", label: "Documentos", icon: FileText },
   { to: "/messages", label: "Mensajes", icon: MessageCircle },
   { to: "/billing", label: "Facturación", icon: Receipt },
-  { to: "/portal", label: "Portal de cliente", icon: UserRound },
 ];
 
 export default function Layout() {
@@ -45,6 +44,14 @@ export default function Layout() {
                 <Icon className="w-4 h-4 shrink-0" /> {label}
               </NavLink>
             ))}
+            <p className="px-3 pt-4 pb-1 text-[10px] uppercase tracking-widest text-stone-400">Área de cliente</p>
+            <NavLink to="/portal" onClick={() => setOpen(false)}
+              className={({ isActive }) => cn("flex items-center gap-3 px-3 py-2 rounded-lg text-sm border transition-colors",
+                isActive
+                  ? "bg-amber-400/25 text-amber-50 border-amber-200/40 font-medium"
+                  : "text-amber-100/90 border-amber-200/30 bg-amber-400/10 hover:bg-amber-400/20 hover:text-amber-50")}>
+              <UserRound className="w-4 h-4 shrink-0" /> Portal de cliente
+            </NavLink>
           </nav>
           <button onClick={logout} className="flex items-center gap-3 px-4 py-4 text-sm text-stone-300 hover:text-white border-t border-white/10">
             <LogOut className="w-4 h-4" /> Cerrar sesión

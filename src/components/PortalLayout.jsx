@@ -1,14 +1,73 @@
-import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Scale, Home, FileText, MessageCircle, UserRound, LogOut } from "lucide-react";
+import { Scale, Home, FileText, MessageCircle, UserRound, LogOut, Lock, Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { cn } from "@/lib/utils";
 
 export default function PortalLayout() {
   const { t } = useI18n();
-  const navigate = useNavigate();
+  const [state, setState] = useState("loading");
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const me = await base44.auth.me();
+        const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
+        const client = clients[0];
+        setState(client && client.portal_access_enabled === false ? "locked" : "ok");
+      } catch {
+        setState("ok");
+      }
+    };
+    check();
+  }, []);
+
+  const brand = (
+    <div className="flex items-center gap-2 min-w-0">
+      <Scale className="w-6 h-6 text-primary shrink-0" />
+      <div className="min-w-0">
+        <p className="font-heading font-bold leading-none">Legal Lex</p>
+        <p className="text-[11px] text-muted-foreground truncate hidden sm:block">{t("hero_sub").split(".")[0]}</p>
+      </div>
+    </div>
+  );
+
+  if (state === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (state === "locked") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b">
+          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            {brand}
+            <div className="flex items-center gap-2 shrink-0">
+              <LanguageSwitcher />
+              <button onClick={() => base44.auth.logout()} title={t("logout")}
+                className="p-2.5 rounded-lg hover:bg-secondary text-muted-foreground">
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 w-full max-w-md mx-auto px-4 py-16">
+          <div className="card-soft p-8 text-center">
+            <Lock className="w-10 h-10 text-primary mx-auto" />
+            <h1 className="font-heading text-2xl font-bold mt-4">{t("portal_locked_title")}</h1>
+            <p className="text-sm text-muted-foreground mt-2">{t("portal_locked_body")}</p>
+          </div>
+        </main>
+        <footer className="border-t py-4 text-center text-xs text-muted-foreground">Legal Lex · Bilbao</footer>
+      </div>
+    );
+  }
 
   const tabs = [
     { to: "/portal", label: t("nav_home"), icon: Home, end: true },
@@ -21,13 +80,7 @@ export default function PortalLayout() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
-            <Scale className="w-6 h-6 text-primary shrink-0" />
-            <div className="min-w-0">
-              <p className="font-heading font-bold leading-none">Legal Lex</p>
-              <p className="text-[11px] text-muted-foreground truncate hidden sm:block">{t("hero_sub").split(".")[0]}</p>
-            </div>
-          </div>
+          {brand}
           <div className="flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
             <button onClick={() => base44.auth.logout()} title={t("logout")}

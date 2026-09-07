@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Inbox, AlarmClock, MessageCircle, Receipt, Users, FolderOpen, CheckSquare, Zap } from "lucide-react";
-import { stageLabel, leadLabel, sensitivityLabel } from "@/lib/constants";
-import { formatDate, daysUntil } from "@/lib/format";
-import { todayISO } from "@/lib/format";
+import { sensitivityLabel, leadLabel } from "@/lib/constants";
+import { formatDate, daysUntil, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
+import CollapsibleSection from "@/components/dashboard/CollapsibleSection";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -53,7 +53,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0">
       <div>
         <h1 className="font-heading text-3xl font-bold">Panel del despacho</h1>
         <p className="text-muted-foreground text-sm mt-1">Atención requerida hoy · {formatDate(new Date().toISOString())}</p>
@@ -78,93 +78,71 @@ export default function Home() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
-        <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><AlarmClock className="w-4 h-4 text-red-600 shrink-0" /> Tareas vencidas ({overdue.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {overdue.slice(0, 5).map((t) => (
-              <Link key={t.id} to={`/matters/${t.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium break-words">{t.title}</p>
-                <p className="text-xs text-red-600 break-words">{t.matter_number} · vencía {formatDate(t.due_date)} · {t.owner || "sin asignar"}</p>
-              </Link>
-            ))}
-            {!overdue.length && <p className="text-sm text-muted-foreground p-3">Sin tareas vencidas 🎉</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={AlarmClock} iconClass="text-red-600" title="Tareas vencidas" count={overdue.length} contentClass="space-y-2">
+          {overdue.slice(0, 5).map((t) => (
+            <Link key={t.id} to={`/matters/${t.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium break-words">{t.title}</p>
+              <p className="text-xs text-red-600 break-words">{t.matter_number} · vencía {formatDate(t.due_date)} · {t.owner || "sin asignar"}</p>
+            </Link>
+          ))}
+          {!overdue.length && <p className="text-sm text-muted-foreground p-3">Sin tareas vencidas 🎉</p>}
+        </CollapsibleSection>
 
-        <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><AlarmClock className="w-4 h-4 text-amber-600 shrink-0" /> Plazos próximos 30 días ({upcomingDeadlines.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {upcomingDeadlines.slice(0, 5).map((m) => (
-              <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium break-words">{m.matter_number} · {m.procedure_type}</p>
-                <p className="text-xs text-muted-foreground break-words">{m.client_name} · {formatDate(m.next_deadline)} ({daysUntil(m.next_deadline)} días)</p>
-              </Link>
-            ))}
-            {!upcomingDeadlines.length && <p className="text-sm text-muted-foreground p-3">Sin plazos en 30 días.</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={AlarmClock} iconClass="text-amber-600" title="Plazos próximos 30 días" count={upcomingDeadlines.length} contentClass="space-y-2">
+          {upcomingDeadlines.slice(0, 5).map((m) => (
+            <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium break-words">{m.matter_number} · {m.procedure_type}</p>
+              <p className="text-xs text-muted-foreground break-words">{m.client_name} · {formatDate(m.next_deadline)} ({daysUntil(m.next_deadline)} días)</p>
+            </Link>
+          ))}
+          {!upcomingDeadlines.length && <p className="text-sm text-muted-foreground p-3">Sin plazos en 30 días.</p>}
+        </CollapsibleSection>
 
-        <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><MessageCircle className="w-4 h-4 text-sky-600 shrink-0" /> Mensajes pendientes ({pendingMsgs.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {pendingMsgs.slice(0, 5).map((c) => (
-              <Link key={c.id} to="/messages" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium break-words">{c.client_name} · {c.original_language}</p>
-                <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
-                <p className="text-xs">{sensitivityLabel(c.sensitivity)} · <StatusBadge value={c.status} /></p>
-              </Link>
-            ))}
-            {!pendingMsgs.length && <p className="text-sm text-muted-foreground p-3">Sin mensajes pendientes.</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={MessageCircle} iconClass="text-sky-600" title="Mensajes pendientes" count={pendingMsgs.length} contentClass="space-y-2">
+          {pendingMsgs.slice(0, 5).map((c) => (
+            <Link key={c.id} to="/messages" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium break-words">{c.client_name} · {c.original_language}</p>
+              <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
+              <p className="text-xs flex flex-wrap items-center gap-1">{sensitivityLabel(c.sensitivity)} · <StatusBadge value={c.status} /></p>
+            </Link>
+          ))}
+          {!pendingMsgs.length && <p className="text-sm text-muted-foreground p-3">Sin mensajes pendientes.</p>}
+        </CollapsibleSection>
 
-        <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><Receipt className="w-4 h-4 text-amber-600 shrink-0" /> Facturas pendientes ({unpaid.length})</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {unpaid.slice(0, 5).map((i) => (
-              <Link key={i.id} to="/billing" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium">{i.number} · {i.client_name}</p>
-                <p className="text-xs text-muted-foreground">{i.total?.toFixed(2) ?? "0"} € · vence {formatDate(i.due_date)}</p>
-              </Link>
-            ))}
-            {!unpaid.length && <p className="text-sm text-muted-foreground p-3">Sin facturas pendientes.</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={Receipt} iconClass="text-amber-600" title="Facturas pendientes" count={unpaid.length} contentClass="space-y-2">
+          {unpaid.slice(0, 5).map((i) => (
+            <Link key={i.id} to="/billing" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium break-words">{i.number} · {i.client_name}</p>
+              <p className="text-xs text-muted-foreground break-words">{i.total?.toFixed(2) ?? "0"} € · vence {formatDate(i.due_date)}</p>
+            </Link>
+          ))}
+          {!unpaid.length && <p className="text-sm text-muted-foreground p-3">Sin facturas pendientes.</p>}
+        </CollapsibleSection>
 
-        <Card className="card-soft md:col-span-2">
-          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><Inbox className="w-4 h-4 text-primary shrink-0" /> Consultas sin cerrar ({newLeads.length})</CardTitle></CardHeader>
-          <CardContent className="grid md:grid-cols-2 gap-2">
-            {newLeads.slice(0, 6).map((l) => (
-              <Link key={l.id} to="/leads" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium break-words">{l.full_name} · {l.preferred_language || "—"}</p>
-                <p className="text-xs text-muted-foreground truncate">{l.enquiry_category || l.message}</p>
-                <p className="text-xs mt-1"><StatusBadge value={l.status} label={leadLabel(l.status)} /></p>
-              </Link>
-            ))}
-            {!newLeads.length && <p className="text-sm text-muted-foreground p-3">Sin consultas nuevas.</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={Inbox} iconClass="text-primary" title="Consultas sin cerrar" count={newLeads.length} className="md:col-span-2" contentClass="grid md:grid-cols-2 gap-2">
+          {newLeads.slice(0, 6).map((l) => (
+            <Link key={l.id} to="/leads" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium break-words">{l.full_name} · {l.preferred_language || "—"}</p>
+              <p className="text-xs text-muted-foreground truncate">{l.enquiry_category || l.message}</p>
+              <p className="text-xs mt-1"><StatusBadge value={l.status} label={leadLabel(l.status)} /></p>
+            </Link>
+          ))}
+          {!newLeads.length && <p className="text-sm text-muted-foreground p-3">Sin consultas nuevas.</p>}
+        </CollapsibleSection>
 
-        <Card className="card-soft md:col-span-2 border-l-4 border-l-primary/30">
-          <CardHeader className="pb-2">
-            <CardTitle className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base min-w-0">
-              <Zap className="w-4 h-4 text-primary shrink-0" />
-              <span className="min-w-0 break-words">Recordatorios automáticos ({autoReminders.length})</span>
-              <span className="text-xs text-muted-foreground font-normal w-full sm:w-auto">· generados por el escaneo matinal</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid md:grid-cols-2 gap-2">
-            {autoReminders.slice(0, 6).map((t) => (
-              <Link key={t.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium flex items-center gap-1.5 min-w-0">
-                  <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{t.title}</span>
-                </p>
-                <p className="text-xs text-muted-foreground">{t.owner || "sin asignar"} · {formatDate(t.due_date)} · prioridad {t.priority}</p>
-              </Link>
-            ))}
-            {!autoReminders.length && <p className="text-sm text-muted-foreground p-3">Sin recordatorios automáticos pendientes.</p>}
-          </CardContent>
-        </Card>
+        <CollapsibleSection icon={Zap} iconClass="text-primary" title="Recordatorios automáticos" count={autoReminders.length}
+          className="md:col-span-2 border-l-4 border-l-primary/30" contentClass="grid md:grid-cols-2 gap-2"
+          titleExtra={<span className="text-xs text-muted-foreground font-normal w-full sm:w-auto">· generados por el escaneo matinal</span>}>
+          {autoReminders.slice(0, 6).map((t) => (
+            <Link key={t.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+              <p className="font-medium flex items-center gap-1.5 min-w-0">
+                <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{t.title}</span>
+              </p>
+              <p className="text-xs text-muted-foreground break-words">{t.owner || "sin asignar"} · {formatDate(t.due_date)} · prioridad {t.priority}</p>
+            </Link>
+          ))}
+          {!autoReminders.length && <p className="text-sm text-muted-foreground p-3">Sin recordatorios automáticos pendientes.</p>}
+        </CollapsibleSection>
       </div>
     </div>
   );

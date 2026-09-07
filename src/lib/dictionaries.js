@@ -24,7 +24,9 @@ export const DICT = {
     voice_pending_note: "[Voice message — automatic transcription pending. The office will listen to the audio.]",
     translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language.",
     no_client_profile: "No client profile is linked to this account yet. Please contact the office.",
-    send_error: "The message could not be sent — please try again in a few moments."
+    send_error: "The message could not be sent — please try again in a few moments.",
+    portal_locked_title: "Portal access pending",
+    portal_locked_body: "Your access to the client portal is currently switched off. Please contact the office and we will enable it for you."
   },
   es: {
     nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
@@ -49,7 +51,9 @@ export const DICT = {
     voice_pending_note: "[Mensaje de voz — transcripción automática pendiente. El despacho escuchará el audio.]",
     translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas.",
     no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho.",
-    send_error: "No se pudo enviar el mensaje — inténtelo de nuevo en unos momentos."
+    send_error: "No se pudo enviar el mensaje — inténtelo de nuevo en unos momentos.",
+    portal_locked_title: "Acceso al portal pendiente",
+    portal_locked_body: "Su acceso al portal de clientes está desactivado actualmente. Póngase en contacto con el despacho y lo activaremos por usted."
   },
   fr: {
     nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
