@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Inbox, AlarmClock, MessageCircle, Receipt, Users, FolderOpen, CheckSquare } from "lucide-react";
+import { Inbox, AlarmClock, MessageCircle, Receipt, Users, FolderOpen, CheckSquare, Zap } from "lucide-react";
 import { stageLabel, leadLabel, sensitivityLabel } from "@/lib/constants";
 import { formatDate, daysUntil } from "@/lib/format";
 import { todayISO } from "@/lib/format";
@@ -41,6 +41,7 @@ export default function Home() {
     return d != null && d <= 30;
   }).sort((a, b) => (a.next_deadline || "").localeCompare(b.next_deadline || ""));
   const newLeads = data.leads.filter((l) => ["new", "awaiting_response"].includes(l.status));
+  const autoReminders = openTasks.filter((t) => t.source === "automation");
   const pendingMsgs = data.comms.filter((c) => ["received", "translation_pending", "pending_review", "lawyer_pending"].includes(c.status));
   const unpaid = data.invoices.filter((i) => ["sent", "overdue"].includes(i.status));
 
@@ -141,6 +142,26 @@ export default function Home() {
               </Link>
             ))}
             {!newLeads.length && <p className="text-sm text-muted-foreground p-3">Sin consultas nuevas.</p>}
+          </CardContent>
+        </Card>
+
+        <Card className="card-soft md:col-span-2 border-l-4 border-l-primary/30">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Zap className="w-4 h-4 text-primary" /> Recordatorios automáticos ({autoReminders.length})
+              <span className="text-xs text-muted-foreground font-normal">· generados por el escaneo matinal</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid md:grid-cols-2 gap-2">
+            {autoReminders.slice(0, 6).map((t) => (
+              <Link key={t.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm">
+                <p className="font-medium flex items-center gap-1.5">
+                  <Zap className="w-3 h-3 text-primary shrink-0" /> {t.title}
+                </p>
+                <p className="text-xs text-muted-foreground">{t.owner || "sin asignar"} · {formatDate(t.due_date)} · prioridad {t.priority}</p>
+              </Link>
+            ))}
+            {!autoReminders.length && <p className="text-sm text-muted-foreground p-3">Sin recordatorios automáticos pendientes.</p>}
           </CardContent>
         </Card>
       </div>

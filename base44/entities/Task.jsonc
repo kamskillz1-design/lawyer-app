@@ -68,6 +68,17 @@
     "requires_lawyer_approval": {
       "type": "boolean",
       "default": false
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "automation"
+      ],
+      "default": "manual"
+    },
+    "source_ref": {
+      "type": "string"
     }
   },
   "required": [

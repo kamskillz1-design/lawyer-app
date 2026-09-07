@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckCircle2 } from "lucide-react";
+import { Plus, CheckCircle2, Zap } from "lucide-react";
 import { TASK_TYPES, taskTypeLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
@@ -98,6 +98,11 @@ export default function Tasks() {
                 </p>
               </div>
               <StatusBadge value={t.priority} label={t.priority} />
+              {t.source === "automation" && (
+                <span className="inline-flex items-center gap-1 text-xs text-primary font-medium whitespace-nowrap">
+                  <Zap className="w-3 h-3" /> AUTO
+                </span>
+              )}
               {t.status !== "done" && (
                 <Button size="sm" variant="outline" className="rounded-lg" onClick={() => complete(t)}>
                   <CheckCircle2 className="w-4 h-4 me-1" /> Completar
