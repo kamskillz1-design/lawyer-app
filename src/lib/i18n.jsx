@@ -22,11 +22,14 @@ export function I18nProvider({ children }) {
   const dictCache = useRef(new Map());
 
   const getDict = (code) => {
-    if (DICT[code]) return DICT[code];
     if (dictCache.current.has(code)) return dictCache.current.get(code);
     const parsed = readCachedDict(code);
-    if (parsed) dictCache.current.set(code, parsed);
-    return parsed;
+    if (parsed) {
+      dictCache.current.set(code, parsed);
+      return parsed;
+    }
+    if (DICT[code]) return DICT[code];
+    return null;
   };
 
   useEffect(() => {
@@ -36,25 +39,46 @@ export function I18nProvider({ children }) {
     document.documentElement.dir = l.rtl ? "rtl" : "ltr";
   }, [lang]);
 
+  const inflight = useRef(new Set());
+
+  // Detect keys missing from a language's dictionary (vs. the English source)
+  // and translate only those, merging the result into the existing dictionary.
+  // This makes every new UI string available in all supported languages.
+  const ensureComplete = (code) => {
+    if (code === "en" || inflight.current.has(code)) return;
+    const dict = getDict(code) || {};
+    const missing = Object.keys(DICT.en).filter((k) => !dict[k]);
+    if (!missing.length) return;
+    inflight.current.add(code);
+    setTranslating(true);
+    const strings = {};
+    missing.forEach((k) => { strings[k] = DICT.en[k]; });
+    base44.functions
+      .invoke("translateUi", { target_language: code, strings })
+      .then((res) => {
+        const added = res.data && res.data.dict;
+        if (added && typeof added === "object") {
+          const merged = { ...(getDict(code) || {}), ...added };
+          localStorage.setItem(cacheKey(code), JSON.stringify(merged));
+          dictCache.current.set(code, merged);
+          forceRefresh((n) => n + 1);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        inflight.current.delete(code);
+        setTranslating(false);
+      });
+  };
+
   const setLang = (code) => {
     if (!LANGUAGES.some((l) => l.code === code)) return;
     setLangState(code);
-    if (!DICT[code] && code !== "en" && !getDict(code)) {
-      setTranslating(true);
-      base44.functions
-        .invoke("translateUi", { target_language: code, strings: DICT.en })
-        .then((res) => {
-          const dict = res.data && res.data.dict;
-          if (dict && typeof dict === "object") {
-            localStorage.setItem(cacheKey(code), JSON.stringify(dict));
-            dictCache.current.set(code, dict);
-            forceRefresh((n) => n + 1);
-          }
-        })
-        .catch(() => {})
-        .finally(() => setTranslating(false));
-    }
   };
+
+  useEffect(() => {
+    ensureComplete(lang);
+  }, [lang]);
 
   const t = (key) => {
     const dict = getDict(lang) || DICT.en;

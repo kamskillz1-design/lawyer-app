@@ -23,10 +23,20 @@ export default async function(req) {
       }
     }
 
-    // Serve from cache without requiring auth (repeats are free for any visitor)
+    // Serve from cache without requiring auth (repeats are free for any visitor).
+    // If the cached dictionary is missing any requested keys (e.g. strings added
+    // after the cache was built), translate only those keys and merge them into
+    // the existing record instead of returning stale data.
     const cached = await base44.asServiceRole.entities.UiDictCache.filter({ language: target }).catch(() => []);
+    let cachedDict = null;
+    let cachedId = null;
     if (cached && cached.length && cached[0].dict) {
-      try { return Response.json({ dict: JSON.parse(cached[0].dict) }); } catch (e) { /* regenerate below */ }
+      cachedId = cached[0].id;
+      try { cachedDict = JSON.parse(cached[0].dict); } catch (e) { cachedDict = null; }
+    }
+    const missingKeys = cachedDict ? keys.filter((k) => !cachedDict[k]) : keys;
+    if (cachedDict && missingKeys.length === 0) {
+      return Response.json({ dict: cachedDict });
     }
 
     // Cache miss: translating costs an LLM call — only for authenticated app users
@@ -36,21 +46,30 @@ export default async function(req) {
       return Response.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    const missingStrings = {};
+    for (const k of missingKeys) missingStrings[k] = strings[k];
     const properties = {};
-    for (const k of keys) properties[k] = { type: 'string' };
+    for (const k of missingKeys) properties[k] = { type: 'string' };
     const res = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: 'Translate each of these user-interface strings into the language with BCP 47 code "' + target + '". Return a JSON object with the exact same keys, where every value is the translated string. Use natural, concise, formal-but-friendly wording suitable for an immigration-law client portal. Keep brand names (LexPath, Bilbao, NIE, TIE) unchanged.\n\n' + JSON.stringify(strings),
-      response_json_schema: { type: 'object', properties, required: keys },
+      prompt: 'Translate each of these user-interface strings into the language with BCP 47 code "' + target + '". Return a JSON object with the exact same keys, where every value is the translated string. Use natural, concise, formal-but-friendly wording suitable for an immigration-law client portal. Keep brand names (LexPath, Bilbao, NIE, TIE) unchanged.\n\n' + JSON.stringify(missingStrings),
+      response_json_schema: { type: 'object', properties, required: missingKeys },
     });
-    const dict = res && typeof res === 'object' ? res : null;
-    if (!dict || Object.keys(dict).length === 0) {
+    const translated = res && typeof res === 'object' ? res : null;
+    if (!translated || Object.keys(translated).length === 0) {
       return Response.json({ error: 'Translation failed' }, { status: 500 });
     }
 
-    await base44.asServiceRole.entities.UiDictCache.create({
-      language: target, dict: JSON.stringify(dict),
-    }).catch(() => {});
-    console.log('translateUi: generated dictionary for ' + target + ' (' + Object.keys(dict).length + ' keys)');
+    const dict = { ...(cachedDict || {}), ...translated };
+    if (cachedId) {
+      await base44.asServiceRole.entities.UiDictCache.update(cachedId, {
+        dict: JSON.stringify(dict),
+      }).catch(() => {});
+    } else {
+      await base44.asServiceRole.entities.UiDictCache.create({
+        language: target, dict: JSON.stringify(dict),
+      }).catch(() => {});
+    }
+    console.log('translateUi: dictionary for ' + target + ' now has ' + Object.keys(dict).length + ' keys (+' + missingKeys.length + ' translated)');
     return Response.json({ dict });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
