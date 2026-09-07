@@ -32,22 +32,21 @@ export default function PortalMessages() {
 
   const send = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
+    if (!text.trim() || !clientProfile) return;
     setSending(true);
     try {
-      const me = await base44.auth.me();
-      const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
-      const client = clients[0];
-      if (!client) throw new Error("No linked client profile");
       await base44.entities.Communication.create({
-        client_id: client.id, client_name: client.legal_name, portal_user_id: me.id,
-        direction: "inbound", channel: "portal", sender: client.legal_name,
-        original_language: client.written_language || lang, original_content: text,
+        client_id: clientProfile.id, client_name: clientProfile.legal_name,
+        portal_user_id: clientProfile.portal_user_id,
+        direction: "inbound", channel: "portal", sender: clientProfile.legal_name,
+        original_language: clientProfile.written_language || lang, original_content: text,
         status: "received", sensitivity: "routine", action_required: true,
       });
       setText("");
       toast({ title: t("sent_success") });
       load();
+    } catch (err) {
+      toast({ title: t("send_error"), variant: "destructive" });
     } finally {
       setSending(false);
     }
@@ -96,7 +95,9 @@ export default function PortalMessages() {
     }
   };
 
-  if (noAccess) return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
+  if (noAccess || (data && !clientProfile)) {
+    return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
+  }
   if (!data) return <p className="text-muted-foreground">{t("loading")}</p>;
 
   return (

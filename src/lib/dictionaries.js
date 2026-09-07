@@ -23,7 +23,8 @@ export const DICT = {
     mic_blocked: "Microphone access is blocked. Allow microphone access in your browser settings (padlock icon in the address bar), then try again.",
     voice_pending_note: "[Voice message — automatic transcription pending. The office will listen to the audio.]",
     translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language.",
-    no_client_profile: "No client profile is linked to this account yet. Please contact the office."
+    no_client_profile: "No client profile is linked to this account yet. Please contact the office.",
+    send_error: "The message could not be sent — please try again in a few moments."
   },
   es: {
     nav_home: "Inicio", nav_documents: "Documentos", nav_messages: "Mensajes", nav_profile: "Mi perfil", logout: "Cerrar sesión", language: "Idioma",
@@ -47,7 +48,8 @@ export const DICT = {
     mic_blocked: "El acceso al micrófono está bloqueado. Permita el acceso al micrófono en la configuración de su navegador (icono de candado en la barra de direcciones) e inténtelo de nuevo.",
     voice_pending_note: "[Mensaje de voz — transcripción automática pendiente. El despacho escuchará el audio.]",
     translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas.",
-    no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho."
+    no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho.",
+    send_error: "No se pudo enviar el mensaje — inténtelo de nuevo en unos momentos."
   },
   fr: {
     nav_home: "Accueil", nav_documents: "Documents", nav_messages: "Messages", nav_profile: "Mon profil", logout: "Se déconnecter", language: "Langue",
@@ -71,7 +73,8 @@ export const DICT = {
     mic_blocked: "L'accès au microphone est bloqué. Autorisez l'accès au microphone dans les paramètres de votre navigateur (icône cadenas dans la barre d'adresse), puis réessayez.",
     voice_pending_note: "[Message vocal — transcription automatique en attente. Le cabinet écoutera l'audio.]",
     translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues.",
-    no_client_profile: "Aucun profil client n'est encore lié à ce compte. Veuillez contacter le cabinet."
+    no_client_profile: "Aucun profil client n'est encore lié à ce compte. Veuillez contacter le cabinet.",
+    send_error: "Le message n'a pas pu être envoyé — veuillez réessayer dans quelques instants."
   },
   ar: {
     nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
@@ -95,6 +98,7 @@ export const DICT = {
     mic_blocked: "الوصول إلى الميكروفون محظور. اسمح بالوصول إلى الميكروفون في إعدادات المتصفح (أيقونة القفل في شريط العنوان) ثم حاول مرة أخرى.",
     voice_pending_note: "[رسالة صوتية — التحويل التلقائي إلى نص قيد الانتظار. سيستمع المكتب إلى التسجيل.]",
     translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات.",
-    no_client_profile: "لا يوجد ملف عميل مرتبط بهذا الحساب بعد. يُرجى الاتصال بالمكتب."
+    no_client_profile: "لا يوجد ملف عميل مرتبط بهذا الحساب بعد. يُرجى الاتصال بالمكتب.",
+    send_error: "تعذر إرسال الرسالة — حاول مرة أخرى بعد لحظات."
   }
 };
