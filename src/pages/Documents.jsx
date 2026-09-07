@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { categoryLabel, REVIEW_STATUSES, reviewLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { Upload } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
+import UploadDocumentDialog from "@/components/documents/UploadDocumentDialog";
 
 const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
 
@@ -11,6 +15,8 @@ export default function Documents() {
   const [docs, setDocs] = useState(null);
   const [filter, setFilter] = useState("review_queue");
   const [notes, setNotes] = useState({});
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const { toast } = useToast();
 
   const reload = () => base44.entities.Document.list("-created_date").then(setDocs);
   useEffect(() => { reload(); }, []);
@@ -36,13 +42,21 @@ export default function Documents() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">Documentos</h1>
-        <select className="h-9 rounded-xl border border-input bg-card px-3 text-sm" value={filter} onChange={(e) => setFilter(e.target.value)}>
-          <option value="review_queue">Cola de revisión</option>
-          <option value="expiring">Caducan en 90 días</option>
-          {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-          <option value="all">Todos</option>
-        </select>
+        <div className="flex flex-wrap items-center gap-2">
+          <select className="h-9 rounded-xl border border-input bg-card px-3 text-sm" value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="review_queue">Cola de revisión</option>
+            <option value="expiring">Caducan en 90 días</option>
+            {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            <option value="all">Todos</option>
+          </select>
+          <Button className="rounded-xl" onClick={() => setUploadOpen(true)}>
+            <Upload className="w-4 h-4 me-1" /> Subir documento
+          </Button>
+        </div>
       </div>
+
+      <UploadDocumentDialog open={uploadOpen} onOpenChange={setUploadOpen}
+        onUploaded={() => { reload(); toast({ title: "Documento subido", description: "Guardado y aceptado. Véalo con el filtro «Aceptado» o «Todos»." }); }} />
 
       <div className="space-y-2">
         {filtered.map((doc) => (
