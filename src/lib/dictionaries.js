@@ -18,6 +18,10 @@ export const DICT = {
     doc_upload_success: "Document uploaded — our team will review it.", invoice_due: "Due",
     record_voice: "Record a voice message", stop_recording: "Recording… tap to stop", voice_sending: "Sending…", listen: "Listen",
     voice_error: "We could not process your voice message. Please try again or write your message.",
+    voice_service_unavailable: "Voice transcription is temporarily unavailable — your voice note has been sent to the office. You can try again or type your message.",
+    voice_empty: "We could not hear anything in your recording. Please try again, holding the microphone closer, or type your message.",
+    mic_blocked: "Microphone access is blocked. Allow microphone access in your browser settings (padlock icon in the address bar), then try again.",
+    voice_pending_note: "[Voice message — automatic transcription pending. The office will listen to the audio.]",
     translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language.",
     no_client_profile: "No client profile is linked to this account yet. Please contact the office."
   },
@@ -38,6 +42,10 @@ export const DICT = {
     doc_upload_success: "Documento subido — nuestro equipo lo revisará.", invoice_due: "Vencimiento",
     record_voice: "Grabar un mensaje de voz", stop_recording: "Grabando… pulse para detener", voice_sending: "Enviando…", listen: "Escuchar",
     voice_error: "No pudimos procesar su mensaje de voz. Inténtelo de nuevo o escriba su mensaje.",
+    voice_service_unavailable: "La transcripción de voz no está disponible temporalmente — su nota de voz se ha enviado al despacho. Puede volver a intentarlo o escribir su mensaje.",
+    voice_empty: "No se escuchó nada en su grabación. Inténtelo de nuevo acercando el micrófono o escriba su mensaje.",
+    mic_blocked: "El acceso al micrófono está bloqueado. Permita el acceso al micrófono en la configuración de su navegador (icono de candado en la barra de direcciones) e inténtelo de nuevo.",
+    voice_pending_note: "[Mensaje de voz — transcripción automática pendiente. El despacho escuchará el audio.]",
     translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas.",
     no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho."
   },
@@ -58,6 +66,10 @@ export const DICT = {
     doc_upload_success: "Document téléversé — notre équipe l'examinera.", invoice_due: "Échéance",
     record_voice: "Enregistrer un message vocal", stop_recording: "Enregistrement… appuyez pour arrêter", voice_sending: "Envoi…", listen: "Écouter",
     voice_error: "Nous n'avons pas pu traiter votre message vocal. Veuillez réessayer ou écrire votre message.",
+    voice_service_unavailable: "La transcription vocale est temporairement indisponible — votre note vocale a été envoyée au cabinet. Vous pouvez réessayer ou écrire votre message.",
+    voice_empty: "Nous n'avons rien entendu dans votre enregistrement. Réessayez en rapprochant le micro ou écrivez votre message.",
+    mic_blocked: "L'accès au microphone est bloqué. Autorisez l'accès au microphone dans les paramètres de votre navigateur (icône cadenas dans la barre d'adresse), puis réessayez.",
+    voice_pending_note: "[Message vocal — transcription automatique en attente. Le cabinet écoutera l'audio.]",
     translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues.",
     no_client_profile: "Aucun profil client n'est encore lié à ce compte. Veuillez contacter le cabinet."
   },
@@ -78,6 +90,10 @@ export const DICT = {
     doc_upload_success: "تم تحميل المستند — سيراجعه فريقنا.", invoice_due: "الاستحقاق",
     record_voice: "تسجيل رسالة صوتية", stop_recording: "جارٍ التسجيل… اضغط للإيقاف", voice_sending: "جارٍ الإرسال…", listen: "استمع",
     voice_error: "لم نتمكن من معالجة رسالتك الصوتية. حاول مرة أخرى أو اكتب رسالتك.",
+    voice_service_unavailable: "التحويل الصوتي إلى نص غير متاح مؤقتاً — تم إرسال رسالتك الصوتية إلى المكتب. يمكنك المحاولة مرة أخرى أو كتابة رسالتك.",
+    voice_empty: "لم نسمع أي شيء في التسجيل. حاول مرة أخرى بتقريب الميكروفون أو اكتب رسالتك.",
+    mic_blocked: "الوصول إلى الميكروفون محظور. اسمح بالوصول إلى الميكروفون في إعدادات المتصفح (أيقونة القفل في شريط العنوان) ثم حاول مرة أخرى.",
+    voice_pending_note: "[رسالة صوتية — التحويل التلقائي إلى نص قيد الانتظار. سيستمع المكتب إلى التسجيل.]",
     translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات.",
     no_client_profile: "لا يوجد ملف عميل مرتبط بهذا الحساب بعد. يُرجى الاتصال بالمكتب."
   }

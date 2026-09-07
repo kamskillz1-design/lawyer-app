@@ -58,20 +58,36 @@ export default function PortalMessages() {
     try {
       const file = new File([blob], "voice-note.webm", { type: blob.type || "audio/webm" });
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const res = await base44.functions.invoke("transcribeVoiceNote", { file_url });
-      const transcript = (res.data && res.data.transcript) || "";
-      if (!transcript.trim()) throw new Error("empty transcript");
       const me = await base44.auth.me();
       const client = clientProfile || (await base44.entities.Client.filter({ portal_user_id: me.id }))[0];
       if (!client) throw new Error("No linked client profile");
+
+      let transcript = "";
+      let errorType = null;
+      try {
+        const res = await base44.functions.invoke("transcribeVoiceNote", { file_url });
+        transcript = (res.data && res.data.transcript) || "";
+        if (!transcript.trim()) errorType = res.data?.error_type || "empty_transcript";
+      } catch (e) {
+        errorType = "service_unavailable";
+      }
+
+      if (errorType === "empty_transcript") {
+        toast({ title: t("voice_empty"), variant: "destructive" });
+        return;
+      }
+
+      const failed = !!errorType;
       await base44.entities.Communication.create({
         client_id: client.id, client_name: client.legal_name, portal_user_id: me.id,
         direction: "inbound", channel: "portal", sender: client.legal_name,
-        original_language: client.written_language || lang, original_content: transcript,
+        original_language: client.written_language || lang,
+        original_content: failed ? t("voice_pending_note") : transcript,
         audio_url: file_url,
+        transcription_status: failed ? "failed" : "done",
         status: "received", sensitivity: "routine", action_required: true,
       });
-      toast({ title: t("sent_success") });
+      toast({ title: failed ? t("voice_service_unavailable") : t("sent_success"), variant: failed ? "destructive" : "default" });
       load();
     } catch (e) {
       toast({ title: t("voice_error"), variant: "destructive" });
@@ -99,7 +115,7 @@ export default function PortalMessages() {
             onRecorded={sendVoice}
             labels={{
               start: t("record_voice"), stop: t("stop_recording"),
-              sending: t("voice_sending"), noMic: t("voice_error"),
+              sending: t("voice_sending"), noMic: t("voice_error"), micBlocked: t("mic_blocked"),
             }}
           />
         </div>

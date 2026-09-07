@@ -57,6 +57,15 @@
     "audio_url": {
       "type": "string"
     },
+    "transcription_status": {
+      "type": "string",
+      "enum": [
+        "done",
+        "failed",
+        "not_applicable"
+      ],
+      "default": "not_applicable"
+    },
     "staff_translation": {
       "type": "string"
     },
