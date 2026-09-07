@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Scale, LayoutDashboard, Users, FolderOpen, CheckSquare, CalendarDays, FileText, MessageCircle, Receipt, Inbox, LogOut, Menu, X } from "lucide-react";
+import { Scale, LayoutDashboard, Users, FolderOpen, CheckSquare, CalendarDays, FileText, MessageCircle, Receipt, Inbox, LogOut, Menu, X, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -14,6 +14,7 @@ const NAV = [
   { to: "/documents", label: "Documentos", icon: FileText },
   { to: "/messages", label: "Mensajes", icon: MessageCircle },
   { to: "/billing", label: "Facturación", icon: Receipt },
+  { to: "/portal", label: "Portal de cliente", icon: UserRound },
 ];
 
 export default function Layout() {
