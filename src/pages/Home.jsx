@@ -79,7 +79,7 @@ export default function Home() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><AlarmClock className="w-4 h-4 text-red-600" /> Tareas vencidas ({overdue.length})</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><AlarmClock className="w-4 h-4 text-red-600 shrink-0" /> Tareas vencidas ({overdue.length})</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {overdue.slice(0, 5).map((t) => (
               <Link key={t.id} to={`/matters/${t.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
@@ -92,7 +92,7 @@ export default function Home() {
         </Card>
 
         <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><AlarmClock className="w-4 h-4 text-amber-600" /> Plazos próximos 30 días ({upcomingDeadlines.length})</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><AlarmClock className="w-4 h-4 text-amber-600 shrink-0" /> Plazos próximos 30 días ({upcomingDeadlines.length})</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {upcomingDeadlines.slice(0, 5).map((m) => (
               <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
@@ -105,7 +105,7 @@ export default function Home() {
         </Card>
 
         <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><MessageCircle className="w-4 h-4 text-sky-600" /> Mensajes pendientes ({pendingMsgs.length})</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><MessageCircle className="w-4 h-4 text-sky-600 shrink-0" /> Mensajes pendientes ({pendingMsgs.length})</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {pendingMsgs.slice(0, 5).map((c) => (
               <Link key={c.id} to="/messages" className="block p-3 rounded-xl hover:bg-secondary text-sm">
@@ -119,7 +119,7 @@ export default function Home() {
         </Card>
 
         <Card className="card-soft">
-          <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Receipt className="w-4 h-4 text-amber-600" /> Facturas pendientes ({unpaid.length})</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><Receipt className="w-4 h-4 text-amber-600 shrink-0" /> Facturas pendientes ({unpaid.length})</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {unpaid.slice(0, 5).map((i) => (
               <Link key={i.id} to="/billing" className="block p-3 rounded-xl hover:bg-secondary text-sm">
@@ -132,7 +132,7 @@ export default function Home() {
         </Card>
 
         <Card className="card-soft md:col-span-2">
-          <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-base"><Inbox className="w-4 h-4 text-primary" /> Consultas sin cerrar ({newLeads.length})</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="flex flex-wrap items-center gap-2 text-base min-w-0"><Inbox className="w-4 h-4 text-primary shrink-0" /> Consultas sin cerrar ({newLeads.length})</CardTitle></CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-2">
             {newLeads.slice(0, 6).map((l) => (
               <Link key={l.id} to="/leads" className="block p-3 rounded-xl hover:bg-secondary text-sm">
@@ -147,16 +147,17 @@ export default function Home() {
 
         <Card className="card-soft md:col-span-2 border-l-4 border-l-primary/30">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Zap className="w-4 h-4 text-primary" /> Recordatorios automáticos ({autoReminders.length})
-              <span className="text-xs text-muted-foreground font-normal">· generados por el escaneo matinal</span>
+            <CardTitle className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base min-w-0">
+              <Zap className="w-4 h-4 text-primary shrink-0" />
+              <span className="min-w-0 break-words">Recordatorios automáticos ({autoReminders.length})</span>
+              <span className="text-xs text-muted-foreground font-normal w-full sm:w-auto">· generados por el escaneo matinal</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-2">
             {autoReminders.slice(0, 6).map((t) => (
               <Link key={t.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium flex items-center gap-1.5">
-                  <Zap className="w-3 h-3 text-primary shrink-0" /> {t.title}
+                <p className="font-medium flex items-center gap-1.5 min-w-0">
+                  <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{t.title}</span>
                 </p>
                 <p className="text-xs text-muted-foreground">{t.owner || "sin asignar"} · {formatDate(t.due_date)} · prioridad {t.priority}</p>
               </Link>
