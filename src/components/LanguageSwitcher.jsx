@@ -28,7 +28,7 @@ export default function LanguageSwitcher() {
         <ChevronDown className="w-3 h-3 text-muted-foreground" />
       </button>
       {open && (
-        <div className="absolute end-0 mt-2 w-72 card-soft bg-card z-50 p-2">
+        <div className="absolute end-0 mt-2 w-72 max-w-[calc(100vw-1.5rem)] card-soft bg-card z-50 p-2">
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-secondary mb-1">
             <Search className="w-4 h-4 text-muted-foreground" />
             <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus

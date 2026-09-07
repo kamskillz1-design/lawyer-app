@@ -81,7 +81,7 @@ export default function Documents() {
                 {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
-            <input className={input + " h-8 text-xs w-40"} placeholder="Nota de revisión"
+            <input className={input + " h-8 text-xs w-full sm:w-40"} placeholder="Nota de revisión"
               value={notes[doc.id] ?? doc.review_notes ?? ""} onChange={(e) => setNotes({ ...notes, [doc.id]: e.target.value })}
               onBlur={() => setReview(doc, doc.review_status)} />
           </div>

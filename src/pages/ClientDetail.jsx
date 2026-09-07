@@ -128,9 +128,9 @@ export default function ClientDetail() {
         {SECTIONS.map((sec) => (
           <div key={sec.title} className="card-soft p-5">
             <h3 className="font-heading font-semibold mb-4">{sec.title}</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {sec.fields.map(({ k, l, type, options, lang, wide }) => (
-                <div key={k} className={wide ? "col-span-2" : ""}>
+                <div key={k} className={wide ? "sm:col-span-2" : ""}>
                   <label className="text-xs text-muted-foreground">{l}</label>
                   {options ? (
                     <select className={input} value={client[k] || ""} onChange={(e) => set(k, e.target.value)}>
@@ -165,9 +165,9 @@ export default function ClientDetail() {
         <h3 className="font-heading font-semibold mb-4">Expedientes ({matters.length})</h3>
         <div className="space-y-2">
           {matters.map((m) => (
-            <Link key={m.id} to={`/matters/${m.id}`} className="flex items-center justify-between p-3 rounded-xl hover:bg-secondary text-sm">
-              <span className="flex items-center gap-2"><FolderOpen className="w-4 h-4 text-primary" /> {m.matter_number} · {m.procedure_type}</span>
-              <span className="text-xs text-muted-foreground">{stageLabel(m.stage)} · {formatDate(m.next_deadline)}</span>
+            <Link key={m.id} to={`/matters/${m.id}`} className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl hover:bg-secondary text-sm">
+              <span className="flex items-center gap-2 min-w-0 break-words"><FolderOpen className="w-4 h-4 text-primary shrink-0" /> {m.matter_number} · {m.procedure_type}</span>
+              <span className="text-xs text-muted-foreground text-end">{stageLabel(m.stage)} · {formatDate(m.next_deadline)}</span>
             </Link>
           ))}
           {!matters.length && <p className="text-sm text-muted-foreground">Sin expedientes. Cree uno desde Expedientes.</p>}

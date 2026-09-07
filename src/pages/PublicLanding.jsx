@@ -68,7 +68,7 @@ export default function PublicLanding() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/95 backdrop-blur sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Scale className="w-6 h-6 text-primary" />
             <span className="font-heading font-bold text-lg">Legal Lex</span>
@@ -81,13 +81,13 @@ export default function PublicLanding() {
       </header>
 
       <section className="max-w-5xl mx-auto px-4 pt-16 pb-12 text-center">
-        <h1 className="font-heading text-4xl md:text-5xl font-bold text-primary leading-tight">{t("hero_title")}</h1>
+        <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-bold text-primary leading-tight">{t("hero_title")}</h1>
         <p className="mt-4 text-muted-foreground max-w-2xl mx-auto text-lg">{t("hero_sub")}</p>
       </section>
 
       <section className="max-w-5xl mx-auto px-4 pb-14">
         <h2 className="font-heading text-2xl font-semibold mb-6">{t("services_title")}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {SERVICES.map(({ key, icon: Icon }) => (
             <div key={key} className="card-soft p-5 flex flex-col gap-3 items-start">
               <div className="w-10 h-10 rounded-xl bg-accent text-accent-foreground flex items-center justify-center">

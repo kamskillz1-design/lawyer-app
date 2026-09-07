@@ -71,13 +71,13 @@ export default function Leads() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">Consultas</h1>
         <Dialog open={openNew} onOpenChange={setOpenNew}>
           <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> Nueva consulta</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Nueva consulta</DialogTitle></DialogHeader>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input className={input} placeholder="Nombre completo *" value={newLead.full_name} onChange={(e) => setNewLead({ ...newLead, full_name: e.target.value })} />
               <input className={input} placeholder="Teléfono" value={newLead.phone} onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })} />
               <input className={input} placeholder="Email" value={newLead.email} onChange={(e) => setNewLead({ ...newLead, email: e.target.value })} />
@@ -91,14 +91,14 @@ export default function Leads() {
               </select>
               <input className={input} placeholder="Categoría (p. ej. renovación)" value={newLead.enquiry_category} onChange={(e) => setNewLead({ ...newLead, enquiry_category: e.target.value })} />
               <input className={input} placeholder="Origen / referido" value={newLead.referral_source} onChange={(e) => setNewLead({ ...newLead, referral_source: e.target.value })} />
-              <textarea className="col-span-2 min-h-24 rounded-md border border-input bg-card px-3 py-2 text-sm" placeholder="Mensaje inicial" value={newLead.message} onChange={(e) => setNewLead({ ...newLead, message: e.target.value })} />
+              <textarea className="sm:col-span-2 min-h-24 rounded-md border border-input bg-card px-3 py-2 text-sm" placeholder="Mensaje inicial" value={newLead.message} onChange={(e) => setNewLead({ ...newLead, message: e.target.value })} />
             </div>
             <Button className="w-full rounded-xl mt-2" onClick={createLead} disabled={!newLead.full_name}>Guardar</Button>
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="card-soft overflow-x-auto">
+      <div className="card-soft hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-start text-xs text-muted-foreground border-b">
@@ -140,6 +140,32 @@ export default function Leads() {
             {!leads.length && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Sin consultas todavía.</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      <div className="md:hidden space-y-2">
+        {leads.map((l) => (
+          <div key={l.id} className="card-soft p-4 space-y-2">
+            <p className="font-medium break-words">{l.full_name}</p>
+            <p className="text-xs text-muted-foreground break-words">{l.phone || l.email || "—"} · {l.source} · {l.preferred_language} · {l.enquiry_category || "—"}</p>
+            <p className="text-xs text-muted-foreground">{l.follow_up_date ? formatDate(l.follow_up_date) : "—"}</p>
+            <select value={l.status} onChange={(e) => setStatus(l, e.target.value)} className="h-9 w-full rounded-md border border-input bg-card px-2 text-xs">
+              {LEAD_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+            <div className="flex flex-wrap gap-1">
+              {l.status !== "converted" && (
+                <Button size="sm" variant="outline" className="rounded-lg" onClick={() => convert(l)}>
+                  <UserPlus className="w-3.5 h-3.5 me-1" /> Convertir
+                </Button>
+              )}
+              {["new", "awaiting_response", "appointment_proposed"].includes(l.status) && (
+                <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setBooking(l)}>
+                  <CalendarPlus className="w-3.5 h-3.5 me-1" /> Cita
+                </Button>
+              )}
+            </div>
+          </div>
+        ))}
+        {!leads.length && <p className="text-sm text-muted-foreground p-4">Sin consultas todavía.</p>}
       </div>
 
       <Dialog open={!!booking} onOpenChange={() => setBooking(null)}>

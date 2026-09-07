@@ -143,8 +143,8 @@ export default function Communications() {
           {pending.map((c) => (
             <button key={c.id} onClick={() => select(c)}
               className={`w-full text-start p-3 rounded-xl hover:bg-secondary transition-colors ${selected?.id === c.id ? "bg-secondary" : ""}`}>
-              <p className="font-medium text-sm flex items-center justify-between">
-                {c.client_name}
+              <p className="font-medium text-sm flex items-center justify-between gap-2 min-w-0">
+                <span className="truncate">{c.client_name}</span>
                 <StatusBadge value={c.status} />
               </p>
               <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>

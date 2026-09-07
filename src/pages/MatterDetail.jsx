@@ -116,7 +116,7 @@ export default function MatterDetail() {
       </div>
 
       <Tabs defaultValue="checklist">
-        <TabsList className="bg-secondary rounded-xl">
+        <TabsList className="bg-secondary rounded-xl h-auto w-full flex flex-wrap justify-start gap-1">
           <TabsTrigger value="checklist" className="rounded-lg data-[state=active]:bg-card">Checklist</TabsTrigger>
           <TabsTrigger value="documents" className="rounded-lg data-[state=active]:bg-card">Documentos</TabsTrigger>
           <TabsTrigger value="tasks" className="rounded-lg data-[state=active]:bg-card">Tareas</TabsTrigger>

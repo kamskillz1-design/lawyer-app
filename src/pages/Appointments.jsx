@@ -80,7 +80,7 @@ export default function Appointments() {
               </p>
             </div>
             <StatusBadge value={a.status} label={a.status} />
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(a, "confirmed")}>Confirmar</Button>
               <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(a, "completed")}>Completada</Button>
               <Button size="sm" variant="outline" className="rounded-lg text-red-700" onClick={() => setStatus(a, "cancelled")}>Cancelar</Button>

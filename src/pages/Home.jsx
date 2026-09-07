@@ -59,15 +59,15 @@ export default function Home() {
         <p className="text-muted-foreground text-sm mt-1">Atención requerida hoy · {formatDate(new Date().toISOString())}</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {stats.map(({ icon: Icon, label, value, to }) => (
           <Link key={label} to={to}>
-            <Card className="card-soft hover:shadow-md transition-shadow">
-              <CardContent className="p-5 flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center">
+            <Card className="card-soft hover:shadow-md transition-shadow min-w-0">
+              <CardContent className="p-4 sm:p-5 flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-accent flex items-center justify-center">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-2xl font-heading font-bold">{value}</p>
                   <p className="text-xs text-muted-foreground">{label}</p>
                 </div>
@@ -83,8 +83,8 @@ export default function Home() {
           <CardContent className="space-y-2">
             {overdue.slice(0, 5).map((t) => (
               <Link key={t.id} to={`/matters/${t.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium">{t.title}</p>
-                <p className="text-xs text-red-600">{t.matter_number} · vencía {formatDate(t.due_date)} · {t.owner || "sin asignar"}</p>
+                <p className="font-medium break-words">{t.title}</p>
+                <p className="text-xs text-red-600 break-words">{t.matter_number} · vencía {formatDate(t.due_date)} · {t.owner || "sin asignar"}</p>
               </Link>
             ))}
             {!overdue.length && <p className="text-sm text-muted-foreground p-3">Sin tareas vencidas 🎉</p>}
@@ -96,8 +96,8 @@ export default function Home() {
           <CardContent className="space-y-2">
             {upcomingDeadlines.slice(0, 5).map((m) => (
               <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium">{m.matter_number} · {m.procedure_type}</p>
-                <p className="text-xs text-muted-foreground">{m.client_name} · {formatDate(m.next_deadline)} ({daysUntil(m.next_deadline)} días)</p>
+                <p className="font-medium break-words">{m.matter_number} · {m.procedure_type}</p>
+                <p className="text-xs text-muted-foreground break-words">{m.client_name} · {formatDate(m.next_deadline)} ({daysUntil(m.next_deadline)} días)</p>
               </Link>
             ))}
             {!upcomingDeadlines.length && <p className="text-sm text-muted-foreground p-3">Sin plazos en 30 días.</p>}
@@ -109,7 +109,7 @@ export default function Home() {
           <CardContent className="space-y-2">
             {pendingMsgs.slice(0, 5).map((c) => (
               <Link key={c.id} to="/messages" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium">{c.client_name} · {c.original_language}</p>
+                <p className="font-medium break-words">{c.client_name} · {c.original_language}</p>
                 <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
                 <p className="text-xs">{sensitivityLabel(c.sensitivity)} · <StatusBadge value={c.status} /></p>
               </Link>
@@ -136,7 +136,7 @@ export default function Home() {
           <CardContent className="grid md:grid-cols-2 gap-2">
             {newLeads.slice(0, 6).map((l) => (
               <Link key={l.id} to="/leads" className="block p-3 rounded-xl hover:bg-secondary text-sm">
-                <p className="font-medium">{l.full_name} · {l.preferred_language || "—"}</p>
+                <p className="font-medium break-words">{l.full_name} · {l.preferred_language || "—"}</p>
                 <p className="text-xs text-muted-foreground truncate">{l.enquiry_category || l.message}</p>
                 <p className="text-xs mt-1"><StatusBadge value={l.status} label={leadLabel(l.status)} /></p>
               </Link>

@@ -26,7 +26,7 @@ export default function SpeakButton({ text, lang, label = "Listen" }) {
 
   return (
     <button type="button" onClick={toggle} title={label} aria-label={label}
-      className="shrink-0 inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+      className="shrink-0 inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
       {speaking ? <Square className="w-3.5 h-3.5" /> : <Volume2 className="w-4 h-4" />}
     </button>
   );

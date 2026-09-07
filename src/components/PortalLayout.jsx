@@ -21,17 +21,17 @@ export default function PortalLayout() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="sticky top-0 z-20 bg-card/95 backdrop-blur border-b">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Scale className="w-6 h-6 text-primary" />
-            <div>
+          <div className="flex items-center gap-2 min-w-0">
+            <Scale className="w-6 h-6 text-primary shrink-0" />
+            <div className="min-w-0">
               <p className="font-heading font-bold leading-none">Legal Lex</p>
-              <p className="text-[11px] text-muted-foreground">{t("hero_sub").split(".")[0]}</p>
+              <p className="text-[11px] text-muted-foreground truncate hidden sm:block">{t("hero_sub").split(".")[0]}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
             <button onClick={() => base44.auth.logout()} title={t("logout")}
-              className="p-2 rounded-lg hover:bg-secondary text-muted-foreground">
+              className="p-2.5 rounded-lg hover:bg-secondary text-muted-foreground">
               <LogOut className="w-4 h-4" />
             </button>
           </div>

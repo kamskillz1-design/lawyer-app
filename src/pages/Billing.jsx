@@ -59,7 +59,7 @@ export default function Billing() {
           <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> Nueva factura</Button></DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Nueva factura</DialogTitle></DialogHeader>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <select className={input} value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })}>
                 <option value="">Cliente *</option>
                 {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
@@ -69,7 +69,7 @@ export default function Billing() {
               <input className={input} placeholder="Gastos externos (€)" type="number" value={form.expenses} onChange={(e) => setForm({ ...form, expenses: e.target.value })} />
               <input type="date" className={input} value={form.issue_date} onChange={(e) => setForm({ ...form, issue_date: e.target.value })} />
               <input type="date" className={input} value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
-              <input className={input + " col-span-2"} placeholder="Concepto del servicio" value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
+              <input className={input + " sm:col-span-2"} placeholder="Concepto del servicio" value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
             </div>
             <Button className="w-full rounded-xl mt-2" onClick={create} disabled={!form.client_id || !form.amount}>Emitir</Button>
           </DialogContent>
@@ -87,7 +87,7 @@ export default function Billing() {
         </div>
       </div>
 
-      <div className="card-soft overflow-x-auto">
+      <div className="card-soft hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-xs text-muted-foreground border-b">
@@ -116,6 +116,26 @@ export default function Billing() {
             {!invoices.length && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Sin facturas.</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      <div className="md:hidden space-y-2">
+        {invoices.map((inv) => (
+          <div key={inv.id} className="card-soft p-4 space-y-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-medium">{inv.number}</p>
+              <StatusBadge value={inv.status} label={invoiceLabel(inv.status)} />
+            </div>
+            <p className="text-sm break-words">{inv.client_name}</p>
+            <p className="text-xs text-muted-foreground break-words">{inv.service_description || "—"}</p>
+            <p className="text-sm font-medium">{formatMoney(inv.total)} · vence {formatDate(inv.due_date)}</p>
+            {inv.status !== "paid" && (
+              <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(inv, "paid")}>
+                <CheckCircle2 className="w-3.5 h-3.5 me-1" /> Cobrada
+              </Button>
+            )}
+          </div>
+        ))}
+        {!invoices.length && <p className="text-sm text-muted-foreground p-4">Sin facturas.</p>}
       </div>
     </div>
   );

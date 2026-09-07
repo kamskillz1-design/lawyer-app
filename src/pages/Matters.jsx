@@ -71,8 +71,8 @@ export default function Matters() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">Expedientes</h1>
-        <div className="flex gap-2">
-          <select className="h-9 rounded-xl border border-input bg-card px-3 text-sm" value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
+        <div className="flex flex-wrap gap-2 min-w-0">
+          <select className="h-9 max-w-full rounded-xl border border-input bg-card px-3 text-sm" value={stageFilter} onChange={(e) => setStageFilter(e.target.value)}>
             <option value="all">Todas las etapas</option>
             {STAGES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
@@ -80,7 +80,7 @@ export default function Matters() {
             <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> Nuevo expediente</Button></DialogTrigger>
             <DialogContent className="max-w-xl">
               <DialogHeader><DialogTitle>Nuevo expediente</DialogTitle></DialogHeader>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <select className={input} value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })}>
                   <option value="">Cliente *</option>
                   {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
@@ -112,7 +112,7 @@ export default function Matters() {
         </div>
       </div>
 
-      <div className="card-soft overflow-x-auto">
+      <div className="card-soft hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-xs text-muted-foreground border-b">
@@ -137,6 +137,21 @@ export default function Matters() {
             {!filtered.length && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">Sin expedientes.</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      <div className="md:hidden space-y-2">
+        {filtered.map((m) => (
+          <Link key={m.id} to={`/matters/${m.id}`} className="card-soft block p-4 space-y-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="font-medium break-words">{m.matter_number}</p>
+              <StatusBadge value={m.urgency} label={m.urgency} />
+            </div>
+            <p className="text-xs text-muted-foreground break-words">{m.client_name} · {m.procedure_type}</p>
+            <p className="text-xs">{stageLabel(m.stage)}</p>
+            <p className="text-xs text-muted-foreground break-words">{m.next_action || "—"} · {formatDate(m.next_deadline)}</p>
+          </Link>
+        ))}
+        {!filtered.length && <p className="text-sm text-muted-foreground p-4">Sin expedientes.</p>}
       </div>
     </div>
   );

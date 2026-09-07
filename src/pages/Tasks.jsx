@@ -54,8 +54,8 @@ export default function Tasks() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">Tareas y plazos</h1>
-        <div className="flex gap-2">
-          <select className="h-9 rounded-xl border border-input bg-card px-3 text-sm" value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <div className="flex flex-wrap gap-2 min-w-0">
+          <select className="h-9 max-w-full rounded-xl border border-input bg-card px-3 text-sm" value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="open">Abiertas</option><option value="overdue">Vencidas</option>
             <option value="today">Hoy</option><option value="done">Completadas</option>
           </select>

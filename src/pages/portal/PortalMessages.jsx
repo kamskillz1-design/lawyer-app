@@ -132,7 +132,7 @@ export default function PortalMessages() {
                   <MessageCircle className="w-3.5 h-3.5" /> {t("your_message")} · {formatDateTime(c.created_date)}
                 </p>
                 <div className="flex items-start gap-2">
-                  <p className="text-sm bg-secondary/70 rounded-xl p-3 flex-1">{c.original_content}</p>
+                  <p className="text-sm bg-secondary/70 rounded-xl p-3 flex-1 min-w-0 break-words">{c.original_content}</p>
                   <SpeakButton text={c.original_content} lang={clientProfile?.written_language || c.original_language || lang} label={t("listen")} />
                 </div>
                 {c.audio_url && (
@@ -148,7 +148,7 @@ export default function PortalMessages() {
                     <Building2 className="w-3.5 h-3.5" /> {t("office_reply")}
                   </p>
                   <div className="flex items-start gap-2">
-                    <p className="text-sm bg-primary/10 text-primary rounded-xl p-3 flex-1">{c.reply_translation}</p>
+                    <p className="text-sm bg-primary/10 text-primary rounded-xl p-3 flex-1 min-w-0 break-words">{c.reply_translation}</p>
                     <SpeakButton text={c.reply_translation} lang={clientProfile?.written_language || lang} label={t("listen")} />
                   </div>
                 </div>

@@ -40,16 +40,16 @@ export default function Clients() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">Clientes</h1>
-        <div className="flex gap-2">
-          <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card">
-            <Search className="w-4 h-4 text-muted-foreground" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar nombre, email, NIE…" className="bg-transparent outline-none text-sm w-56" />
+        <div className="flex flex-wrap gap-2 min-w-0">
+          <div className="flex items-center gap-2 h-9 px-3 rounded-xl border bg-card flex-1 min-w-[9rem] sm:flex-none sm:w-64">
+            <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar nombre, email, NIE…" className="bg-transparent outline-none text-sm w-full min-w-0" />
           </div>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> Nuevo cliente</Button></DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Nuevo cliente</DialogTitle></DialogHeader>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input className={input} placeholder="Nombre legal *" value={form.legal_name} onChange={(e) => setForm({ ...form, legal_name: e.target.value })} />
                 <input className={input} placeholder="Teléfono" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
                 <input className={input} placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
@@ -67,7 +67,7 @@ export default function Clients() {
         </div>
       </div>
 
-      <div className="card-soft overflow-x-auto">
+      <div className="card-soft hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-xs text-muted-foreground border-b">
@@ -91,6 +91,18 @@ export default function Clients() {
             {!filtered.length && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">Sin resultados.</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      <div className="md:hidden space-y-2">
+        {filtered.map((c) => (
+          <div key={c.id} className="card-soft p-4 space-y-1">
+            <Link to={`/clients/${c.id}`} className="font-medium hover:text-primary break-words">{c.legal_name}</Link>
+            <p className="text-xs text-muted-foreground break-words">NIE: {c.nie_number || "—"} · {c.phone || "—"} · {c.email || "—"}</p>
+            <p className="text-xs text-muted-foreground break-words">{c.written_language || "es"} / {c.spoken_language || "—"}{c.interpreter_required ? " · intérprete" : ""}</p>
+            <p className="text-xs text-muted-foreground break-words">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""} · Portal: {c.portal_user_id ? "✓ activo" : "—"}</p>
+          </div>
+        ))}
+        {!filtered.length && <p className="text-sm text-muted-foreground p-4">Sin resultados.</p>}
       </div>
     </div>
   );

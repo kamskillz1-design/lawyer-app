@@ -61,7 +61,7 @@ export default function PortalProfile() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-heading text-3xl font-bold">{t("profile_title")}</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <LanguageSwitcher />
           <Button className="rounded-xl" onClick={save} disabled={saving}>
             <Save className="w-4 h-4 me-1" /> {saving ? t("loading") : t("save")}
