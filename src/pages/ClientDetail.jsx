@@ -4,7 +4,8 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, UserPlus, FolderOpen, Archive } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, FolderOpen, Archive, HardDriveDownload } from "lucide-react";
+import ExportArchiveDialog from "@/components/clients/ExportArchiveDialog";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
 import ArchivedClientOptions from "@/components/clients/ArchivedClientOptions";
 import { stageLabel } from "@/lib/constants";
@@ -19,6 +20,7 @@ export default function ClientDetail() {
   const [matters, setMatters] = useState([]);
   const [saving, setSaving] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
   const reload = async () => {
     const [c, ms] = await Promise.all([
@@ -96,6 +98,11 @@ export default function ClientDetail() {
               <Archive className="w-4 h-4 me-1" /> Archivar
             </Button>
           )}
+          {client.status === "archived" && (
+            <Button variant="outline" className="rounded-xl" onClick={() => setExportOpen(true)}>
+              <HardDriveDownload className="w-4 h-4 me-1" /> Exportar al archivo
+            </Button>
+          )}
           <Button className="rounded-xl" onClick={save} disabled={saving}><Save className="w-4 h-4 me-1" /> {saving ? "Guardando…" : "Guardar cambios"}</Button>
         </div>
       </div>
@@ -121,6 +128,9 @@ export default function ClientDetail() {
 
       <ArchiveClientDialog open={archiveOpen} onOpenChange={setArchiveOpen} client={client}
         onDone={(m) => { setArchiveOpen(false); toast({ title: m }); reload(); }} />
+
+      <ExportArchiveDialog open={exportOpen} onOpenChange={setExportOpen} client={client}
+        onDone={() => { toast({ title: "Cliente exportado a Dropbox", description: "Los datos se han purgado de la aplicación." }); reload(); }} />
     </div>
   );
 }

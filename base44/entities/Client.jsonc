@@ -122,6 +122,10 @@
     "legacy_notes": {
       "type": "string"
     },
+    "dropbox_export_date": {
+      "type": "string",
+      "format": "date"
+    },
     "retention_review_date": {
       "type": "string",
       "format": "date"

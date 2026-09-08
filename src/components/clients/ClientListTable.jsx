@@ -2,9 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { MoreVertical, Eye, Archive } from "lucide-react";
+import { MoreVertical, Eye, Archive, HardDriveDownload } from "lucide-react";
 
-export default function ClientListTable({ clients, muted = false, onArchive }) {
+export default function ClientListTable({ clients, muted = false, onArchive, onExport }) {
+  const showActions = !muted || !!onExport;
   const portal = (c) =>
     c.status === "archived" ? "archivado" : c.portal_user_id ? "✓ activo" : "—";
 
@@ -15,7 +16,7 @@ export default function ClientListTable({ clients, muted = false, onArchive }) {
           <tr className="text-xs text-muted-foreground border-b">
             <th className="p-3 text-start">Cliente</th><th className="p-3 text-start">Contacto</th>
             <th className="p-3 text-start">Idiomas</th><th className="p-3 text-start">Encargo</th><th className="p-3 text-start">Portal</th>
-            {!muted && <th className="p-3 text-start">Acciones</th>}
+            {showActions && <th className="p-3 text-start">Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -24,12 +25,13 @@ export default function ClientListTable({ clients, muted = false, onArchive }) {
               <td className="p-3">
                 <Link to={`/clients/${c.id}`} className="font-medium hover:text-primary">{c.legal_name}</Link>
                 <p className="text-xs text-muted-foreground">NIE: {c.nie_number || "—"}</p>
+                {c.legacy_dropbox_path && <p className="text-xs text-muted-foreground break-all">Archivo Dropbox: {c.legacy_dropbox_path}</p>}
               </td>
               <td className="p-3 text-xs">{c.phone || "—"}<br />{c.email || "—"}</td>
               <td className="p-3 text-xs">{c.written_language || "es"} / {c.spoken_language || "—"}{c.interpreter_required ? " · intérprete" : ""}</td>
               <td className="p-3 text-xs">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""}</td>
               <td className="p-3 text-xs">{portal(c)}</td>
-              {!muted && (
+              {showActions && (
                 <td className="p-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -46,13 +48,18 @@ export default function ClientListTable({ clients, muted = false, onArchive }) {
                           <Archive className="w-4 h-4" /> Archivar
                         </DropdownMenuItem>
                       )}
+                      {onExport && c.status === "archived" && (
+                        <DropdownMenuItem className="h-11" onClick={() => onExport(c)}>
+                          <HardDriveDownload className="w-4 h-4" /> Exportar al archivo
+                        </DropdownMenuItem>
+                      )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </td>
               )}
             </tr>
           ))}
-          {!clients.length && <tr><td colSpan={muted ? 5 : 6} className="p-6 text-center text-muted-foreground">Sin resultados.</td></tr>}
+          {!clients.length && <tr><td colSpan={showActions ? 6 : 5} className="p-6 text-center text-muted-foreground">Sin resultados.</td></tr>}
         </tbody>
       </table>
     </div>

@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { LANGUAGES } from "@/lib/languages";
 import ClientSearch from "@/components/clients/ClientSearch";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
+import ExportArchiveDialog from "@/components/clients/ExportArchiveDialog";
 import ClientListTable from "@/components/clients/ClientListTable";
 import ClientListCards from "@/components/clients/ClientListCards";
 import { inputClass as input } from "@/lib/formStyles";
@@ -17,6 +18,7 @@ export default function Clients() {
   const { toast } = useToast();
   const [clients, setClients] = useState(null);
   const [archiveTarget, setArchiveTarget] = useState(null);
+  const [exportTarget, setExportTarget] = useState(null);
   const [open, setOpen] = useState(false);
   const [qActive, setQActive] = useState("");
   const [qArchived, setQArchived] = useState("");
@@ -84,14 +86,18 @@ export default function Clients() {
         </TabsContent>
         <TabsContent value="archived" className="space-y-4 mt-4">
           <ClientSearch value={qArchived} onChange={setQArchived} placeholder="Buscar archivados…" />
-          <ClientListTable clients={archived} muted />
-          <ClientListCards clients={archived} muted />
+          <ClientListTable clients={archived} muted onExport={setExportTarget} />
+          <ClientListCards clients={archived} muted onExport={setExportTarget} />
         </TabsContent>
       </Tabs>
 
       <ArchiveClientDialog open={!!archiveTarget} onOpenChange={(v) => !v && setArchiveTarget(null)}
         client={archiveTarget}
         onDone={(m) => { setArchiveTarget(null); toast({ title: m }); reload(); }} />
+
+      <ExportArchiveDialog open={!!exportTarget} onOpenChange={(v) => !v && setExportTarget(null)}
+        client={exportTarget}
+        onDone={() => { setExportTarget(null); toast({ title: "Cliente exportado a Dropbox" }); reload(); }} />
     </div>
   );
 }
