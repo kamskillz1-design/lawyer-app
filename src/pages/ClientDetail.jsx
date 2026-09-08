@@ -4,7 +4,9 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, UserPlus, FolderOpen } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, FolderOpen, Archive } from "lucide-react";
+import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
+import ArchivedClientOptions from "@/components/clients/ArchivedClientOptions";
 import { LANGUAGES } from "@/lib/languages";
 import { stageLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
@@ -68,6 +70,7 @@ export default function ClientDetail() {
   const [client, setClient] = useState(null);
   const [matters, setMatters] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [archiveOpen, setArchiveOpen] = useState(false);
 
   const reload = async () => {
     const [c, ms] = await Promise.all([
@@ -131,18 +134,27 @@ export default function ClientDetail() {
           <p className="text-sm text-muted-foreground">{client.preferred_name && `(${client.preferred_name}) `}NIE {client.nie_number || "—"} · Portal: {client.portal_user_id ? (client.portal_access_enabled === false ? "bloqueado" : "activo") : "sin acceso"}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {!client.portal_user_id && (
+          {client.status !== "archived" && !client.portal_user_id && (
             <Button variant="outline" className="rounded-xl" onClick={invitePortal}><UserPlus className="w-4 h-4 me-1" /> Invitar al portal</Button>
           )}
-          {client.portal_user_id && (
+          {client.status !== "archived" && client.portal_user_id && (
             <label className="flex items-center gap-2 text-sm card-soft px-4 py-2 rounded-xl cursor-pointer">
               <Switch checked={client.portal_access_enabled !== false} onCheckedChange={togglePortalAccess} />
               Acceso al portal
             </label>
           )}
+          {client.status !== "archived" && (
+            <Button variant="outline" className="rounded-xl text-destructive hover:text-destructive" onClick={() => setArchiveOpen(true)}>
+              <Archive className="w-4 h-4 me-1" /> Archivar
+            </Button>
+          )}
           <Button className="rounded-xl" onClick={save} disabled={saving}><Save className="w-4 h-4 me-1" /> {saving ? "Guardando…" : "Guardar cambios"}</Button>
         </div>
       </div>
+
+      {client.status === "archived" && (
+        <ArchivedClientOptions client={client} onDone={(m) => { toast({ title: m }); reload(); }} />
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         {SECTIONS.map((sec) => (
@@ -193,6 +205,9 @@ export default function ClientDetail() {
           {!matters.length && <p className="text-sm text-muted-foreground">Sin expedientes. Cree uno desde Expedientes.</p>}
         </div>
       </div>
+
+      <ArchiveClientDialog open={archiveOpen} onOpenChange={setArchiveOpen} client={client}
+        onDone={(m) => { setArchiveOpen(false); toast({ title: m }); reload(); }} />
     </div>
   );
 }

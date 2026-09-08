@@ -4,10 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import { UserPlus, Search, ShieldCheck, Link2 } from "lucide-react";
+import { UserPlus, Search, ShieldCheck, Link2, UserX } from "lucide-react";
 import InviteUserDialog from "@/components/users/InviteUserDialog";
 import ChangeRoleDialog from "@/components/users/ChangeRoleDialog";
 import LinkClientDialog from "@/components/users/LinkClientDialog";
+import DeactivateAccessDialog from "@/components/users/DeactivateAccessDialog";
 
 const RoleBadge = ({ role }) => (
   <Badge variant="outline" className={role === "admin"
@@ -27,6 +28,7 @@ export default function Users() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [roleTarget, setRoleTarget] = useState(null);
   const [linkTarget, setLinkTarget] = useState(null);
+  const [deactivateTarget, setDeactivateTarget] = useState(null);
 
   const reload = async () => {
     try {
@@ -69,9 +71,14 @@ export default function Users() {
         <ShieldCheck className="w-3.5 h-3.5 me-1" /> Rol
       </Button>
       {u.role !== "admin" && (
-        <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
-          <Link2 className="w-3.5 h-3.5 me-1" /> Vincular
-        </Button>
+        <>
+          <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
+            <Link2 className="w-3.5 h-3.5 me-1" /> Vincular
+          </Button>
+          <Button size="sm" variant="outline" className="rounded-lg text-destructive hover:text-destructive" onClick={() => setDeactivateTarget(u)}>
+            <UserX className="w-3.5 h-3.5 me-1" /> Desactivar
+          </Button>
+        </>
       )}
     </div>
   );
@@ -150,6 +157,8 @@ export default function Users() {
       <LinkClientDialog open={!!linkTarget} onOpenChange={(v) => !v && setLinkTarget(null)} user={linkTarget}
         clients={clients} currentClientId={linkTarget ? (linkedClient(linkTarget) || {}).id : ""}
         onDone={onDone} />
+      <DeactivateAccessDialog open={!!deactivateTarget} onOpenChange={(v) => !v && setDeactivateTarget(null)}
+        user={deactivateTarget} client={deactivateTarget ? linkedClient(deactivateTarget) : null} onDone={onDone} />
     </div>
   );
 }
