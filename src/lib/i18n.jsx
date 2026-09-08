@@ -6,6 +6,40 @@ import { base44 } from "@/api/base44Client";
 const I18nContext = createContext(null);
 
 const cacheKey = (code) => `lexpath_dict_${code}`;
+
+const STAGE_KEYS = {
+  open_documents_requested: "s_docs_requested",
+  documents_under_review: "s_docs_review",
+  preparation_in_progress: "s_prep",
+  awaiting_lawyer_approval: "s_lawyer",
+  ready_to_submit: "s_ready",
+  submitted: "s_submitted",
+  awaiting_decision: "s_awaiting",
+  further_info_requested: "s_further",
+  resolution_received: "s_resolution",
+  post_resolution: "s_resolution",
+  completed: "s_completed",
+};
+
+const CHECKLIST_KEYS = {
+  needed: "cl_needed",
+  uploaded: "cl_uploaded",
+  being_checked: "cl_checking",
+  accepted: "cl_accepted",
+  needs_correction: "cl_correction",
+  not_required: "cl_not_required",
+};
+
+// English fallback so a consumer rendered outside the provider never crashes.
+const FALLBACK = {
+  lang: "en",
+  setLang: () => {},
+  t: (key) => DICT.en[key] || key,
+  rtl: false,
+  stageText: (stage) => (STAGE_KEYS[stage] ? DICT.en[STAGE_KEYS[stage]] || null : null),
+  checklistText: (status) => (CHECKLIST_KEYS[status] ? DICT.en[CHECKLIST_KEYS[status]] || status : status),
+  translating: false,
+};
 const readCachedDict = (code) => {
   try {
     const parsed = JSON.parse(localStorage.getItem(cacheKey(code)) || "null");
@@ -85,34 +119,9 @@ export function I18nProvider({ children }) {
     return dict[key] || DICT.en[key] || key;
   };
 
-  const stageText = (stage) => {
-    const map = {
-      open_documents_requested: "s_docs_requested",
-      documents_under_review: "s_docs_review",
-      preparation_in_progress: "s_prep",
-      awaiting_lawyer_approval: "s_lawyer",
-      ready_to_submit: "s_ready",
-      submitted: "s_submitted",
-      awaiting_decision: "s_awaiting",
-      further_info_requested: "s_further",
-      resolution_received: "s_resolution",
-      post_resolution: "s_resolution",
-      completed: "s_completed",
-    };
-    return map[stage] ? t(map[stage]) : null;
-  };
+  const stageText = (stage) => (STAGE_KEYS[stage] ? t(STAGE_KEYS[stage]) : null);
 
-  const checklistText = (status) => {
-    const map = {
-      needed: "cl_needed",
-      uploaded: "cl_uploaded",
-      being_checked: "cl_checking",
-      accepted: "cl_accepted",
-      needs_correction: "cl_correction",
-      not_required: "cl_not_required",
-    };
-    return map[status] ? t(map[status]) : status;
-  };
+  const checklistText = (status) => (CHECKLIST_KEYS[status] ? t(CHECKLIST_KEYS[status]) : status);
 
   return (
     <I18nContext.Provider
@@ -123,4 +132,4 @@ export function I18nProvider({ children }) {
   );
 }
 
-export const useI18n = () => useContext(I18nContext);
+export const useI18n = () => useContext(I18nContext) || FALLBACK;
