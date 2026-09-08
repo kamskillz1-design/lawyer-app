@@ -27,6 +27,7 @@ import Appointments from '@/pages/Appointments';
 import DocumentsPage from '@/pages/Documents';
 import Communications from '@/pages/Communications';
 import Billing from '@/pages/Billing';
+import Users from '@/pages/Users';
 import PortalHome from '@/pages/portal/PortalHome';
 import PortalDocuments from '@/pages/portal/PortalDocuments';
 import PortalMessages from '@/pages/portal/PortalMessages';
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/messages" element={<Communications />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/users" element={<Users />} />
         </Route>
         <Route element={<PortalLayout />}>
           <Route path="/portal" element={<PortalHome />} />
