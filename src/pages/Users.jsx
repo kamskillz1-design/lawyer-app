@@ -21,6 +21,7 @@ export default function Users() {
   const { toast } = useToast();
   const [me, setMe] = useState(undefined);
   const [users, setUsers] = useState(null);
+  const [usersError, setUsersError] = useState(false);
   const [clients, setClients] = useState([]);
   const [search, setSearch] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -28,9 +29,14 @@ export default function Users() {
   const [linkTarget, setLinkTarget] = useState(null);
 
   const reload = async () => {
-    const [us, cs] = await Promise.all([base44.entities.User.list(), base44.entities.Client.list()]);
-    setUsers(us);
-    setClients(cs);
+    try {
+      setUsersError(false);
+      const [us, cs] = await Promise.all([base44.entities.User.list(), base44.entities.Client.list()]);
+      setUsers(us);
+      setClients(cs);
+    } catch {
+      setUsersError(true);
+    }
   };
 
   useEffect(() => {
@@ -38,8 +44,17 @@ export default function Users() {
     reload();
   }, []);
 
-  if (me === undefined || users === null) return <p className="text-muted-foreground">Cargando…</p>;
+  if (me === undefined) return <p className="text-muted-foreground">Cargando…</p>;
   if (!me || me.role !== "admin") return <Navigate to="/portal" replace />;
+  if (usersError) return (
+    <div className="card-soft p-6 space-y-3">
+      <p className="text-sm text-muted-foreground">No se pudo cargar la lista de usuarios.</p>
+      <Button size="sm" variant="outline" className="rounded-lg" onClick={reload}>
+        Reintentar
+      </Button>
+    </div>
+  );
+  if (users === null) return <p className="text-muted-foreground">Cargando…</p>;
 
   const linkedClient = (u) => clients.find((c) => c.portal_user_id === u.id);
   const q = search.trim().toLowerCase();
