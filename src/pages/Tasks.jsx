@@ -6,8 +6,8 @@ import { Plus, CheckCircle2, Zap } from "lucide-react";
 import { TASK_TYPES, taskTypeLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState(null);
@@ -38,7 +38,7 @@ export default function Tasks() {
     reload();
   };
 
-  if (!tasks) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!tasks) return <InlineMessage />;
   const today = todayISO();
 
   const filtered = tasks.filter((t) => {

@@ -8,8 +8,8 @@ import { Plus } from "lucide-react";
 import { STAGES, PROCEDURE_FAMILIES, PROCEDURE_TYPES, stageLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 const DEFAULT_CHECKLIST = [
   { category: "passport", title: "Pasaporte vigente de todos los miembros", why: "Identificación y viajes", translation_required: false },
   { category: "padron_certificate", title: "Certificado de empadronamiento", why: "Acreditación de residencia en España", translation_required: false },
@@ -63,7 +63,7 @@ export default function Matters() {
     toast({ title: "Expediente creado", description: "Checklist inicial generado." });
   };
 
-  if (!matters) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!matters) return <InlineMessage />;
 
   const filtered = stageFilter === "all" ? matters : matters.filter((m) => m.stage === stageFilter);
 

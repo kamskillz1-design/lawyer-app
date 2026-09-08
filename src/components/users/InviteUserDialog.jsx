@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
 
 export default function InviteUserDialog({ open, onOpenChange, clients, onDone }) {
   const [email, setEmail] = useState("");

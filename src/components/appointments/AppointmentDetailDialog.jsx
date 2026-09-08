@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import StatusBadge from "@/components/StatusBadge";
 import { appointmentLabel } from "@/lib/constants";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
-const label = "grid gap-1 text-sm text-muted-foreground";
+import { inputClass as input, labelClass as label } from "@/lib/formStyles";
 
 export default function AppointmentDetailDialog({ open, onOpenChange, appointment, onDone }) {
   const [form, setForm] = useState(null);

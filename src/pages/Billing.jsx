@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Plus, CheckCircle2 } from "lucide-react";
-import { INVOICE_STATUSES, invoiceLabel } from "@/lib/constants";
+import { invoiceLabel } from "@/lib/constants";
 import { formatDate, formatMoney, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import InvoiceDetailDialog from "@/components/billing/InvoiceDetailDialog";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Billing() {
   const { toast } = useToast();
@@ -48,7 +48,7 @@ export default function Billing() {
     reload();
   };
 
-  if (!invoices) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!invoices) return <InlineMessage />;
 
   const outstandingTotal = invoices.filter((i) => ["sent", "overdue"].includes(i.status)).reduce((s, i) => s + (i.total || 0), 0);
   const paidTotal = invoices.filter((i) => i.status === "paid").reduce((s, i) => s + (i.total || 0), 0);

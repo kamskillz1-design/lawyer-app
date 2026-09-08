@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
 
 export default function ChangeRoleDialog({ open, onOpenChange, user, onDone }) {
   const [role, setRole] = useState("user");

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useI18n } from "@/lib/i18n";
-import { FolderOpen, CalendarDays, Receipt, ChevronRight } from "lucide-react";
+import { CalendarDays, Receipt, ChevronRight } from "lucide-react";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function PortalHome() {
   const { t, stageText } = useI18n();
@@ -27,8 +28,8 @@ export default function PortalHome() {
     load().catch(() => setNoAccess(true));
   }, []);
 
-  if (noAccess) return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
-  if (!data) return <p className="text-muted-foreground">{t("loading")}</p>;
+  if (noAccess) return <InlineMessage className="p-6" text={t("no_client_profile")} />;
+  if (!data) return <InlineMessage text={t("loading")} />;
 
   const { client, matters, appointments, invoices, items } = data;
   const pendingAppts = appointments.filter((a) => a.status === "scheduled" || a.status === "confirmed")
@@ -59,7 +60,7 @@ export default function PortalHome() {
                   {stage || m.stage}
                 </span>
               </div>
-              <p className="mt-3 text-sm"><span className="font-medium">{t("next_step")}:</span> {stage ? "" : ""}{stage}</p>
+              <p className="mt-3 text-sm"><span className="font-medium">{t("next_step")}:</span> {stage}</p>
               {missing > 0 && (
                 <p className="mt-2 text-sm text-amber-700">
                   {missing} {t("checklist_title").toLowerCase()} — {t("cl_needed")} →

@@ -9,6 +9,7 @@ import WhatsAppConnectCard from "@/components/portal/WhatsAppConnectCard";
 import SpeakButton from "@/components/portal/SpeakButton";
 import { formatDateTime } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function PortalMessages() {
   const { t, lang } = useI18n();
@@ -97,9 +98,9 @@ export default function PortalMessages() {
   };
 
   if (noAccess || (data && !clientProfile)) {
-    return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
+    return <InlineMessage className="p-6" text={t("no_client_profile")} />;
   }
-  if (!data) return <p className="text-muted-foreground">{t("loading")}</p>;
+  if (!data) return <InlineMessage text={t("loading")} />;
 
   return (
     <div className="space-y-6" dir={getLanguage(lang)?.rtl ? "rtl" : "ltr"}>

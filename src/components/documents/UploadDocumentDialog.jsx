@@ -5,8 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DOC_CATEGORIES } from "@/lib/constants";
 import { Loader2, Upload } from "lucide-react";
-
-const inputCls = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as inputCls } from "@/lib/formStyles";
 const EMPTY = {
   client_id: "", matter_id: "", checklist_item_id: "", title: "",
   category: "", issue_date: "", expiry_date: "", visibility: "staff",

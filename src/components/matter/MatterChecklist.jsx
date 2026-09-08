@@ -5,8 +5,8 @@ import { Plus, Trash2 } from "lucide-react";
 import { DOC_CATEGORIES, CHECKLIST_STATUSES, checklistLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function MatterChecklist({ matter }) {
   const [items, setItems] = useState(null);
@@ -14,7 +14,7 @@ export default function MatterChecklist({ matter }) {
   const [form, setForm] = useState({ title: "", category: "other", why_required: "", who_provides: "client", deadline: "" });
 
   const reload = () => base44.entities.ChecklistItem.filter({ matter_id: matter.id }).then(setItems);
-  useEffect(() => { reload(); [matter.id]; }, [matter.id]);
+  useEffect(() => { reload(); }, [matter.id]);
 
   const setStatus = async (item, status) => {
     await base44.entities.ChecklistItem.update(item.id, { status });
@@ -39,7 +39,7 @@ export default function MatterChecklist({ matter }) {
     reload();
   };
 
-  if (!items) return <p className="text-muted-foreground text-sm">Cargando checklist…</p>;
+  if (!items) return <InlineMessage className="text-sm" text="Cargando checklist…" />;
   const done = items.filter((i) => ["accepted", "not_required"].includes(i.status)).length;
 
   return (

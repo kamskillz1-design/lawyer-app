@@ -8,8 +8,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Upload } from "lucide-react";
 import StatusBadge from "@/components/StatusBadge";
 import UploadDocumentDialog from "@/components/documents/UploadDocumentDialog";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Documents() {
   const [docs, setDocs] = useState(null);
@@ -23,12 +23,11 @@ export default function Documents() {
 
   const setReview = async (doc, status) => {
     const me = await base44.auth.me();
-    const reviewNotes = notes[doc.id] ?? doc.review_notes ?? "";
     await base44.entities.Document.update(doc.id, { review_status: status, review_notes: notes[doc.id] ?? doc.review_notes ?? "", reviewer: me.full_name });
     reload();
   };
 
-  if (!docs) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!docs) return <InlineMessage />;
   const today = todayISO();
 
   const filtered = docs.filter((d) => {

@@ -6,13 +6,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save } from "lucide-react";
 import { STAGES, stageLabel } from "@/lib/constants";
-import { formatDate, todayISO } from "@/lib/format";
+import { formatDate } from "@/lib/format";
 import MatterChecklist from "@/components/matter/MatterChecklist";
 import MatterDocuments from "@/components/matter/MatterDocuments";
 import MatterTasks from "@/components/matter/MatterTasks";
 import MatterTimeline from "@/components/matter/MatterTimeline";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import MatterDataFields from "@/components/matter/MatterDataFields";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function MatterDetail() {
   const { id } = useParams();
@@ -51,25 +51,7 @@ export default function MatterDetail() {
     toast({ title: "Expediente guardado" });
   };
 
-  if (!matter) return <p className="text-muted-foreground">Cargando…</p>;
-
-  const setD = (k) => (e) => setDraft({ ...draft, [k]: e.target.value });
-  const val = (k) => (draft[k] !== undefined ? draft[k] : (matter[k] || ""));
-
-  const FIELDS = [
-    { k: "next_action", l: "Próxima acción" },
-    { k: "next_action_owner", l: "Responsable del próximo paso", options: ["staff", "lawyer", "client", "authority", "third_party"] },
-    { k: "next_deadline", l: "Próximo plazo / revisión", type: "date" },
-    { k: "target_submission_date", l: "Fecha objetivo de presentación", type: "date" },
-    { k: "submission_date", l: "Fecha de presentación", type: "date" },
-    { k: "government_ref", l: "Referencia de la autoridad" },
-    { k: "assigned_lawyer", l: "Letrado responsable" },
-    { k: "assigned_caseworker", l: "Gestor responsable" },
-    { k: "outcome", l: "Resultado" },
-    { k: "renewal_due_date", l: "Próxima renovación", type: "date" },
-    { k: "legacy_dropbox_path", l: "Ruta Dropbox histórica" },
-    { k: "status_reason", l: "Motivo de pausa/estado" },
-  ];
+  if (!matter) return <InlineMessage />;
 
   return (
     <div className="space-y-6">
@@ -128,25 +110,7 @@ export default function MatterDetail() {
         <TabsContent value="tasks" className="mt-4"><MatterTasks matter={matter} /></TabsContent>
         <TabsContent value="timeline" className="mt-4"><MatterTimeline matter={matter} /></TabsContent>
         <TabsContent value="data" className="mt-4">
-          <div className="card-soft p-5 grid md:grid-cols-2 gap-4">
-            {FIELDS.map(({ k, l, type, options }) => (
-              <div key={k}>
-                <label className="text-xs text-muted-foreground">{l}</label>
-                {editing ? (
-                  options ? (
-                    <select className={input} value={val(k)} onChange={setD(k)}>
-                      <option value="">—</option>
-                      {options.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  ) : (
-                    <input type={type || "text"} className={input} value={val(k)} onChange={setD(k)} />
-                  )
-                ) : (
-                  <p className={`py-1.5 ${type === "date" && val(k) ? "" : ""}`}>{val(k) ? (type === "date" ? formatDate(val(k)) : val(k)) : "—"}</p>
-                )}
-              </div>
-            ))}
-          </div>
+          <MatterDataFields matter={matter} draft={draft} editing={editing} onFieldChange={(k, v) => setDraft({ ...draft, [k]: v })} />
         </TabsContent>
       </Tabs>
     </div>

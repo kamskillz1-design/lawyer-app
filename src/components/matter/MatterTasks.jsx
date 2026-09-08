@@ -5,8 +5,8 @@ import { Plus, CheckCircle2 } from "lucide-react";
 import { TASK_TYPES, taskTypeLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function MatterTasks({ matter }) {
   const [tasks, setTasks] = useState(null);
@@ -30,7 +30,7 @@ export default function MatterTasks({ matter }) {
     reload();
   };
 
-  if (!tasks) return <p className="text-muted-foreground text-sm">Cargando tareas…</p>;
+  if (!tasks) return <InlineMessage className="text-sm" text="Cargando tareas…" />;
   const today = todayISO();
 
   return (

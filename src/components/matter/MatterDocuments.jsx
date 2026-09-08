@@ -5,8 +5,8 @@ import { Upload, Download, CheckCircle2 } from "lucide-react";
 import { categoryLabel, REVIEW_STATUSES, reviewLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function MatterDocuments({ matter }) {
   const [docs, setDocs] = useState(null);
@@ -52,7 +52,7 @@ export default function MatterDocuments({ matter }) {
     reload();
   };
 
-  if (!docs) return <p className="text-muted-foreground text-sm">Cargando documentos…</p>;
+  if (!docs) return <InlineMessage className="text-sm" text="Cargando documentos…" />;
 
   return (
     <div className="space-y-3">

@@ -5,9 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import StatusBadge from "@/components/StatusBadge";
 import { formatDate, formatMoney, todayISO } from "@/lib/format";
 import { invoiceLabel } from "@/lib/constants";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
-const label = "grid gap-1 text-sm text-muted-foreground";
+import { inputClass as input, labelClass as label } from "@/lib/formStyles";
 
 export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDone }) {
   const [form, setForm] = useState(null);

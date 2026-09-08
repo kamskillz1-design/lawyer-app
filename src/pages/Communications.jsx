@@ -1,22 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Languages, Send, Gavel, CheckCircle2, ListPlus, AlertTriangle, Mic, MessageCircle } from "lucide-react";
-import { SENSITIVITIES, sensitivityLabel } from "@/lib/constants";
-import { formatDateTime } from "@/lib/format";
+import { CONFIDENCE_HINT } from "@/lib/constants";
 import { getLanguage } from "@/lib/languages";
-import StatusBadge from "@/components/StatusBadge";
-import TranscribeManually from "@/components/communication/TranscribeManually";
+import InlineMessage from "@/components/InlineMessage";
+import MessageList from "@/components/communication/MessageList";
+import MessageDetail from "@/components/communication/MessageDetail";
+import ReplyComposer from "@/components/communication/ReplyComposer";
 import WhatsAppReplyDialog from "@/components/communication/WhatsAppReplyDialog";
 
-const CONFIDENCE_HINT = {
-  normal: "Traducción fiable",
-  review_recommended: "Revisar antes de enviar",
-  uncertain: "Traducción dudosa — considerar traducción humana",
-  human_required: "Requiere traducción/intérprete humano",
-};
-
+// Communications center: owns message data, translation and sending flows.
+// Presentation is delegated to MessageList, MessageDetail and ReplyComposer.
 export default function Communications() {
   const { toast } = useToast();
   const [comms, setComms] = useState(null);
@@ -138,7 +132,18 @@ export default function Communications() {
     toast({ title: "Tarea creada" });
   };
 
-  if (!comms) return <p className="text-muted-foreground">Cargando…</p>;
+  const changeSensitivity = async (value) => {
+    await base44.entities.Communication.update(selected.id, { sensitivity: value });
+    select({ ...selected, sensitivity: value });
+    reload();
+  };
+
+  const applyTranscription = (text) => {
+    select({ ...selected, original_content: text, transcription_status: "done" });
+    reload();
+  };
+
+  if (!comms) return <InlineMessage />;
 
   const pending = comms.filter((c) => c.status !== "sent" && c.status !== "internal_note");
 
@@ -147,143 +152,37 @@ export default function Communications() {
       <h1 className="font-heading text-3xl font-bold">Centro de mensajes y traducción</h1>
 
       <div className="grid lg:grid-cols-[340px_1fr] gap-4">
-        <div className="card-soft p-2 h-fit lg:max-h-[70vh] overflow-y-auto">
-          {pending.map((c) => (
-            <button key={c.id} onClick={() => select(c)}
-              className={`w-full text-start p-3 rounded-xl hover:bg-secondary transition-colors ${selected?.id === c.id ? "bg-secondary" : ""}`}>
-              <p className="font-medium text-sm flex items-center justify-between gap-2 min-w-0">
-                <span className="truncate">{c.client_name}</span>
-                {c.channel === "whatsapp" && (
-                  <span className="inline-flex items-center gap-1 shrink-0 text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
-                    <MessageCircle className="w-3 h-3" /> WhatsApp
-                  </span>
-                )}
-                <StatusBadge value={c.status} />
-              </p>
-              <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
-              {c.audio_url && <span className="inline-flex items-center gap-1 text-[10px] text-primary mt-0.5"><Mic className="w-3 h-3" /> nota de voz</span>}
-              {c.transcription_status === "failed" && <span className="block text-[10px] text-amber-700 font-medium mt-0.5">transcripción fallida — escuchar audio</span>}
-              <p className="text-[10px] text-muted-foreground mt-1">
-                {c.original_language} · {c.channel} · {sensitivityLabel(c.sensitivity)}
-              </p>
-            </button>
-          ))}
-          {!pending.length && <p className="text-sm text-muted-foreground p-3">Sin mensajes pendientes.</p>}
-
-          {comms.some((c) => c.status === "sent") && (
-            <details className="p-2">
-              <summary className="text-xs text-muted-foreground cursor-pointer p-1">Enviados ({comms.filter((c) => c.status === "sent").length})</summary>
-              {comms.filter((c) => c.status === "sent").slice(0, 8).map((c) => (
-                <button key={c.id} onClick={() => select(c)} className="w-full text-start p-2 rounded-lg hover:bg-secondary">
-                  <p className="text-xs font-medium">{c.client_name}</p>
-                  <p className="text-[10px] text-muted-foreground">{formatDateTime(c.created_date)}</p>
-                </button>
-              ))}
-            </details>
-          )}
-        </div>
+        <MessageList comms={comms} pending={pending} selected={selected} onSelect={select} />
 
         <div className="space-y-4">
           {!selected && <div className="card-soft p-8 text-center text-muted-foreground">Seleccione un mensaje para gestionarlo.</div>}
           {selected && (
             <>
-              <div className="card-soft p-5">
-                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground text-sm">{selected.client_name}</span>
-                  <span>· {selected.channel} · {selected.original_language} · {formatDateTime(selected.created_date)}</span>
-                  <StatusBadge value={selected.status} />
-                  {selected.channel === "whatsapp" && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
-                      <MessageCircle className="w-3 h-3" /> WhatsApp
-                    </span>
-                  )}
-                  {needsLawyer && !approved && <span className="flex items-center gap-1 text-red-700 font-medium"><Gavel className="w-3 h-3" /> requiere aprobación letrada</span>}
-                </div>
-
-                <div dir={getLanguage(selected.original_language || "").rtl ? "rtl" : "ltr"} className="mt-4 p-4 rounded-xl bg-secondary/70">
-                  <p className="text-sm">{selected.original_content}</p>
-                  {selected.audio_url && (
-                    <div className="flex items-center gap-2 mt-3">
-                      <Mic className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-[10px] text-muted-foreground">
-                        {selected.transcription_status === "failed" ? "Transcripción automática fallida — escuche el audio:" : "Transcrito automáticamente de la nota de voz original:"}
-                      </span>
-                      <audio controls src={selected.audio_url} className="h-9 w-full max-w-sm" />
-                    </div>
-                  )}
-                  {selected.transcription_status === "failed" && (
-                    <div className="mt-3 flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                      <p className="text-xs text-amber-800">La transcripción automática falló. Escuche el audio y transcriba el mensaje manualmente para poder traducirlo y responderlo.</p>
-                    </div>
-                  )}
-                </div>
-
-                {selected.staff_translation ? (
-                  <div className="mt-3 p-4 rounded-xl border-s-4 border-primary/40 bg-card">
-                    <p className="text-xs text-muted-foreground mb-1">Traducción al español (IA{selected.translation_confidence ? ` · ${CONFIDENCE_HINT[selected.translation_confidence]}` : ""})</p>
-                    <p className="text-sm">{selected.staff_translation}</p>
-                  </div>
-                ) : selected.transcription_status === "failed" ? (
-                  <TranscribeManually comm={selected} onSaved={(text) => { select({ ...selected, original_content: text, transcription_status: "done" }); reload(); }} />
-                ) : (
-                  <Button variant="outline" className="rounded-xl mt-3" onClick={translateIncoming} disabled={busy === "incoming"}>
-                    <Languages className="w-4 h-4 me-1" /> {busy === "incoming" ? "Traduciendo…" : "Traducir al español"}
-                  </Button>
-                )}
-
-                <div className="flex flex-wrap items-center gap-2 mt-4">
-                  <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={selected.sensitivity}
-                    onChange={async (e) => {
-                      await base44.entities.Communication.update(selected.id, { sensitivity: e.target.value });
-                      select({ ...selected, sensitivity: e.target.value });
-                      reload();
-                    }}>
-                    {SENSITIVITIES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                  </select>
-                  <Button size="sm" variant="outline" className="rounded-lg text-red-700" onClick={escalate}>
-                    <AlertTriangle className="w-3.5 h-3.5 me-1" /> Escalar a letrada
-                  </Button>
-                  <Button size="sm" variant="outline" className="rounded-lg" onClick={createTask}>
-                    <ListPlus className="w-3.5 h-3.5 me-1" /> Crear tarea
-                  </Button>
-                </div>
-              </div>
-
-              <div className="card-soft p-5">
-                <h3 className="font-heading font-semibold mb-3">Respuesta</h3>
-                <textarea value={reply} onChange={(e) => setReply(e.target.value)}
-                  placeholder="Escriba la respuesta en español…"
-                  className="w-full min-h-24 rounded-xl border border-input bg-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40" />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <Button variant="outline" className="rounded-xl" onClick={generateDraft} disabled={busy === "draft" || !reply.trim()}>
-                    <Languages className="w-4 h-4 me-1" />
-                    {busy === "draft" ? "Generando…" : `Generar borrador en ${getLanguage(clientOf(selected)?.written_language || "en").native}`}
-                  </Button>
-                  {needsLawyer && !approved && (
-                    <Button variant="outline" className="rounded-xl text-primary" onClick={approveAsLawyer}>
-                      <CheckCircle2 className="w-4 h-4 me-1" /> Aprobar (letrada)
-                    </Button>
-                  )}
-                  {selected.channel === "whatsapp" ? (
-                    <Button className="rounded-xl ms-auto" onClick={() => setWaOpen(true)}
-                      disabled={!draft.trim() || (needsLawyer && !approved)}>
-                      <Send className="w-4 h-4 me-1" /> Enviar por WhatsApp
-                    </Button>
-                  ) : (
-                    <Button className="rounded-xl ms-auto" onClick={send}
-                      disabled={!draft.trim() || (needsLawyer && !approved)}>
-                      <Send className="w-4 h-4 me-1" /> Enviar al cliente
-                    </Button>
-                  )}
-                </div>
-                {draft && (
-                  <div className="mt-3 p-4 rounded-xl bg-accent/50">
-                    <p className="text-xs text-muted-foreground mb-1">Borrador en el idioma del cliente (revisar antes de enviar):</p>
-                    <p dir={getLanguage(clientOf(selected)?.written_language || "").rtl ? "rtl" : "ltr"} className="text-sm">{draft}</p>
-                  </div>
-                )}
-              </div>
+              <MessageDetail
+                selected={selected}
+                needsLawyer={needsLawyer}
+                approved={approved}
+                busy={busy}
+                onTranslate={translateIncoming}
+                onSensitivityChange={changeSensitivity}
+                onEscalate={escalate}
+                onCreateTask={createTask}
+                onTranscribed={applyTranscription}
+              />
+              <ReplyComposer
+                selected={selected}
+                client={clientOf(selected)}
+                reply={reply}
+                draft={draft}
+                busy={busy}
+                needsLawyer={needsLawyer}
+                approved={approved}
+                onReplyChange={setReply}
+                onGenerateDraft={generateDraft}
+                onApprove={approveAsLawyer}
+                onSend={send}
+                onWaOpen={() => setWaOpen(true)}
+              />
             </>
           )}
           <WhatsAppReplyDialog

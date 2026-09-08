@@ -9,6 +9,7 @@ import InviteUserDialog from "@/components/users/InviteUserDialog";
 import ChangeRoleDialog from "@/components/users/ChangeRoleDialog";
 import LinkClientDialog from "@/components/users/LinkClientDialog";
 import DeactivateAccessDialog from "@/components/users/DeactivateAccessDialog";
+import InlineMessage from "@/components/InlineMessage";
 
 const RoleBadge = ({ role }) => (
   <Badge variant="outline" className={role === "admin"
@@ -46,7 +47,7 @@ export default function Users() {
     reload();
   }, []);
 
-  if (me === undefined) return <p className="text-muted-foreground">Cargando…</p>;
+  if (me === undefined) return <InlineMessage />;
   if (!me || me.role !== "admin") return <Navigate to="/portal" replace />;
   if (usersError) return (
     <div className="card-soft p-6 space-y-3">
@@ -56,7 +57,7 @@ export default function Users() {
       </Button>
     </div>
   );
-  if (users === null) return <p className="text-muted-foreground">Cargando…</p>;
+  if (users === null) return <InlineMessage />;
 
   const linkedClient = (u) => clients.find((c) => c.portal_user_id === u.id);
   const q = search.trim().toLowerCase();

@@ -8,8 +8,8 @@ import { LEAD_STATUSES, leadLabel } from "@/lib/constants";
 import { LANGUAGES } from "@/lib/languages";
 import { formatDate } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Leads() {
   const { toast } = useToast();
@@ -67,7 +67,7 @@ export default function Leads() {
     toast({ title: "Cita reservada" });
   };
 
-  if (!leads) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!leads) return <InlineMessage />;
 
   return (
     <div className="space-y-4">

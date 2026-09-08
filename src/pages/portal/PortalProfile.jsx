@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Save } from "lucide-react";
 import { LANGUAGES } from "@/lib/languages";
+import InlineMessage from "@/components/InlineMessage";
 
 const input = "w-full h-10 rounded-xl border border-input bg-card px-3 text-sm";
 
@@ -45,8 +46,8 @@ export default function PortalProfile() {
     }
   };
 
-  if (noAccess) return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
-  if (!client) return <p className="text-muted-foreground">{t("loading")}</p>;
+  if (noAccess) return <InlineMessage className="p-6" text={t("no_client_profile")} />;
+  if (!client) return <InlineMessage text={t("loading")} />;
 
   const langSelect = (k, label) => (
     <div>

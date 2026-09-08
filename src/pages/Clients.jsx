@@ -10,8 +10,8 @@ import ClientSearch from "@/components/clients/ClientSearch";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
 import ClientListTable from "@/components/clients/ClientListTable";
 import ClientListCards from "@/components/clients/ClientListCards";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Clients() {
   const { toast } = useToast();
@@ -37,7 +37,7 @@ export default function Clients() {
     reload();
   };
 
-  if (!clients) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!clients) return <InlineMessage />;
 
   const byQuery = (list, q) => list.filter((c) =>
     c.legal_name?.toLowerCase().includes(q.toLowerCase()) ||

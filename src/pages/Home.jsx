@@ -7,6 +7,7 @@ import { sensitivityLabel, leadLabel } from "@/lib/constants";
 import { formatDate, daysUntil, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import CollapsibleSection from "@/components/dashboard/CollapsibleSection";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -27,7 +28,7 @@ export default function Home() {
     load();
   }, []);
 
-  if (!data) return <p className="text-muted-foreground p-8">Cargando panel…</p>;
+  if (!data) return <InlineMessage text="Cargando panel…" className="p-8" />;
 
   const openTasks = data.tasks.filter((t) => t.status !== "done");
   const overdue = openTasks.filter((t) => t.due_date && t.due_date < today)

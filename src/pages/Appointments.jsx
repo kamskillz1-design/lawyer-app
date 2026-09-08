@@ -7,8 +7,8 @@ import { APPOINTMENT_TYPES, appointmentLabel } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import AppointmentDetailDialog from "@/components/appointments/AppointmentDetailDialog";
-
-const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
+import { inputClass as input } from "@/lib/formStyles";
+import InlineMessage from "@/components/InlineMessage";
 
 export default function Appointments() {
   const [appointments, setAppointments] = useState(null);
@@ -40,7 +40,7 @@ export default function Appointments() {
     reload();
   };
 
-  if (!appointments) return <p className="text-muted-foreground">Cargando…</p>;
+  if (!appointments) return <InlineMessage />;
   const upcoming = appointments.filter((a) => a.status === "scheduled" || a.status === "confirmed");
 
   return (

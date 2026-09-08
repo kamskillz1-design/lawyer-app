@@ -6,6 +6,7 @@ import { Upload, Download, FileCheck2, Info } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
 import { cn } from "@/lib/utils";
+import InlineMessage from "@/components/InlineMessage";
 
 const STATUS_STYLE = {
   needed: "bg-amber-50 text-amber-800 border-amber-200",
@@ -60,8 +61,8 @@ export default function PortalDocuments() {
     }
   };
 
-  if (noAccess) return <p className="p-6 text-muted-foreground">{t("no_client_profile")}</p>;
-  if (!data) return <p className="text-muted-foreground">{t("loading")}</p>;
+  if (noAccess) return <InlineMessage className="p-6" text={t("no_client_profile")} />;
+  if (!data) return <InlineMessage text={t("loading")} />;
 
   const { matters, items, docs, client } = data;
 
