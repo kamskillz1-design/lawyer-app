@@ -153,3 +153,11 @@ export const appointmentLabel = (id) => (APPOINTMENT_TYPES.find((s) => s.id === 
 export const leadLabel = (id) => (LEAD_STATUSES.find((s) => s.id === id) || {}).label || id;
 export const sensitivityLabel = (id) => (SENSITIVITIES.find((s) => s.id === id) || {}).label || id;
 export const invoiceLabel = (id) => (INVOICE_STATUSES.find((s) => s.id === id) || {}).label || id;
+
+// Staff hint shown next to AI translation confidence values.
+export const CONFIDENCE_HINT = {
+  normal: "Traducción fiable",
+  review_recommended: "Revisar antes de enviar",
+  uncertain: "Traducción dudosa — considerar traducción humana",
+  human_required: "Requiere traducción/intérprete humano",
+};
