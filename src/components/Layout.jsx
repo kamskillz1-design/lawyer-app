@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Scale, LayoutDashboard, Users, FolderOpen, CheckSquare, CalendarDays, FileText, MessageCircle, Receipt, Inbox, LogOut, Menu, X, UserRound, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const NAV = [
   { to: "/dashboard", label: "Panel", icon: LayoutDashboard },
@@ -54,6 +55,9 @@ export default function Layout() {
               <UserRound className="w-4 h-4 shrink-0" /> Portal de cliente
             </NavLink>
           </nav>
+          <div className="px-4 pb-3 pt-2">
+            <LanguageSwitcher />
+          </div>
           <button onClick={logout} className="flex items-center gap-3 px-4 py-4 text-sm text-stone-300 hover:text-white border-t border-white/10">
             <LogOut className="w-4 h-4" /> Cerrar sesión
           </button>
@@ -63,7 +67,7 @@ export default function Layout() {
           <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-card">
             <button onClick={() => setOpen(true)} aria-label="Abrir menú" className="p-2 -ms-2"><Menu className="w-6 h-6" /></button>
             <p className="font-heading font-bold">Legal Lex</p>
-            <div className="w-6" />
+            <LanguageSwitcher />
           </div>
           <div className="p-4 md:p-8 max-w-6xl mx-auto">
             <Outlet />
