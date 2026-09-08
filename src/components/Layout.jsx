@@ -55,17 +55,14 @@ export default function Layout() {
               <UserRound className="w-4 h-4 shrink-0" /> Portal de cliente
             </NavLink>
           </nav>
-          <div className="px-4 pb-3 pt-2">
-            <LanguageSwitcher />
-          </div>
           <button onClick={logout} className="flex items-center gap-3 px-4 py-4 text-sm text-stone-300 hover:text-white border-t border-white/10">
             <LogOut className="w-4 h-4" /> Cerrar sesión
           </button>
         </aside>
         {open && <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={() => setOpen(false)} />}
         <main className="flex-1 min-w-0">
-          <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-card">
-            <button onClick={() => setOpen(true)} aria-label="Abrir menú" className="p-2 -ms-2"><Menu className="w-6 h-6" /></button>
+          <div className="flex items-center justify-between px-4 py-3 border-b bg-card">
+            <button onClick={() => setOpen(true)} aria-label="Abrir menú" className="p-2 -ms-2 lg:hidden"><Menu className="w-6 h-6" /></button>
             <p className="font-heading font-bold">Legal Lex</p>
             <LanguageSwitcher />
           </div>
