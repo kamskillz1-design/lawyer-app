@@ -38,7 +38,7 @@ export default function Layout() {
               <p className="text-[11px] text-stone-300 mt-1">Extranjería · Bilbao</p>
             </div>
           </div>
-          <nav className="flex-1 px-3 space-y-1 mt-2">
+          <nav className="flex-1 min-h-0 overflow-y-auto px-3 space-y-1 mt-2">
             {NAV.map(({ to, label, icon: Icon }) => (
               <NavLink key={to} to={to} onClick={() => setOpen(false)}
                 className={({ isActive }) => cn("flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors",
