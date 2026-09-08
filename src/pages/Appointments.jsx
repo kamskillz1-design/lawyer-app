@@ -6,6 +6,7 @@ import { Plus } from "lucide-react";
 import { APPOINTMENT_TYPES, appointmentLabel } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
+import AppointmentDetailDialog from "@/components/appointments/AppointmentDetailDialog";
 
 const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
 
@@ -13,6 +14,7 @@ export default function Appointments() {
   const [appointments, setAppointments] = useState(null);
   const [clients, setClients] = useState([]);
   const [adding, setAdding] = useState(false);
+  const [detail, setDetail] = useState(null);
   const [form, setForm] = useState({ client_id: "", type: "consultation", date_time: "", location: "Oficina Bilbao", assigned_staff: "", interpreter_required: false });
 
   const reload = async () => {
@@ -71,7 +73,7 @@ export default function Appointments() {
       <div className="space-y-2">
         {upcoming.map((a) => (
           <div key={a.id} className="card-soft p-4 flex flex-wrap items-center gap-3">
-            <div className="flex-1 min-w-52">
+            <div className="flex-1 min-w-52 cursor-pointer" onClick={() => setDetail(a)}>
               <p className="font-medium text-sm">{appointmentLabel(a.type)} — {a.client_name}</p>
               <p className="text-xs text-muted-foreground">
                 {formatDateTime(a.date_time)} · {a.location}
@@ -95,13 +97,16 @@ export default function Appointments() {
           <h3 className="font-heading font-semibold mb-2">Historial reciente</h3>
           <div className="space-y-1">
             {appointments.filter((a) => a.status === "completed").slice(-5).reverse().map((a) => (
-              <p key={a.id} className="text-sm text-muted-foreground p-2 rounded-lg hover:bg-secondary">
+              <p key={a.id} className="text-sm text-muted-foreground p-2 rounded-lg hover:bg-secondary cursor-pointer" onClick={() => setDetail(a)}>
                 {formatDateTime(a.date_time)} — {appointmentLabel(a.type)} — {a.client_name} {a.result ? `· ${a.result}` : ""}
               </p>
             ))}
           </div>
         </div>
       )}
+
+      <AppointmentDetailDialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}
+        appointment={detail} onDone={reload} />
     </div>
   );
 }

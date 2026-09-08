@@ -7,6 +7,7 @@ import { Plus, CheckCircle2 } from "lucide-react";
 import { INVOICE_STATUSES, invoiceLabel } from "@/lib/constants";
 import { formatDate, formatMoney, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
+import InvoiceDetailDialog from "@/components/billing/InvoiceDetailDialog";
 
 const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
 
@@ -15,6 +16,7 @@ export default function Billing() {
   const [invoices, setInvoices] = useState(null);
   const [clients, setClients] = useState([]);
   const [open, setOpen] = useState(false);
+  const [detail, setDetail] = useState(null);
   const [form, setForm] = useState({ client_id: "", service_description: "", amount: "", government_fees: "", expenses: "", issue_date: "", due_date: "" });
 
   const reload = async () => {
@@ -97,7 +99,7 @@ export default function Billing() {
           </thead>
           <tbody>
             {invoices.map((inv) => (
-              <tr key={inv.id} className="border-b last:border-0 hover:bg-secondary/50">
+              <tr key={inv.id} className="border-b last:border-0 hover:bg-secondary/50 cursor-pointer" onClick={() => setDetail(inv)}>
                 <td className="p-3 font-medium">{inv.number}</td>
                 <td className="p-3">{inv.client_name}</td>
                 <td className="p-3 text-xs">{inv.service_description || "—"}</td>
@@ -106,7 +108,7 @@ export default function Billing() {
                 <td className="p-3"><StatusBadge value={inv.status} label={invoiceLabel(inv.status)} /></td>
                 <td className="p-3">
                   {inv.status !== "paid" && (
-                    <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(inv, "paid")}>
+                    <Button size="sm" variant="outline" className="rounded-lg" onClick={(e) => { e.stopPropagation(); setStatus(inv, "paid"); }}>
                       <CheckCircle2 className="w-3.5 h-3.5 me-1" /> Cobrada
                     </Button>
                   )}
@@ -120,7 +122,7 @@ export default function Billing() {
 
       <div className="md:hidden space-y-2">
         {invoices.map((inv) => (
-          <div key={inv.id} className="card-soft p-4 space-y-1">
+          <div key={inv.id} className="card-soft p-4 space-y-1 cursor-pointer" onClick={() => setDetail(inv)}>
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">{inv.number}</p>
               <StatusBadge value={inv.status} label={invoiceLabel(inv.status)} />
@@ -129,7 +131,7 @@ export default function Billing() {
             <p className="text-xs text-muted-foreground break-words">{inv.service_description || "—"}</p>
             <p className="text-sm font-medium">{formatMoney(inv.total)} · vence {formatDate(inv.due_date)}</p>
             {inv.status !== "paid" && (
-              <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(inv, "paid")}>
+              <Button size="sm" variant="outline" className="rounded-lg" onClick={(e) => { e.stopPropagation(); setStatus(inv, "paid"); }}>
                 <CheckCircle2 className="w-3.5 h-3.5 me-1" /> Cobrada
               </Button>
             )}
@@ -137,6 +139,9 @@ export default function Billing() {
         ))}
         {!invoices.length && <p className="text-sm text-muted-foreground p-4">Sin facturas.</p>}
       </div>
+
+      <InvoiceDetailDialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}
+        invoice={detail} onDone={(msg) => { reload(); toast({ title: msg }); }} />
     </div>
   );
 }
