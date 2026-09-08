@@ -71,14 +71,14 @@ export default function Users() {
         <ShieldCheck className="w-3.5 h-3.5 me-1" /> Rol
       </Button>
       {u.role !== "admin" && (
-        <>
-          <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
-            <Link2 className="w-3.5 h-3.5 me-1" /> Vincular
-          </Button>
-          <Button size="sm" variant="outline" className="rounded-lg text-destructive hover:text-destructive" onClick={() => setDeactivateTarget(u)}>
-            <UserX className="w-3.5 h-3.5 me-1" /> Desactivar
-          </Button>
-        </>
+        <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
+          <Link2 className="w-3.5 h-3.5 me-1" /> Vincular
+        </Button>
+      )}
+      {u.id !== me.id && (
+        <Button size="sm" variant="outline" className="rounded-lg text-destructive hover:text-destructive" onClick={() => setDeactivateTarget(u)}>
+          <UserX className="w-3.5 h-3.5 me-1" /> Desactivar
+        </Button>
       )}
     </div>
   );

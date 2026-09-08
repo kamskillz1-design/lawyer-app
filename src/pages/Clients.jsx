@@ -4,15 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { LANGUAGES } from "@/lib/languages";
 import ClientSearch from "@/components/clients/ClientSearch";
+import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
 import ClientListTable from "@/components/clients/ClientListTable";
 import ClientListCards from "@/components/clients/ClientListCards";
 
 const input = "w-full h-9 rounded-md border border-input bg-card px-3 text-sm";
 
 export default function Clients() {
+  const { toast } = useToast();
   const [clients, setClients] = useState(null);
+  const [archiveTarget, setArchiveTarget] = useState(null);
   const [open, setOpen] = useState(false);
   const [qActive, setQActive] = useState("");
   const [qArchived, setQArchived] = useState("");
@@ -75,8 +79,8 @@ export default function Clients() {
         </TabsList>
         <TabsContent value="active" className="space-y-4 mt-4">
           <ClientSearch value={qActive} onChange={setQActive} placeholder="Buscar nombre, email, NIE…" />
-          <ClientListTable clients={active} />
-          <ClientListCards clients={active} />
+          <ClientListTable clients={active} onArchive={setArchiveTarget} />
+          <ClientListCards clients={active} onArchive={setArchiveTarget} />
         </TabsContent>
         <TabsContent value="archived" className="space-y-4 mt-4">
           <ClientSearch value={qArchived} onChange={setQArchived} placeholder="Buscar archivados…" />
@@ -84,6 +88,10 @@ export default function Clients() {
           <ClientListCards clients={archived} muted />
         </TabsContent>
       </Tabs>
+
+      <ArchiveClientDialog open={!!archiveTarget} onOpenChange={(v) => !v && setArchiveTarget(null)}
+        client={archiveTarget}
+        onDone={(m) => { setArchiveTarget(null); toast({ title: m }); reload(); }} />
     </div>
   );
 }

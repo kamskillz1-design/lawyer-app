@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { MoreVertical, Eye, Archive } from "lucide-react";
 
-export default function ClientListTable({ clients, muted = false }) {
+export default function ClientListTable({ clients, muted = false, onArchive }) {
   const portal = (c) =>
     c.status === "archived" ? "archivado" : c.portal_user_id ? "✓ activo" : "—";
 
@@ -12,6 +15,7 @@ export default function ClientListTable({ clients, muted = false }) {
           <tr className="text-xs text-muted-foreground border-b">
             <th className="p-3 text-start">Cliente</th><th className="p-3 text-start">Contacto</th>
             <th className="p-3 text-start">Idiomas</th><th className="p-3 text-start">Encargo</th><th className="p-3 text-start">Portal</th>
+            {!muted && <th className="p-3 text-start">Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -25,9 +29,30 @@ export default function ClientListTable({ clients, muted = false }) {
               <td className="p-3 text-xs">{c.written_language || "es"} / {c.spoken_language || "—"}{c.interpreter_required ? " · intérprete" : ""}</td>
               <td className="p-3 text-xs">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""}</td>
               <td className="p-3 text-xs">{portal(c)}</td>
+              {!muted && (
+                <td className="p-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="rounded-lg h-11 w-11" aria-label="Acciones">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem className="h-11" asChild>
+                        <Link to={`/clients/${c.id}`}><Eye className="w-4 h-4" /> Ver detalle</Link>
+                      </DropdownMenuItem>
+                      {onArchive && (
+                        <DropdownMenuItem className="h-11 text-destructive focus:text-destructive" onClick={() => onArchive(c)}>
+                          <Archive className="w-4 h-4" /> Archivar
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+              )}
             </tr>
           ))}
-          {!clients.length && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">Sin resultados.</td></tr>}
+          {!clients.length && <tr><td colSpan={muted ? 5 : 6} className="p-6 text-center text-muted-foreground">Sin resultados.</td></tr>}
         </tbody>
       </table>
     </div>
