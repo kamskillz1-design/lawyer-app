@@ -25,6 +25,9 @@ export const DICT = {
     translating_ui: "Translating the interface…", ui_all_languages: "The interface translates automatically into every language.",
     no_client_profile: "No client profile is linked to this account yet. Please contact the office.",
     send_error: "The message could not be sent — please try again in a few moments.",
+    whatsapp_connect_title: "Chat with us on WhatsApp",
+    whatsapp_connect_body: "Connect your WhatsApp once and our assistant can answer your questions about your case, documents, appointments and invoices — in your own language, right in your chat.",
+    whatsapp_connect_btn: "Connect WhatsApp",
     portal_locked_title: "Portal access pending",
     portal_locked_body: "Your access to the client portal is currently switched off. Please contact the office and we will enable it for you."
   },
@@ -52,6 +55,9 @@ export const DICT = {
     translating_ui: "Traduciendo la interfaz…", ui_all_languages: "La interfaz se traduce automáticamente a todos los idiomas.",
     no_client_profile: "Todavía no hay un perfil de cliente vinculado a esta cuenta. Póngase en contacto con el despacho.",
     send_error: "No se pudo enviar el mensaje — inténtelo de nuevo en unos momentos.",
+    whatsapp_connect_title: "Hable con nosotros por WhatsApp",
+    whatsapp_connect_body: "Conecte su WhatsApp una vez y nuestro asistente podrá responder a sus preguntas sobre su expediente, documentos, citas y facturas — en su propio idioma, directamente en su chat.",
+    whatsapp_connect_btn: "Conectar WhatsApp",
     portal_locked_title: "Acceso al portal pendiente",
     portal_locked_body: "Su acceso al portal de clientes está desactivado actualmente. Póngase en contacto con el despacho y lo activaremos por usted."
   },
@@ -78,7 +84,10 @@ export const DICT = {
     voice_pending_note: "[Message vocal — transcription automatique en attente. Le cabinet écoutera l'audio.]",
     translating_ui: "Traduction de l'interface…", ui_all_languages: "L'interface se traduit automatiquement dans toutes les langues.",
     no_client_profile: "Aucun profil client n'est encore lié à ce compte. Veuillez contacter le cabinet.",
-    send_error: "Le message n'a pas pu être envoyé — veuillez réessayer dans quelques instants."
+    send_error: "Le message n'a pas pu être envoyé — veuillez réessayer dans quelques instants.",
+    whatsapp_connect_title: "Discutez avec nous sur WhatsApp",
+    whatsapp_connect_body: "Connectez votre WhatsApp une fois et notre assistant pourra répondre à vos questions sur votre dossier, vos documents, vos rendez-vous et vos factures — dans votre langue, directement dans votre chat.",
+    whatsapp_connect_btn: "Connecter WhatsApp",
   },
   ar: {
     nav_home: "الرئيسية", nav_documents: "المستندات", nav_messages: "الرسائل", nav_profile: "ملفي الشخصي", logout: "تسجيل الخروج", language: "اللغة",
@@ -103,6 +112,9 @@ export const DICT = {
     voice_pending_note: "[رسالة صوتية — التحويل التلقائي إلى نص قيد الانتظار. سيستمع المكتب إلى التسجيل.]",
     translating_ui: "جارٍ ترجمة الواجهة…", ui_all_languages: "تُترجم الواجهة تلقائياً إلى جميع اللغات.",
     no_client_profile: "لا يوجد ملف عميل مرتبط بهذا الحساب بعد. يُرجى الاتصال بالمكتب.",
-    send_error: "تعذر إرسال الرسالة — حاول مرة أخرى بعد لحظات."
+    send_error: "تعذر إرسال الرسالة — حاول مرة أخرى بعد لحظات.",
+    whatsapp_connect_title: "تحدث معنا عبر واتساب",
+    whatsapp_connect_body: "اربط واتساب مرة واحدة وسيتمكن مساعدنا من الإجابة عن أسئلتك بشأن ملفك ومستنداتك ومواعيدك وفواتيرك — بلغتك، مباشرة في محادثتك.",
+    whatsapp_connect_btn: "ربط واتساب",
   }
 };

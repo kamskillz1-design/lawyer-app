@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Languages, Send, Gavel, CheckCircle2, ListPlus, AlertTriangle, Mic } from "lucide-react";
+import { Languages, Send, Gavel, CheckCircle2, ListPlus, AlertTriangle, Mic, MessageCircle } from "lucide-react";
 import { SENSITIVITIES, sensitivityLabel } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
 import StatusBadge from "@/components/StatusBadge";
 import TranscribeManually from "@/components/communication/TranscribeManually";
+import WhatsAppReplyDialog from "@/components/communication/WhatsAppReplyDialog";
 
 const CONFIDENCE_HINT = {
   normal: "Traducción fiable",
@@ -25,6 +26,7 @@ export default function Communications() {
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState("");
   const [approved, setApproved] = useState(false);
+  const [waOpen, setWaOpen] = useState(false);
   const [me, setMe] = useState(null);
 
   const reload = async () => {
@@ -108,6 +110,12 @@ export default function Communications() {
     toast({ title: "Respuesta enviada", description: "El cliente la verá en su portal en su idioma." });
   };
 
+  const handleWaSent = () => {
+    reload();
+    select({ ...selected, status: "sent", reply_original: reply, reply_translation: draft });
+    toast({ title: "Respuesta enviada por WhatsApp", description: "El cliente la recibirá en su chat de WhatsApp." });
+  };
+
   const escalate = async () => {
     await base44.entities.Communication.update(selected.id, { sensitivity: "lawyer_review", status: "lawyer_pending" });
     reload();
@@ -145,6 +153,11 @@ export default function Communications() {
               className={`w-full text-start p-3 rounded-xl hover:bg-secondary transition-colors ${selected?.id === c.id ? "bg-secondary" : ""}`}>
               <p className="font-medium text-sm flex items-center justify-between gap-2 min-w-0">
                 <span className="truncate">{c.client_name}</span>
+                {c.channel === "whatsapp" && (
+                  <span className="inline-flex items-center gap-1 shrink-0 text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                    <MessageCircle className="w-3 h-3" /> WhatsApp
+                  </span>
+                )}
                 <StatusBadge value={c.status} />
               </p>
               <p className="text-xs text-muted-foreground truncate">{c.original_content}</p>
@@ -179,6 +192,11 @@ export default function Communications() {
                   <span className="font-medium text-foreground text-sm">{selected.client_name}</span>
                   <span>· {selected.channel} · {selected.original_language} · {formatDateTime(selected.created_date)}</span>
                   <StatusBadge value={selected.status} />
+                  {selected.channel === "whatsapp" && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                      <MessageCircle className="w-3 h-3" /> WhatsApp
+                    </span>
+                  )}
                   {needsLawyer && !approved && <span className="flex items-center gap-1 text-red-700 font-medium"><Gavel className="w-3 h-3" /> requiere aprobación letrada</span>}
                 </div>
 
@@ -247,10 +265,17 @@ export default function Communications() {
                       <CheckCircle2 className="w-4 h-4 me-1" /> Aprobar (letrada)
                     </Button>
                   )}
-                  <Button className="rounded-xl ms-auto" onClick={send}
-                    disabled={!draft.trim() || (needsLawyer && !approved)}>
-                    <Send className="w-4 h-4 me-1" /> Enviar al cliente
-                  </Button>
+                  {selected.channel === "whatsapp" ? (
+                    <Button className="rounded-xl ms-auto" onClick={() => setWaOpen(true)}
+                      disabled={!draft.trim() || (needsLawyer && !approved)}>
+                      <Send className="w-4 h-4 me-1" /> Enviar por WhatsApp
+                    </Button>
+                  ) : (
+                    <Button className="rounded-xl ms-auto" onClick={send}
+                      disabled={!draft.trim() || (needsLawyer && !approved)}>
+                      <Send className="w-4 h-4 me-1" /> Enviar al cliente
+                    </Button>
+                  )}
                 </div>
                 {draft && (
                   <div className="mt-3 p-4 rounded-xl bg-accent/50">
@@ -261,6 +286,11 @@ export default function Communications() {
               </div>
             </>
           )}
+          <WhatsAppReplyDialog
+            comm={selected} reply={reply} draft={draft}
+            approvedBy={me?.full_name || "Personal"}
+            open={waOpen} onOpenChange={setWaOpen} onSent={handleWaSent}
+          />
         </div>
       </div>
     </div>

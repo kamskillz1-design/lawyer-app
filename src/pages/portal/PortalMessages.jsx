@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Send, MessageCircle, Building2, Mic } from "lucide-react";
 import VoiceRecorder from "@/components/portal/VoiceRecorder";
+import WhatsAppConnectCard from "@/components/portal/WhatsAppConnectCard";
 import SpeakButton from "@/components/portal/SpeakButton";
 import { formatDateTime } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
@@ -104,6 +105,8 @@ export default function PortalMessages() {
     <div className="space-y-6" dir={getLanguage(lang)?.rtl ? "rtl" : "ltr"}>
       <h1 className="font-heading text-3xl font-bold">{t("messages_title")}</h1>
 
+      <WhatsAppConnectCard />
+
       <form onSubmit={send} className="card-soft p-5">
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t("message_placeholder")}
           className="w-full min-h-28 rounded-xl border border-input bg-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40" />
@@ -129,7 +132,7 @@ export default function PortalMessages() {
             <div key={c.id} className="card-soft p-4 space-y-3">
               <div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
-                  <MessageCircle className="w-3.5 h-3.5" /> {t("your_message")} · {formatDateTime(c.created_date)}
+                  <MessageCircle className="w-3.5 h-3.5" /> {c.channel === "whatsapp" ? "WhatsApp" : t("your_message")} · {formatDateTime(c.created_date)}
                 </p>
                 <div className="flex items-start gap-2">
                   <p className="text-sm bg-secondary/70 rounded-xl p-3 flex-1 min-w-0 break-words">{c.original_content}</p>
