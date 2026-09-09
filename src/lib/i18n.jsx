@@ -3,9 +3,20 @@ import { LANGUAGES, getLanguage } from "./languages";
 import { DICT } from "./dictionaries";
 import { base44 } from "@/api/base44Client";
 
-const I18nContext = createContext(null);
+// The context object is stored on the global scope: when this module is
+// re-executed by a live-code update (HMR), a fresh createContext() would
+// create a *different* context object, leaving consumers with a null context
+// (the fallback with a no-op setLang — the switcher appears "stuck" on
+// English and selections do nothing). Reusing the same object keeps the
+// provider and all consumers connected across updates.
+const globalScope = typeof window !== "undefined" ? window : globalThis;
+const I18nContext = globalScope.__lexpath_i18n_context__ ||
+  (globalScope.__lexpath_i18n_context__ = createContext(null));
 
-const cacheKey = (code) => `lexpath_dict_${code}`;
+// Versioned cache key: bumping the version discards every previously cached
+// dictionary (localStorage) and rebuilds them cleanly on demand.
+const DICT_CACHE_VERSION = 2;
+const cacheKey = (code) => `lexpath_dict_v${DICT_CACHE_VERSION}_${code}`;
 
 const STAGE_KEYS = {
   open_documents_requested: "s_docs_requested",
@@ -50,12 +61,17 @@ const readCachedDict = (code) => {
 };
 
 export function I18nProvider({ children }) {
-  const [lang, setLangState] = useState(() => localStorage.getItem("lexpath_lang") || "es");
+  const [lang, setLangState] = useState(() => {
+    const stored = localStorage.getItem("lexpath_lang");
+    return LANGUAGES.some((l) => l.code === stored) ? stored : "es";
+  });
   const [translating, setTranslating] = useState(false);
   const [, forceRefresh] = useState(0);
   const dictCache = useRef(new Map());
 
   const getDict = (code) => {
+    // English is the canonical source dictionary — never read it from cache.
+    if (code === "en") return DICT.en;
     if (dictCache.current.has(code)) return dictCache.current.get(code);
     const parsed = readCachedDict(code);
     if (parsed) {
@@ -76,8 +92,6 @@ export function I18nProvider({ children }) {
   const inflight = useRef(new Set());
 
   // Detect keys missing from a language's dictionary (vs. the English source)
-  // and translate only those, merging the result into the existing dictionary.
-  // This makes every new UI string available in all supported languages.
   const BATCH_SIZE = 100;
 
   // Detect keys missing from a language's dictionary (vs. the English source)
