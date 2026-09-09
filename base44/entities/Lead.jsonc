@@ -98,7 +98,7 @@
     "full_name"
   ],
   "rls": {
-    "create": {},
+    "create": null,
     "read": {
       "user_condition": {
         "role": "admin"

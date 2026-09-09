@@ -83,6 +83,11 @@
     "title"
   ],
   "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "read": {
       "$or": [
         {
@@ -95,15 +100,17 @@
         }
       ]
     },
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
     "update": {
-      "user_condition": {
-        "role": "admin"
-      }
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.portal_user_id": "{{user.id}}"
+        }
+      ]
     },
     "delete": {
       "user_condition": {
