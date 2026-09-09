@@ -22,6 +22,12 @@ const chaseTemplate = (title, number) =>
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
+    // Admin-only maintenance job: reject any non-admin / anonymous caller
+    // before touching service-role data access or LLM calls.
+    const user = await base44.auth.me().catch(() => null);
+    if (!user || user.role !== 'admin') {
+      return Response.json({ error: 'Forbidden' }, { status: 403 });
+    }
     const svc = base44.asServiceRole;
     const [matters, tasks, checklistItems, invoices, clients] = await Promise.all([
       svc.entities.Matter.list(),
