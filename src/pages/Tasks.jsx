@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Plus, CheckCircle2, Zap } from "lucide-react";
+import { Plus, CheckCircle2, Zap, Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import useTaskTitles from "@/hooks/useTaskTitles";
 import { TASK_TYPES, taskTypeLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
@@ -17,6 +18,7 @@ export default function Tasks() {
   const [filter, setFilter] = useState("open");
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ title: "", matter_id: "", due_date: "", priority: "medium", task_type: "general", owner: "" });
+  const titles = useTaskTitles(tasks);
 
   const reload = async () => {
     const [ts, ms] = await Promise.all([base44.entities.Task.list(), base44.entities.Matter.list()]);
@@ -91,7 +93,10 @@ export default function Tasks() {
           return (
             <div key={tk.id} className={`card-soft p-4 flex flex-wrap items-center gap-3 ${tk.status === "done" ? "opacity-60" : ""}`}>
               <div className="flex-1 min-w-52">
-                <p className={`font-medium text-sm ${tk.status === "done" ? "line-through" : ""}`}>{tk.title}</p>
+                <p className={`font-medium text-sm ${tk.status === "done" ? "line-through" : ""}`}>
+                  {titles[tk.id]?.title ?? tk.title}
+                  {titles[tk.id]?.translating && <Loader2 className="w-3 h-3 animate-spin inline ms-1 align-middle text-muted-foreground" />}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   {taskTypeLabel(tk.task_type, t)} · {tk.owner || t("unassigned")}
                   {tk.matter_id && <> · <Link to={`/matters/${tk.matter_id}`} className="hover:text-primary">{tk.matter_number}</Link></>}

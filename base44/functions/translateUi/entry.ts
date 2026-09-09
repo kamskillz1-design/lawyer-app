@@ -51,7 +51,7 @@ export default async function(req) {
     const properties = {};
     for (const k of missingKeys) properties[k] = { type: 'string' };
     const res = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: 'Translate each of these user-interface strings into the language with BCP 47 code "' + target + '". Return a JSON object with the exact same keys, where every value is the translated string. Use natural, concise, formal-but-friendly wording suitable for an immigration-law client portal. Keep brand names (Legal Lex, Bilbao, NIE, TIE) unchanged.\n\n' + JSON.stringify(missingStrings),
+      prompt: 'Translate each of these user-interface strings into the language with BCP 47 code "' + target + '". Return a JSON object with the exact same keys, where every value is the translated string. Use natural, concise, formal-but-friendly wording suitable for an immigration-law client portal. Keep brand names (Legal Lex, Bilbao, NIE, TIE) unchanged. Keep placeholders in curly braces, such as {n}, {matter}, {procedure}, {doc}, {client}, {invoice}, {action} or {owner}, exactly as written — the app fills them with data at display time.\n\n' + JSON.stringify(missingStrings),
       response_json_schema: { type: 'object', properties, required: missingKeys },
     });
     const translated = res && typeof res === 'object' ? res : null;

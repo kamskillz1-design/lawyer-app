@@ -56,6 +56,7 @@ export default async function(req) {
         owner: ownerOf(m), due_date: today,
         priority: d <= 1 ? 'urgent' : d <= 7 ? 'high' : 'medium',
         task_type: 'legal_deadline',
+        payload: JSON.stringify({ kind: 'deadline', days: d, matter_number: m.matter_number || '', procedure_type: m.procedure_type || '', next_action: m.next_action || '', next_action_owner: m.next_action_owner || '' }),
         instructions: 'Automatización: próximo paso «' + (m.next_action || '—') + '» (responsable: ' + (m.next_action_owner || '—') + ').',
       }, 'deadline|' + m.id + '|' + bucket);
     }
@@ -67,6 +68,7 @@ export default async function(req) {
       if (d == null || d >= 0) continue;
       addTask({
         title: 'Tarea vencida — escalar: ' + t.title,
+        payload: JSON.stringify({ kind: 'escalation', ref_title: t.title, days: -d }),
         matter_id: t.matter_id || '', client_id: t.client_id || '', matter_number: t.matter_number || '',
         owner: t.owner || '', due_date: today, priority: 'high', task_type: 'general',
         instructions: 'La tarea original venció hace ' + (-d) + ' día/s. Escalar al responsable o a la letrada.',
@@ -102,6 +104,7 @@ export default async function(req) {
       }
       addTask({
         title: 'Documento pendiente' + (d < 0 ? (' (venció hace ' + (-d) + ' día/s)') : ' (vence en <7 días)') + ': ' + item.title,
+        payload: JSON.stringify({ kind: 'checklist', doc_title: item.title, days: d, chase: instructions }),
         matter_id: item.matter_id, client_id: item.client_id, matter_number: item.matter_number,
         owner: '', due_date: today, priority: d < 0 ? 'high' : 'medium',
         task_type: 'client_document', instructions,
@@ -116,12 +119,14 @@ export default async function(req) {
       if (d < 0) {
         addTask({
           title: 'Factura vencida: ' + inv.number + ' — ' + inv.client_name,
+          payload: JSON.stringify({ kind: 'invoice_overdue', invoice: inv.number || '', client: inv.client_name || '' }),
           client_id: inv.client_id, owner: '', due_date: today, priority: 'high', task_type: 'payment',
           instructions: 'Gestionar el cobro pendiente y recordar al cliente desde el portal.',
         }, 'invoice|' + inv.id + '|overdue');
       } else if (d <= 7) {
         addTask({
           title: 'Factura vence en ' + d + ' día/s: ' + inv.number + ' — ' + inv.client_name,
+          payload: JSON.stringify({ kind: 'invoice_due', days: d, invoice: inv.number || '', client: inv.client_name || '' }),
           client_id: inv.client_id, owner: '', due_date: today, priority: 'medium', task_type: 'payment',
           instructions: 'Recordar el pago antes del vencimiento.',
         }, 'invoice|' + inv.id + '|due_soon');
@@ -136,6 +141,7 @@ export default async function(req) {
         const bucket = pd <= 30 ? '30' : '60';
         addTask({
           title: 'Permiso de residencia de ' + c.legal_name + ' caduca en ' + pd + ' días',
+          payload: JSON.stringify({ kind: 'permit', days: pd, client: c.legal_name || '' }),
           client_id: c.id, owner: c.assigned_caseworker || '', due_date: today,
           priority: pd <= 30 ? 'high' : 'medium', task_type: 'permit_expiry',
           instructions: 'Evaluar renovación y abrir expediente si procede.',
@@ -145,6 +151,7 @@ export default async function(req) {
       if (ppd != null && ppd >= 0 && ppd <= 30) {
         addTask({
           title: 'Pasaporte de ' + c.legal_name + ' caduca en ' + ppd + ' días',
+          payload: JSON.stringify({ kind: 'passport', days: ppd, client: c.legal_name || '' }),
           client_id: c.id, owner: c.assigned_caseworker || '', due_date: today,
           priority: ppd <= 7 ? 'high' : 'medium', task_type: 'passport_expiry',
           instructions: 'Pedir al cliente el pasaporte renovado para el expediente.',

@@ -33,6 +33,37 @@ export default async function(req) {
       return Response.json({ translation: result.translation, source_language_detected: result.source_language_detected, confidence: result.confidence || 'review_recommended', method: 'ai' });
     }
 
+    // Batch translation of short internal strings (e.g. staff-typed task titles).
+    // One LLM call per page: texts is a { id: text } map, the response maps the
+    // same ids to their translations.
+    if (mode === 'batch_translate') {
+      const { texts, source_language, target_language } = body;
+      if (!target_language || typeof target_language !== 'string') return Response.json({ error: 'Falta el idioma destino' }, { status: 400 });
+      if (!texts || typeof texts !== 'object' || Array.isArray(texts)) return Response.json({ error: 'Faltan los textos' }, { status: 400 });
+      const ids = Object.keys(texts);
+      if (!ids.length || ids.length > 100) return Response.json({ error: 'Número de textos no válido' }, { status: 400 });
+      for (const id of ids) {
+        if (typeof texts[id] !== 'string' || !texts[id].trim() || texts[id].length > 500) {
+          return Response.json({ error: 'Texto no válido: ' + id }, { status: 400 });
+        }
+      }
+      const prompt = 'Eres un traductor profesional para un despacho de extranjería en Bilbao, España. ' +
+        'Traduce cada uno de los siguientes textos del personal del despacho (idioma origen: ' + (source_language || 'es') +
+        ') al idioma con código BCP 47: ' + target_language + '. Son títulos de tareas internas (frases cortas). ' +
+        'Mantén sin cambios nombres propios, números de expediente y fechas. No añadas contenido nuevo. ' +
+        'Devuelve un objeto JSON con una única clave "translations" cuyo valor es un objeto con exactamente las mismas claves y la traducción fiel de cada texto.\n\n' + JSON.stringify(texts);
+      const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
+        prompt,
+        response_json_schema: {
+          type: 'object',
+          properties: { translations: { type: 'object' } },
+          required: ['translations'],
+        },
+      });
+      const translations = (result && result.translations && typeof result.translations === 'object') ? result.translations : {};
+      return Response.json({ translations });
+    }
+
     if (mode === 'draft_reply') {
       const { reply_text, target_language, context } = body;
       if (!reply_text || !target_language) return Response.json({ error: 'Faltan la respuesta o el idioma destino' }, { status: 400 });

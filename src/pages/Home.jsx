@@ -6,6 +6,7 @@ import { Inbox, AlarmClock, MessageCircle, Receipt, Users, FolderOpen, CheckSqua
 import { sensitivityLabel, leadLabel } from "@/lib/constants";
 import { formatDate, daysUntil, todayISO } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
+import useTaskTitles from "@/hooks/useTaskTitles";
 import StatusBadge from "@/components/StatusBadge";
 import CollapsibleSection from "@/components/dashboard/CollapsibleSection";
 import InlineMessage from "@/components/InlineMessage";
@@ -14,6 +15,7 @@ export default function Home() {
   const { t } = useI18n();
   const [data, setData] = useState(null);
   const today = todayISO();
+  const titles = useTaskTitles(data ? data.tasks : null);
 
   useEffect(() => {
     const load = async () => {
@@ -84,7 +86,7 @@ export default function Home() {
         <CollapsibleSection icon={AlarmClock} iconClass="text-red-600" title={t("dash_overdue")} count={overdue.length} contentClass="space-y-2">
           {overdue.slice(0, 5).map((tk) => (
             <Link key={tk.id} to={`/matters/${tk.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
-              <p className="font-medium break-words">{tk.title}</p>
+              <p className="font-medium break-words">{titles[tk.id]?.title ?? tk.title}</p>
               <p className="text-xs text-red-600 break-words">{tk.matter_number} · {t("was_due")} {formatDate(tk.due_date)} · {tk.owner || t("unassigned")}</p>
             </Link>
           ))}
@@ -139,7 +141,7 @@ export default function Home() {
           {autoReminders.slice(0, 6).map((tk) => (
             <Link key={tk.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium flex items-center gap-1.5 min-w-0">
-                <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{tk.title}</span>
+                <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{titles[tk.id]?.title ?? tk.title}</span>
               </p>
               <p className="text-xs text-muted-foreground break-words">{tk.owner || t("unassigned")} · {formatDate(tk.due_date)} · {tk.priority}</p>
             </Link>

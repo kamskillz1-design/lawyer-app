@@ -79,6 +79,12 @@
     },
     "source_ref": {
       "type": "string"
+    },
+    "payload": {
+      "type": "string"
+    },
+    "title_translations": {
+      "type": "string"
     }
   },
   "required": [
