@@ -78,18 +78,27 @@ export function I18nProvider({ children }) {
   // Detect keys missing from a language's dictionary (vs. the English source)
   // and translate only those, merging the result into the existing dictionary.
   // This makes every new UI string available in all supported languages.
-  const ensureComplete = (code) => {
+  const BATCH_SIZE = 100;
+
+  // Detect keys missing from a language's dictionary (vs. the English source)
+  // and translate only those, merging the result into the existing dictionary.
+  // The translateUi function rejects payloads over 200 strings, so the missing
+  // keys are sent in sequential batches of BATCH_SIZE; each batch is merged and
+  // persisted as it arrives. On a batch failure we stop — whatever was merged
+  // stays cached and the remaining keys retry on the next language switch.
+  const ensureComplete = async (code) => {
     if (code === "en" || inflight.current.has(code)) return;
     const dict = getDict(code) || {};
     const missing = Object.keys(DICT.en).filter((k) => !dict[k]);
     if (!missing.length) return;
     inflight.current.add(code);
     setTranslating(true);
-    const strings = {};
-    missing.forEach((k) => { strings[k] = DICT.en[k]; });
-    base44.functions
-      .invoke("translateUi", { target_language: code, strings })
-      .then((res) => {
+    try {
+      for (let i = 0; i < missing.length; i += BATCH_SIZE) {
+        const batch = missing.slice(i, i + BATCH_SIZE);
+        const strings = {};
+        batch.forEach((k) => { strings[k] = DICT.en[k]; });
+        const res = await base44.functions.invoke("translateUi", { target_language: code, strings });
         const added = res.data && res.data.dict;
         if (added && typeof added === "object") {
           const merged = { ...(getDict(code) || {}), ...added };
@@ -97,12 +106,13 @@ export function I18nProvider({ children }) {
           dictCache.current.set(code, merged);
           forceRefresh((n) => n + 1);
         }
-      })
-      .catch(() => {})
-      .finally(() => {
-        inflight.current.delete(code);
-        setTranslating(false);
-      });
+      }
+    } catch (e) {
+      // Stop on the first failed batch; remaining keys retry next switch.
+    } finally {
+      inflight.current.delete(code);
+      setTranslating(false);
+    }
   };
 
   const setLang = (code) => {
