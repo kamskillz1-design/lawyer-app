@@ -1,22 +1,24 @@
-// Staff-facing constants (staff workspace is in Spanish by design).
+// Staff-facing constants. `label` is the Spanish fallback; each entry also
+// carries a `key` resolved through the i18n dictionary, so every option
+// label follows the user's interface language.
 export const STAGES = [
-  { id: "new_enquiry", label: "Nueva consulta" },
-  { id: "consultation_pending", label: "Consulta pendiente" },
-  { id: "consultation_completed", label: "Consulta realizada" },
-  { id: "awaiting_engagement", label: "Pendiente encargo/pago" },
-  { id: "open_documents_requested", label: "Abierto — documentos solicitados" },
-  { id: "documents_under_review", label: "Documentos en revisión" },
-  { id: "preparation_in_progress", label: "Preparación en curso" },
-  { id: "awaiting_lawyer_approval", label: "Pendiente aprobación letrada" },
-  { id: "ready_to_submit", label: "Listo para presentar" },
-  { id: "submitted", label: "Presentado" },
-  { id: "awaiting_decision", label: "Esperando resolución" },
-  { id: "further_info_requested", label: "Requerimiento de información" },
-  { id: "resolution_received", label: "Resolución recibida" },
-  { id: "post_resolution", label: "Post-resolución / TIE / cita" },
-  { id: "completed", label: "Completado" },
-  { id: "closed_not_proceeding", label: "Cerrado — no instruye/no procede" },
-  { id: "archived", label: "Archivado" },
+  { id: "new_enquiry", key: "st_new_enquiry", label: "Nueva consulta" },
+  { id: "consultation_pending", key: "st_consultation_pending", label: "Consulta pendiente" },
+  { id: "consultation_completed", key: "st_consultation_completed", label: "Consulta realizada" },
+  { id: "awaiting_engagement", key: "st_awaiting_engagement", label: "Pendiente encargo/pago" },
+  { id: "open_documents_requested", key: "st_docs_requested", label: "Abierto — documentos solicitados" },
+  { id: "documents_under_review", key: "st_docs_review", label: "Documentos en revisión" },
+  { id: "preparation_in_progress", key: "st_prep", label: "Preparación en curso" },
+  { id: "awaiting_lawyer_approval", key: "st_lawyer_approval", label: "Pendiente aprobación letrada" },
+  { id: "ready_to_submit", key: "st_ready", label: "Listo para presentar" },
+  { id: "submitted", key: "st_submitted", label: "Presentado" },
+  { id: "awaiting_decision", key: "st_awaiting_decision", label: "Esperando resolución" },
+  { id: "further_info_requested", key: "st_further_info", label: "Requerimiento de información" },
+  { id: "resolution_received", key: "st_resolution", label: "Resolución recibida" },
+  { id: "post_resolution", key: "st_post_resolution", label: "Post-resolución / TIE / cita" },
+  { id: "completed", key: "st_completed", label: "Completado" },
+  { id: "closed_not_proceeding", key: "st_closed", label: "Cerrado — no instruye/no procede" },
+  { id: "archived", key: "st_archived", label: "Archivado" },
 ];
 
 export const PROCEDURE_FAMILIES = [
@@ -32,127 +34,131 @@ export const PROCEDURE_TYPES = [
 ];
 
 export const DOC_CATEGORIES = [
-  { id: "passport", label: "Pasaporte" },
-  { id: "visa", label: "Visado" },
-  { id: "nie_certificate", label: "Certificado NIE" },
-  { id: "tie_card", label: "Tarjeta TIE" },
-  { id: "residence_authorisation", label: "Autorización/resolución de residencia" },
-  { id: "birth_certificate", label: "Certificado de nacimiento" },
-  { id: "marriage_certificate", label: "Certificado de matrimonio" },
-  { id: "divorce_document", label: "Documento de divorcio/separación" },
-  { id: "criminal_record", label: "Certificado de antecedentes penales" },
-  { id: "padron_certificate", label: "Certificado de empadronamiento" },
-  { id: "proof_of_address", label: "Justificante de domicilio" },
-  { id: "employment_contract", label: "Contrato de trabajo" },
-  { id: "employer_evidence", label: "Acreditación del empleador" },
-  { id: "payslips", label: "Nóminas" },
-  { id: "social_security", label: "Prueba de Seguridad Social" },
-  { id: "tax_documentation", label: "Documentación fiscal" },
-  { id: "bank_statements", label: "Extractos bancarios" },
-  { id: "study_enrolment", label: "Matrícula / prueba de estudios" },
-  { id: "health_insurance", label: "Seguro de salud" },
-  { id: "medical_certificate", label: "Certificado médico" },
-  { id: "proof_of_funds", label: "Prueba de medios económicos" },
-  { id: "apostille", label: "Apostilla / legalización" },
-  { id: "sworn_translation", label: "Traducción jurada" },
-  { id: "power_of_attorney", label: "Poder de representación" },
-  { id: "official_form", label: "Modelo oficial" },
-  { id: "fee_receipt", label: "Justificante de tasas" },
-  { id: "submission_receipt", label: "Resguardo de presentación" },
-  { id: "authority_notification", label: "Notificación de la autoridad" },
-  { id: "appointment_confirmation", label: "Confirmación de cita" },
-  { id: "final_resolution", label: "Resolución final" },
-  { id: "internal_work_product", label: "Trabajo interno" },
-  { id: "other", label: "Otro" },
+  { id: "passport", key: "cat_passport", label: "Pasaporte" },
+  { id: "visa", key: "cat_visa", label: "Visado" },
+  { id: "nie_certificate", key: "cat_nie", label: "Certificado NIE" },
+  { id: "tie_card", key: "cat_tie", label: "Tarjeta TIE" },
+  { id: "residence_authorisation", key: "cat_residence", label: "Autorización/resolución de residencia" },
+  { id: "birth_certificate", key: "cat_birth", label: "Certificado de nacimiento" },
+  { id: "marriage_certificate", key: "cat_marriage", label: "Certificado de matrimonio" },
+  { id: "divorce_document", key: "cat_divorce", label: "Documento de divorcio/separación" },
+  { id: "criminal_record", key: "cat_criminal", label: "Certificado de antecedentes penales" },
+  { id: "padron_certificate", key: "cat_padron", label: "Certificado de empadronamiento" },
+  { id: "proof_of_address", key: "cat_address", label: "Justificante de domicilio" },
+  { id: "employment_contract", key: "cat_employment", label: "Contrato de trabajo" },
+  { id: "employer_evidence", key: "cat_employer", label: "Acreditación del empleador" },
+  { id: "payslips", key: "cat_payslips", label: "Nóminas" },
+  { id: "social_security", key: "cat_social", label: "Prueba de Seguridad Social" },
+  { id: "tax_documentation", key: "cat_tax", label: "Documentación fiscal" },
+  { id: "bank_statements", key: "cat_bank", label: "Extractos bancarios" },
+  { id: "study_enrolment", key: "cat_enrolment", label: "Matrícula / prueba de estudios" },
+  { id: "health_insurance", key: "cat_insurance", label: "Seguro de salud" },
+  { id: "medical_certificate", key: "cat_medical", label: "Certificado médico" },
+  { id: "proof_of_funds", key: "cat_funds", label: "Prueba de medios económicos" },
+  { id: "apostille", key: "cat_apostille", label: "Apostilla / legalización" },
+  { id: "sworn_translation", key: "cat_translation", label: "Traducción jurada" },
+  { id: "power_of_attorney", key: "cat_poower", label: "Poder de representación" },
+  { id: "official_form", key: "cat_form", label: "Modelo oficial" },
+  { id: "fee_receipt", key: "cat_fee", label: "Justificante de tasas" },
+  { id: "submission_receipt", key: "cat_submission", label: "Resguardo de presentación" },
+  { id: "authority_notification", key: "cat_notification", label: "Notificación de la autoridad" },
+  { id: "appointment_confirmation", key: "cat_appt_confirm", label: "Confirmación de cita" },
+  { id: "final_resolution", key: "cat_final", label: "Resolución final" },
+  { id: "internal_work_product", key: "cat_internal", label: "Trabajo interno" },
+  { id: "other", key: "cat_other", label: "Otro" },
 ];
 
 export const REVIEW_STATUSES = [
-  { id: "not_requested", label: "No solicitado" },
-  { id: "requested", label: "Solicitado" },
-  { id: "uploaded", label: "Subido" },
-  { id: "under_review", label: "En revisión" },
-  { id: "accepted", label: "Aceptado" },
-  { id: "needs_correction", label: "Requiere corrección" },
-  { id: "missing_page", label: "Falta página" },
-  { id: "incorrect_document", label: "Documento incorrecto" },
-  { id: "expired", label: "Caducado" },
-  { id: "replaced", label: "Sustituido" },
-  { id: "not_applicable", label: "No aplica" },
-  { id: "archived", label: "Archivado" },
+  { id: "not_requested", key: "rev_not_requested", label: "No solicitado" },
+  { id: "requested", key: "rev_requested", label: "Solicitado" },
+  { id: "uploaded", key: "rev_uploaded", label: "Subido" },
+  { id: "under_review", key: "rev_under_review", label: "En revisión" },
+  { id: "accepted", key: "rev_accepted", label: "Aceptado" },
+  { id: "needs_correction", key: "rev_correction", label: "Requiere corrección" },
+  { id: "missing_page", key: "rev_missing_page", label: "Falta página" },
+  { id: "incorrect_document", key: "rev_incorrect", label: "Documento incorrecto" },
+  { id: "expired", key: "rev_expired", label: "Caducado" },
+  { id: "replaced", key: "rev_replaced", label: "Sustituido" },
+  { id: "not_applicable", key: "rev_not_applicable", label: "No aplica" },
+  { id: "archived", key: "rev_archived", label: "Archivado" },
 ];
 
+// Checklist statuses reuse the existing cl_* dictionary keys.
 export const CHECKLIST_STATUSES = [
-  { id: "needed", label: "Pendiente" },
-  { id: "uploaded", label: "Subido" },
-  { id: "being_checked", label: "En revisión" },
-  { id: "accepted", label: "Aceptado" },
-  { id: "needs_correction", label: "Requiere corrección" },
-  { id: "not_required", label: "No necesario" },
+  { id: "needed", key: "cl_needed", label: "Pendiente" },
+  { id: "uploaded", key: "cl_uploaded", label: "Subido" },
+  { id: "being_checked", key: "cl_checking", label: "En revisión" },
+  { id: "accepted", key: "cl_accepted", label: "Aceptado" },
+  { id: "needs_correction", key: "cl_correction", label: "Requiere corrección" },
+  { id: "not_required", key: "cl_not_required", label: "No necesario" },
 ];
 
 export const TASK_TYPES = [
-  { id: "legal_deadline", label: "Plazo legal" },
-  { id: "authority_deadline", label: "Plazo de la autoridad" },
-  { id: "client_document", label: "Documento del cliente" },
-  { id: "internal_review", label: "Revisión interna" },
-  { id: "permit_expiry", label: "Caducidad de permiso" },
-  { id: "passport_expiry", label: "Caducidad de pasaporte" },
-  { id: "tie_expiry", label: "Caducidad de TIE" },
-  { id: "appointment", label: "Cita" },
-  { id: "payment", label: "Pago" },
-  { id: "renewal", label: "Renovación" },
-  { id: "archive_review", label: "Revisión de archivo" },
-  { id: "general", label: "General" },
+  { id: "legal_deadline", key: "tt_legal", label: "Plazo legal" },
+  { id: "authority_deadline", key: "tt_authority", label: "Plazo de la autoridad" },
+  { id: "client_document", key: "tt_client_doc", label: "Documento del cliente" },
+  { id: "internal_review", key: "tt_internal", label: "Revisión interna" },
+  { id: "permit_expiry", key: "tt_permit", label: "Caducidad de permiso" },
+  { id: "passport_expiry", key: "tt_passport", label: "Caducidad de pasaporte" },
+  { id: "tie_expiry", key: "tt_tie", label: "Caducidad de TIE" },
+  { id: "appointment", key: "tt_appointment", label: "Cita" },
+  { id: "payment", key: "tt_payment", label: "Pago" },
+  { id: "renewal", key: "tt_renewal", label: "Renovación" },
+  { id: "archive_review", key: "tt_archive", label: "Revisión de archivo" },
+  { id: "general", key: "tt_general", label: "General" },
 ];
 
 export const APPOINTMENT_TYPES = [
-  { id: "consultation", label: "Consulta inicial" },
-  { id: "document_review", label: "Revisión de documentos" },
-  { id: "submission_prep", label: "Preparación de presentación" },
-  { id: "office_followup", label: "Seguimiento en oficina" },
-  { id: "video", label: "Videollamada" },
-  { id: "authority", label: "Cita en autoridad (extranjería)" },
-  { id: "tie_fingerprint", label: "Cita policía — huellas/TIE" },
-  { id: "payment", label: "Cita de pagos" },
+  { id: "consultation", key: "at_consultation", label: "Consulta inicial" },
+  { id: "document_review", key: "at_doc_review", label: "Revisión de documentos" },
+  { id: "submission_prep", key: "at_submission", label: "Preparación de presentación" },
+  { id: "office_followup", key: "at_followup", label: "Seguimiento en oficina" },
+  { id: "video", key: "at_video", label: "Videollamada" },
+  { id: "authority", key: "at_authority", label: "Cita en autoridad (extranjería)" },
+  { id: "tie_fingerprint", key: "at_fingerprint", label: "Cita policía — huellas/TIE" },
+  { id: "payment", key: "at_payment", label: "Cita de pagos" },
 ];
 
 export const LEAD_STATUSES = [
-  { id: "new", label: "Nuevo" },
-  { id: "awaiting_response", label: "Esperando respuesta" },
-  { id: "appointment_proposed", label: "Cita propuesta" },
-  { id: "appointment_booked", label: "Cita reservada" },
-  { id: "consultation_completed", label: "Consulta realizada" },
-  { id: "awaiting_engagement", label: "Pendiente encargo" },
-  { id: "converted", label: "Convertido en cliente" },
-  { id: "not_proceeding", label: "No procede" },
-  { id: "referred_elsewhere", label: "Derivado" },
-  { id: "closed", label: "Cerrado" },
+  { id: "new", key: "ls_new", label: "Nuevo" },
+  { id: "awaiting_response", key: "ls_awaiting", label: "Esperando respuesta" },
+  { id: "appointment_proposed", key: "ls_proposed", label: "Cita propuesta" },
+  { id: "appointment_booked", key: "ls_booked", label: "Cita reservada" },
+  { id: "consultation_completed", key: "ls_consulted", label: "Consulta realizada" },
+  { id: "awaiting_engagement", key: "ls_engagement", label: "Pendiente encargo" },
+  { id: "converted", key: "ls_converted", label: "Convertido en cliente" },
+  { id: "not_proceeding", key: "ls_not_proceeding", label: "No procede" },
+  { id: "referred_elsewhere", key: "ls_referred", label: "Derivado" },
+  { id: "closed", key: "ls_closed", label: "Cerrado" },
 ];
 
 export const SENSITIVITIES = [
-  { id: "routine", label: "Rutina", review: "staff" },
-  { id: "important", label: "Importante", review: "staff" },
-  { id: "lawyer_review", label: "Requiere letrado", review: "lawyer" },
-  { id: "urgent", label: "Urgente", review: "lawyer" },
+  { id: "routine", key: "sens_routine", label: "Rutina", review: "staff" },
+  { id: "important", key: "sens_important", label: "Importante", review: "staff" },
+  { id: "lawyer_review", key: "sens_lawyer", label: "Requiere letrado", review: "lawyer" },
+  { id: "urgent", key: "sens_urgent", label: "Urgente", review: "lawyer" },
 ];
 
 export const INVOICE_STATUSES = [
-  { id: "draft", label: "Borrador" },
-  { id: "sent", label: "Enviada" },
-  { id: "paid", label: "Pagada" },
-  { id: "overdue", label: "Vencida" },
-  { id: "void", label: "Anulada" },
+  { id: "draft", key: "inv_draft", label: "Borrador" },
+  { id: "sent", key: "inv_sent", label: "Enviada" },
+  { id: "paid", key: "inv_paid", label: "Pagada" },
+  { id: "overdue", key: "inv_overdue", label: "Vencida" },
+  { id: "void", key: "inv_void", label: "Anulada" },
 ];
 
-export const stageLabel = (id) => (STAGES.find((s) => s.id === id) || {}).label || id;
-export const categoryLabel = (id) => (DOC_CATEGORIES.find((c) => c.id === id) || {}).label || id;
-export const reviewLabel = (id) => (REVIEW_STATUSES.find((s) => s.id === id) || {}).label || id;
-export const checklistLabel = (id) => (CHECKLIST_STATUSES.find((s) => s.id === id) || {}).label || id;
-export const taskTypeLabel = (id) => (TASK_TYPES.find((s) => s.id === id) || {}).label || id;
-export const appointmentLabel = (id) => (APPOINTMENT_TYPES.find((s) => s.id === id) || {}).label || id;
-export const leadLabel = (id) => (LEAD_STATUSES.find((s) => s.id === id) || {}).label || id;
-export const sensitivityLabel = (id) => (SENSITIVITIES.find((s) => s.id === id) || {}).label || id;
-export const invoiceLabel = (id) => (INVOICE_STATUSES.find((s) => s.id === id) || {}).label || id;
+// All label helpers accept an optional translate function; without one they
+// fall back to the Spanish label (previous behaviour).
+const byId = (list, id) => list.find((s) => s.id === id);
+export const stageLabel = (id, t) => { const s = byId(STAGES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const categoryLabel = (id, t) => { const s = byId(DOC_CATEGORIES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const reviewLabel = (id, t) => { const s = byId(REVIEW_STATUSES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const checklistLabel = (id, t) => { const s = byId(CHECKLIST_STATUSES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const taskTypeLabel = (id, t) => { const s = byId(TASK_TYPES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const appointmentLabel = (id, t) => { const s = byId(APPOINTMENT_TYPES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const leadLabel = (id, t) => { const s = byId(LEAD_STATUSES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const sensitivityLabel = (id, t) => { const s = byId(SENSITIVITIES, id); return s ? (t ? t(s.key) : s.label) : id; };
+export const invoiceLabel = (id, t) => { const s = byId(INVOICE_STATUSES, id); return s ? (t ? t(s.key) : s.label) : id; };
 
 // Staff hint shown next to AI translation confidence values.
 export const CONFIDENCE_HINT = {
@@ -160,4 +166,12 @@ export const CONFIDENCE_HINT = {
   review_recommended: "Revisar antes de enviar",
   uncertain: "Traducción dudosa — considerar traducción humana",
   human_required: "Requiere traducción/intérprete humano",
+};
+
+export const confidenceHint = (id, t) => {
+  if (t) {
+    const map = { normal: "conf_normal", review_recommended: "conf_review", uncertain: "conf_uncertain", human_required: "conf_human" };
+    return map[id] ? t(map[id]) : (CONFIDENCE_HINT[id] || id);
+  }
+  return CONFIDENCE_HINT[id] || id;
 };

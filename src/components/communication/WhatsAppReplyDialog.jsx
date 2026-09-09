@@ -5,10 +5,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const normalize = (s) => (s || "").replace(/\s+/g, " ").trim().toLowerCase();
 
 export default function WhatsAppReplyDialog({ comm, reply, draft, approvedBy, open, onOpenChange, onSent }) {
+  const { t } = useI18n();
   const [convs, setConvs] = useState(null);
   const [chosen, setChosen] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,7 +29,7 @@ export default function WhatsAppReplyDialog({ comm, reply, draft, approvedBy, op
         if (match) setChosen(match.id);
       } catch (e) {
         setConvs([]);
-        setError("No se pudieron cargar las conversaciones de WhatsApp.");
+        setError(t("wa_load_error"));
       }
     })();
   }, [open, comm]);
@@ -44,7 +46,7 @@ export default function WhatsAppReplyDialog({ comm, reply, draft, approvedBy, op
       onSent();
       onOpenChange(false);
     } catch (e) {
-      setError(`No se pudo enviar por WhatsApp (${e.message || e}). Revise la conexión del cliente o envíe la respuesta por el portal.`);
+      setError(`${t("wa_send_error")} (${e.message || e}). ${t("wa_send_error_hint")}`);
     } finally {
       setBusy(false);
     }
@@ -54,13 +56,13 @@ export default function WhatsAppReplyDialog({ comm, reply, draft, approvedBy, op
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Enviar por WhatsApp</DialogTitle>
+          <DialogTitle>{t("msg_send_whatsapp")}</DialogTitle>
           <DialogDescription>
-            Seleccione la conversación de WhatsApp de {comm?.client_name}. La respuesta se entregará en su chat, en su idioma.
+            {t("wa_desc1")} {comm?.client_name}. {t("wa_desc2")}
           </DialogDescription>
         </DialogHeader>
         {convs === null ? (
-          <p className="text-sm text-muted-foreground">Cargando conversaciones…</p>
+          <p className="text-sm text-muted-foreground">{t("wa_loading_convs")}</p>
         ) : (
           <div className="space-y-2 max-h-60 overflow-y-auto">
             {convs.map((c) => {
@@ -68,22 +70,20 @@ export default function WhatsAppReplyDialog({ comm, reply, draft, approvedBy, op
               return (
                 <button key={c.id} type="button" onClick={() => setChosen(c.id)}
                   className={`w-full text-start p-3 rounded-xl border transition-colors ${chosen === c.id ? "border-primary bg-accent/60" : "border-border hover:bg-secondary"}`}>
-                  <p className="text-sm font-medium truncate">{c.metadata?.name || comm?.client_name || "Cliente"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{lastUser?.content || "Sin mensajes"}</p>
+                  <p className="text-sm font-medium truncate">{c.metadata?.name || comm?.client_name || t("comm_client")}</p>
+                  <p className="text-xs text-muted-foreground truncate">{lastUser?.content || t("wa_no_messages")}</p>
                 </button>
               );
             })}
             {!convs.length && (
-              <p className="text-sm text-muted-foreground">
-                No hay conversaciones de WhatsApp. El cliente debe conectar su WhatsApp desde el portal (Mensajes → Conectar WhatsApp).
-              </p>
+              <p className="text-sm text-muted-foreground">{t("wa_none")}</p>
             )}
           </div>
         )}
         {error && <p className="text-xs text-red-700">{error}</p>}
         <DialogFooter>
           <Button onClick={send} disabled={!chosen || busy || !draft?.trim()}>
-            <Send className="w-4 h-4 me-1" /> {busy ? "Enviando…" : "Enviar"}
+            <Send className="w-4 h-4 me-1" /> {busy ? t("sending") : t("send")}
           </Button>
         </DialogFooter>
       </DialogContent>

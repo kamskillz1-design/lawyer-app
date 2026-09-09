@@ -5,11 +5,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, AlertTriangle, CheckCircle2, CloudOff } from "lucide-react";
 
-// Confirmación de exportación a Dropbox con estados: confirmar, subiendo,
-// Dropbox no conectada, error (reintentable) y resumen de éxito.
+// Dropbox export confirmation with phases: confirm, uploading,
+// Dropbox not connected, retryable error and success summary.
 export default function ExportArchiveDialog({ open, onOpenChange, client, onDone }) {
+  const { t } = useI18n();
   const [phase, setPhase] = useState("confirm");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
@@ -32,7 +34,7 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
       onDone && onDone(data);
     } catch (e) {
       const payload = e?.response?.data || {};
-      setError(payload.error || e.message || "Error inesperado durante la exportación.");
+      setError(payload.error || e.message || t("export_error_default"));
       setFailedFiles(payload.failed || []);
       setPhase("error");
     }
@@ -42,10 +44,9 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
     <Dialog open={open} onOpenChange={close}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Exportar al archivo de Dropbox</DialogTitle>
+          <DialogTitle>{t("export_title")}</DialogTitle>
           <DialogDescription>
-            {client?.legal_name} — se creará primero una copia completa en Dropbox y, solo tras
-            verificar la subida, se eliminarán los datos de la aplicación.
+            {client?.legal_name} {t("export_desc")}
           </DialogDescription>
         </DialogHeader>
 
@@ -53,18 +54,12 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
           <div className="space-y-3">
             <Alert variant="destructive" className="rounded-xl">
               <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                Esta acción es <strong>irreversible</strong>. Se exportarán todos los documentos,
-                un resumen en PDF y una copia de seguridad JSON a la carpeta
-                <span className="break-all"> /GlobalLaw OS/Archivo/…</span> de la despacho. Después
-                se purgarán expedientes, documentos, comunicaciones, citas, facturas y tareas, y el
-                cliente quedará reducido a un registro mínimo con la referencia al archivo.
-              </AlertDescription>
+              <AlertDescription>{t("export_warning")}</AlertDescription>
             </Alert>
             <DialogFooter>
-              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>Cancelar</Button>
+              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>{t("cancel")}</Button>
               <Button variant="destructive" className="rounded-xl" onClick={run}>
-                Exportar y purgar
+                {t("export_run_btn")}
               </Button>
             </DialogFooter>
           </div>
@@ -73,8 +68,8 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
         {phase === "busy" && (
           <div className="flex flex-col items-center gap-2 py-8 text-center">
             <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-sm font-medium">Subiendo el expediente a Dropbox…</p>
-            <p className="text-xs text-muted-foreground">No cierre esta ventana. No se elimina nada hasta verificar cada archivo.</p>
+            <p className="text-sm font-medium">{t("export_uploading_msg")}</p>
+            <p className="text-xs text-muted-foreground">{t("export_uploading_note")}</p>
           </div>
         )}
 
@@ -82,14 +77,10 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
           <div className="space-y-3">
             <Alert className="rounded-xl">
               <CloudOff className="h-4 w-4" />
-              <AlertDescription>
-                La cuenta de Dropbox de la despacho aún no está conectada a la aplicación.
-                Conéctela desde la configuración de integraciones y vuelva a intentarlo.
-                No se ha eliminado ningún dato.
-              </AlertDescription>
+              <AlertDescription>{t("export_not_connected")}</AlertDescription>
             </Alert>
             <DialogFooter>
-              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>Entendido</Button>
+              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>{t("export_understood")}</Button>
             </DialogFooter>
           </div>
         )}
@@ -108,8 +99,8 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
               </AlertDescription>
             </Alert>
             <DialogFooter>
-              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>Cerrar</Button>
-              <Button className="rounded-xl" onClick={run}>Reintentar</Button>
+              <Button variant="outline" className="rounded-xl" onClick={() => close(false)}>{t("close")}</Button>
+              <Button className="rounded-xl" onClick={run}>{t("retry")}</Button>
             </DialogFooter>
           </div>
         )}
@@ -119,15 +110,15 @@ export default function ExportArchiveDialog({ open, onOpenChange, client, onDone
             <Alert className="rounded-xl border-emerald-200 bg-emerald-50 text-emerald-800">
               <CheckCircle2 className="h-4 w-4" />
               <AlertDescription>
-                Exportación completada y datos purgados de la aplicación.
+                {t("export_done_msg")}
                 <div className="mt-2 text-xs">
-                  <p className="break-all"><strong>Carpeta Dropbox:</strong> {result.folder}</p>
-                  <p>{result.documents} documento(s) subido(s) · {result.records?.matters ?? 0} expediente(s) purgado(s)</p>
+                  <p className="break-all"><strong>{t("export_folder_lbl")}</strong> {result.folder}</p>
+                  <p>{result.documents} {t("export_doc_unit")} · {result.records?.matters ?? 0} {t("export_matter_unit")}</p>
                 </div>
               </AlertDescription>
             </Alert>
             <DialogFooter>
-              <Button className="rounded-xl" onClick={() => close(false)}>Cerrar</Button>
+              <Button className="rounded-xl" onClick={() => close(false)}>{t("close")}</Button>
             </DialogFooter>
           </div>
         )}

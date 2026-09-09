@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { DOC_CATEGORIES } from "@/lib/constants";
+import { useI18n } from "@/lib/i18n";
 import { Loader2, Upload } from "lucide-react";
 import { inputClass as inputCls } from "@/lib/formStyles";
 const EMPTY = {
@@ -12,6 +13,7 @@ const EMPTY = {
 };
 
 export default function UploadDocumentDialog({ open, onOpenChange, onUploaded }) {
+  const { t } = useI18n();
   const [clients, setClients] = useState([]);
   const [matters, setMatters] = useState([]);
   const [checklist, setChecklist] = useState([]);
@@ -49,7 +51,7 @@ export default function UploadDocumentDialog({ open, onOpenChange, onUploaded })
     e.preventDefault();
     setError("");
     if (!form.client_id || !form.title.trim() || !form.category || !file) {
-      setError("Complete el cliente, el título, la categoría y seleccione un archivo.");
+      setError(t("doc_form_error"));
       return;
     }
     setSaving(true);
@@ -71,7 +73,7 @@ export default function UploadDocumentDialog({ open, onOpenChange, onUploaded })
       onUploaded();
       onOpenChange(false);
     } catch (err) {
-      setError("No se pudo subir el documento. Inténtelo de nuevo.");
+      setError(t("doc_upload_error"));
     } finally {
       setSaving(false);
     }
@@ -81,21 +83,21 @@ export default function UploadDocumentDialog({ open, onOpenChange, onUploaded })
     <Dialog open={open} onOpenChange={(o) => !saving && onOpenChange(o)}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-heading">Subir documento</DialogTitle>
+          <DialogTitle className="font-heading">{t("upload_doc_btn")}</DialogTitle>
         </DialogHeader>
         <form onSubmit={submit} className="space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="doc-client">Cliente *</Label>
+              <Label htmlFor="doc-client">{t("ph_client_required")}</Label>
               <select id="doc-client" className={inputCls} value={form.client_id} onChange={(e) => setClient(e.target.value)}>
-                <option value="">Seleccione…</option>
+                <option value="">{t("doc_select")}</option>
                 {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="doc-matter">Expediente</Label>
+              <Label htmlFor="doc-matter">{t("matters_title")}</Label>
               <select id="doc-matter" className={inputCls} value={form.matter_id} onChange={(e) => setMatter(e.target.value)} disabled={!form.client_id}>
-                <option value="">Sin expediente</option>
+                <option value="">{t("no_matter_opt")}</option>
                 {matters.map((m) => <option key={m.id} value={m.id}>{m.matter_number || m.procedure_type}</option>)}
               </select>
             </div>
@@ -103,56 +105,56 @@ export default function UploadDocumentDialog({ open, onOpenChange, onUploaded })
 
           {form.matter_id && (
             <div className="space-y-1">
-              <Label htmlFor="doc-checklist">Elemento del checklist (opcional)</Label>
+              <Label htmlFor="doc-checklist">{t("doc_checklist_item")}</Label>
               <select id="doc-checklist" className={inputCls} value={form.checklist_item_id}
                 onChange={(e) => setForm((f) => ({ ...f, checklist_item_id: e.target.value }))}>
-                <option value="">No vincular</option>
+                <option value="">{t("doc_no_link")}</option>
                 {checklist.map((i) => <option key={i.id} value={i.id}>{i.title}</option>)}
               </select>
             </div>
           )}
 
           <div className="space-y-1">
-            <Label htmlFor="doc-title">Título *</Label>
+            <Label htmlFor="doc-title">{t("doc_title_lbl")}</Label>
             <input id="doc-title" className={inputCls} value={form.title} maxLength={200}
-              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="p. ej. Resolución de arraigo social" />
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={t("doc_title_ph")} />
           </div>
 
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="space-y-1 sm:col-span-1">
-              <Label htmlFor="doc-category">Categoría *</Label>
+              <Label htmlFor="doc-category">{t("doc_category_lbl")}</Label>
               <select id="doc-category" className={inputCls} value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
-                <option value="">Seleccione…</option>
-                {DOC_CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+                <option value="">{t("doc_select")}</option>
+                {DOC_CATEGORIES.map((c) => <option key={c.id} value={c.id}>{t(c.key)}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="doc-issue">Fecha de emisión</Label>
+              <Label htmlFor="doc-issue">{t("doc_issue_lbl")}</Label>
               <input id="doc-issue" type="date" className={inputCls} value={form.issue_date}
                 onChange={(e) => setForm((f) => ({ ...f, issue_date: e.target.value }))} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="doc-expiry">Fecha de caducidad</Label>
+              <Label htmlFor="doc-expiry">{t("doc_expiry_lbl")}</Label>
               <input id="doc-expiry" type="date" className={inputCls} value={form.expiry_date}
                 onChange={(e) => setForm((f) => ({ ...f, expiry_date: e.target.value }))} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="doc-visibility">Visibilidad</Label>
+            <Label htmlFor="doc-visibility">{t("doc_visibility")}</Label>
             <select id="doc-visibility" className={inputCls} value={form.visibility}
               onChange={(e) => setForm((f) => ({ ...f, visibility: e.target.value }))}>
-              <option value="staff">Solo personal</option>
-              <option value="client">Visible al cliente (portal)</option>
+              <option value="staff">{t("doc_vis_staff")}</option>
+              <option value="client">{t("doc_vis_client")}</option>
             </select>
             {noPortalLinked && (
-              <p className="text-xs text-amber-700">Este cliente no tiene cuenta de portal vinculada; el documento no aparecerá en su portal.</p>
+              <p className="text-xs text-amber-700">{t("doc_no_portal_warn")}</p>
             )}
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="doc-file">Archivo (PDF, JPG o PNG) *</Label>
+            <Label htmlFor="doc-file">{t("doc_file_lbl")}</Label>
             <input id="doc-file" type="file" accept=".pdf,.jpg,.jpeg,.png" className="w-full text-sm"
               onChange={(e) => setFile(e.target.files?.[0] || null)} disabled={saving} />
             {file && <p className="text-xs text-muted-foreground truncate">{file.name}</p>}
@@ -161,10 +163,10 @@ export default function UploadDocumentDialog({ open, onOpenChange, onUploaded })
           {error && <p className="text-xs text-destructive">{error}</p>}
 
           <DialogFooter className="gap-2 mt-2">
-            <Button type="button" variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)} disabled={saving}>Cancelar</Button>
+            <Button type="button" variant="outline" className="rounded-xl" onClick={() => onOpenChange(false)} disabled={saving}>{t("cancel")}</Button>
             <Button type="submit" className="rounded-xl" disabled={saving || !file || !form.client_id || !form.title.trim() || !form.category}>
               {saving ? <Loader2 className="w-4 h-4 me-1 animate-spin" /> : <Upload className="w-4 h-4 me-1" />}
-              {saving ? "Subiendo…" : "Subir documento"}
+              {saving ? t("uploading") : t("upload_doc_btn")}
             </Button>
           </DialogFooter>
         </form>

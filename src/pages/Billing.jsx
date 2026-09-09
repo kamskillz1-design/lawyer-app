@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { Plus, CheckCircle2 } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { invoiceLabel } from "@/lib/constants";
 import { formatDate, formatMoney, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
@@ -13,6 +14,7 @@ import InlineMessage from "@/components/InlineMessage";
 
 export default function Billing() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [invoices, setInvoices] = useState(null);
   const [clients, setClients] = useState([]);
   const [open, setOpen] = useState(false);
@@ -40,7 +42,7 @@ export default function Billing() {
     setOpen(false);
     setForm({ client_id: "", service_description: "", amount: "", government_fees: "", expenses: "", issue_date: "", due_date: "" });
     reload();
-    toast({ title: "Factura creada y visible en el portal del cliente" });
+    toast({ title: t("toast_invoice_created") });
   };
 
   const setStatus = async (inv, status) => {
@@ -56,35 +58,35 @@ export default function Billing() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-3xl font-bold">Facturación</h1>
+        <h1 className="font-heading text-3xl font-bold">{t("billing_title")}</h1>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> Nueva factura</Button></DialogTrigger>
+          <DialogTrigger asChild><Button className="rounded-xl"><Plus className="w-4 h-4 me-1" /> {t("new_invoice")}</Button></DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Nueva factura</DialogTitle></DialogHeader>
+            <DialogHeader><DialogTitle>{t("new_invoice")}</DialogTitle></DialogHeader>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <select className={input} value={form.client_id} onChange={(e) => setForm({ ...form, client_id: e.target.value })}>
-                <option value="">Cliente *</option>
+                <option value="">{t("ph_client_required")}</option>
                 {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
               </select>
-              <input className={input} placeholder="Honorarios (€)" type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
-              <input className={input} placeholder="Tasas oficiales (€)" type="number" value={form.government_fees} onChange={(e) => setForm({ ...form, government_fees: e.target.value })} />
-              <input className={input} placeholder="Gastos externos (€)" type="number" value={form.expenses} onChange={(e) => setForm({ ...form, expenses: e.target.value })} />
+              <input className={input} placeholder={t("ph_fees")} type="number" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+              <input className={input} placeholder={t("ph_gov_fees")} type="number" value={form.government_fees} onChange={(e) => setForm({ ...form, government_fees: e.target.value })} />
+              <input className={input} placeholder={t("ph_expenses")} type="number" value={form.expenses} onChange={(e) => setForm({ ...form, expenses: e.target.value })} />
               <input type="date" className={input} value={form.issue_date} onChange={(e) => setForm({ ...form, issue_date: e.target.value })} />
               <input type="date" className={input} value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
-              <input className={input + " sm:col-span-2"} placeholder="Concepto del servicio" value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
+              <input className={input + " sm:col-span-2"} placeholder={t("ph_concept")} value={form.service_description} onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
             </div>
-            <Button className="w-full rounded-xl mt-2" onClick={create} disabled={!form.client_id || !form.amount}>Emitir</Button>
+            <Button className="w-full rounded-xl mt-2" onClick={create} disabled={!form.client_id || !form.amount}>{t("issue_btn")}</Button>
           </DialogContent>
         </Dialog>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="card-soft p-5">
-          <p className="text-xs text-muted-foreground">Pendiente de cobro</p>
+          <p className="text-xs text-muted-foreground">{t("outstanding_lbl")}</p>
           <p className="font-heading text-2xl font-bold text-red-700">{formatMoney(outstandingTotal)}</p>
         </div>
         <div className="card-soft p-5">
-          <p className="text-xs text-muted-foreground">Cobrado</p>
+          <p className="text-xs text-muted-foreground">{t("collected_lbl")}</p>
           <p className="font-heading text-2xl font-bold text-emerald-700">{formatMoney(paidTotal)}</p>
         </div>
       </div>
@@ -93,8 +95,8 @@ export default function Billing() {
         <table className="w-full text-sm">
           <thead>
             <tr className="text-xs text-muted-foreground border-b">
-              <th className="p-3 text-start">Factura</th><th className="p-3 text-start">Cliente</th><th className="p-3 text-start">Concepto</th>
-              <th className="p-3 text-start">Total</th><th className="p-3 text-start">Vencimiento</th><th className="p-3 text-start">Estado</th><th className="p-3"></th>
+              <th className="p-3 text-start">{t("th_invoice")}</th><th className="p-3 text-start">{t("clients_title")}</th><th className="p-3 text-start">{t("th_concept")}</th>
+              <th className="p-3 text-start">{t("th_total")}</th><th className="p-3 text-start">{t("th_due")}</th><th className="p-3 text-start">{t("th_status")}</th><th className="p-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -105,17 +107,17 @@ export default function Billing() {
                 <td className="p-3 text-xs">{inv.service_description || "—"}</td>
                 <td className="p-3">{formatMoney(inv.total)}</td>
                 <td className="p-3 text-xs">{formatDate(inv.due_date)}</td>
-                <td className="p-3"><StatusBadge value={inv.status} label={invoiceLabel(inv.status)} /></td>
+                <td className="p-3"><StatusBadge value={inv.status} label={invoiceLabel(inv.status, t)} /></td>
                 <td className="p-3">
                   {inv.status !== "paid" && (
                     <Button size="sm" variant="outline" className="rounded-lg" onClick={(e) => { e.stopPropagation(); setStatus(inv, "paid"); }}>
-                      <CheckCircle2 className="w-3.5 h-3.5 me-1" /> Cobrada
+                      <CheckCircle2 className="w-3.5 h-3.5 me-1" /> {t("paid_btn")}
                     </Button>
                   )}
                 </td>
               </tr>
             ))}
-            {!invoices.length && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">Sin facturas.</td></tr>}
+            {!invoices.length && <tr><td colSpan={7} className="p-6 text-center text-muted-foreground">{t("no_invoices")}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -125,19 +127,19 @@ export default function Billing() {
           <div key={inv.id} className="card-soft p-4 space-y-1 cursor-pointer" onClick={() => setDetail(inv)}>
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium">{inv.number}</p>
-              <StatusBadge value={inv.status} label={invoiceLabel(inv.status)} />
+              <StatusBadge value={inv.status} label={invoiceLabel(inv.status, t)} />
             </div>
             <p className="text-sm break-words">{inv.client_name}</p>
             <p className="text-xs text-muted-foreground break-words">{inv.service_description || "—"}</p>
-            <p className="text-sm font-medium">{formatMoney(inv.total)} · vence {formatDate(inv.due_date)}</p>
+            <p className="text-sm font-medium">{formatMoney(inv.total)} · {t("due_word")} {formatDate(inv.due_date)}</p>
             {inv.status !== "paid" && (
               <Button size="sm" variant="outline" className="rounded-lg" onClick={(e) => { e.stopPropagation(); setStatus(inv, "paid"); }}>
-                <CheckCircle2 className="w-3.5 h-3.5 me-1" /> Cobrada
+                <CheckCircle2 className="w-3.5 h-3.5 me-1" /> {t("paid_btn")}
               </Button>
             )}
           </div>
         ))}
-        {!invoices.length && <p className="text-sm text-muted-foreground p-4">Sin facturas.</p>}
+        {!invoices.length && <p className="text-sm text-muted-foreground p-4">{t("no_invoices")}</p>}
       </div>
 
       <InvoiceDetailDialog open={!!detail} onOpenChange={(v) => !v && setDetail(null)}

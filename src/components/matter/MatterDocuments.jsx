@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { Upload, Download, CheckCircle2 } from "lucide-react";
+import { Upload, Download } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 import { categoryLabel, REVIEW_STATUSES, reviewLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
@@ -9,6 +10,7 @@ import { inputClass as input } from "@/lib/formStyles";
 import InlineMessage from "@/components/InlineMessage";
 
 export default function MatterDocuments({ matter }) {
+  const { t } = useI18n();
   const [docs, setDocs] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [reviewNotes, setReviewNotes] = useState({});
@@ -23,7 +25,7 @@ export default function MatterDocuments({ matter }) {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const category = prompt("Categoría del documento (dejar vacío = otro):", "");
+      const category = prompt(t("doc_category_prompt"), "");
       const doc = await base44.entities.Document.create({
         title: file.name, client_id: matter.client_id, client_name: matter.client_name,
         matter_id: matter.id, matter_number: matter.matter_number, portal_user_id: matter.portal_user_id || "",
@@ -52,15 +54,15 @@ export default function MatterDocuments({ matter }) {
     reload();
   };
 
-  if (!docs) return <InlineMessage className="text-sm" text="Cargando documentos…" />;
+  if (!docs) return <InlineMessage className="text-sm" text={t("loading_docs")} />;
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">{docs.length} documentos · Revisión: {todayISO()}</p>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-muted-foreground">{docs.length} {t("docs_word")} · {t("review_word")} {todayISO()}</p>
         <input ref={fileRef} type="file" id="matter-doc-upload" className="hidden" onChange={upload} />
         <Button size="sm" className="rounded-lg" onClick={() => fileRef.current?.click()} disabled={uploading}>
-          <Upload className="w-4 h-4 me-1" /> {uploading ? "Subiendo…" : "Subir documento"}
+          <Upload className="w-4 h-4 me-1" /> {uploading ? t("uploading") : t("upload_doc_btn")}
         </Button>
       </div>
 
@@ -72,28 +74,28 @@ export default function MatterDocuments({ matter }) {
               <div className="flex-1 min-w-52">
                 <p className="font-medium text-sm">{doc.title}</p>
                 <p className="text-xs text-muted-foreground">
-                  {categoryLabel(doc.category)} · {doc.source === "client" ? "cliente" : doc.source}
-                  {doc.expiry_date ? ` · caduca ${formatDate(doc.expiry_date)}` : ""}
-                  {expired && <span className="text-red-600 font-medium"> · CADUCADO</span>}
+                  {categoryLabel(doc.category, t)} · {doc.source === "client" ? t("comm_client") : doc.source}
+                  {doc.expiry_date ? ` · ${t("expires_word")} ${formatDate(doc.expiry_date)}` : ""}
+                  {expired && <span className="text-red-600 font-medium"> · {t("doc_expired")}</span>}
                 </p>
               </div>
-              <StatusBadge value={doc.review_status} label={reviewLabel(doc.review_status)} />
-              <a href={doc.file_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg hover:bg-secondary text-muted-foreground" title="Ver/descargar">
+              <StatusBadge value={doc.review_status} label={reviewLabel(doc.review_status, t)} />
+              <a href={doc.file_url} target="_blank" rel="noreferrer" className="p-2 rounded-lg hover:bg-secondary text-muted-foreground" title={t("view_download")}>
                 <Download className="w-4 h-4" />
               </a>
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-3">
-              <input className={input + " flex-1 min-w-40 h-8 text-xs"} placeholder="Nota de revisión (visible para el cliente en correcciones)"
+              <input className={input + " flex-1 min-w-40 h-8 text-xs"} placeholder={t("ph_review_note_client")}
                 value={reviewNotes[doc.id] ?? doc.review_notes ?? ""} onChange={(e) => setReviewNotes({ ...reviewNotes, [doc.id]: e.target.value })} />
               <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={doc.review_status}
                 onChange={(e) => review(doc, e.target.value)}>
-                {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{t(s.key)}</option>)}
               </select>
             </div>
           </div>
         );
       })}
-      {!docs.length && <p className="text-sm text-muted-foreground">Sin documentos. El cliente también puede subirlos desde su portal.</p>}
+      {!docs.length && <p className="text-sm text-muted-foreground">{t("no_docs_matter")}</p>}
     </div>
   );
 }

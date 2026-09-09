@@ -3,11 +3,13 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import StatusBadge from "@/components/StatusBadge";
+import { useI18n } from "@/lib/i18n";
 import { formatDate, formatMoney, todayISO } from "@/lib/format";
 import { invoiceLabel } from "@/lib/constants";
 import { inputClass as input, labelClass as label } from "@/lib/formStyles";
 
 export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDone }) {
+  const { t } = useI18n();
   const [form, setForm] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -38,7 +40,7 @@ export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDon
       await base44.entities.Invoice.update(invoice.id, data);
       onOpenChange(false); onDone(msg);
     } catch (e) {
-      setError(e?.message || "No se pudo actualizar la factura.");
+      setError(e?.message || t("invoice_error"));
     } finally { setBusy(false); }
   };
 
@@ -51,18 +53,18 @@ export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDon
     issue_date: form.issue_date,
     due_date: form.due_date,
     notes: form.notes,
-  }, "Factura actualizada");
+  }, t("toast_invoice_updated"));
 
   const markPaid = () => update({
     status: "paid", paid_date: todayISO(), payment_method: form.payment_method,
-  }, "Factura cobrada");
+  }, t("toast_invoice_paid"));
 
   const voidInvoice = () => {
-    if (!window.confirm("¿Anular esta factura?")) return;
-    update({ status: "void" }, "Factura anulada");
+    if (!window.confirm(t("confirm_void"))) return;
+    update({ status: "void" }, t("toast_invoice_void"));
   };
 
-  const reopen = () => update({ status: "draft", paid_date: "" }, "Factura reabierta");
+  const reopen = () => update({ status: "draft", paid_date: "" }, t("toast_invoice_reopened"));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,49 +72,49 @@ export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDon
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
             {invoice.number} — {formatMoney(total)}
-            <StatusBadge value={invoice.status} label={invoiceLabel(invoice.status)} />
+            <StatusBadge value={invoice.status} label={invoiceLabel(invoice.status, t)} />
           </DialogTitle>
           <DialogDescription>
-            {invoice.client_name}{invoice.paid_date ? ` · cobrada el ${formatDate(invoice.paid_date)}` : ""}
+            {invoice.client_name}{invoice.paid_date ? ` · ${t("paid_on_word")} ${formatDate(invoice.paid_date)}` : ""}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
           {editable ? (
             <>
-              <label className={label}>Concepto
+              <label className={label}>{t("inv_concept")}
                 <input className={input} value={form.service_description}
                   onChange={(e) => setForm({ ...form, service_description: e.target.value })} />
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <label className={label}>Honorarios (€)
+                <label className={label}>{t("inv_fees")}
                   <input type="number" className={input} value={form.amount}
                     onChange={(e) => setForm({ ...form, amount: e.target.value })} />
                 </label>
-                <label className={label}>Tasas (€)
+                <label className={label}>{t("inv_gov_fees")}
                   <input type="number" className={input} value={form.government_fees}
                     onChange={(e) => setForm({ ...form, government_fees: e.target.value })} />
                 </label>
-                <label className={label}>Gastos (€)
+                <label className={label}>{t("inv_expenses")}
                   <input type="number" className={input} value={form.expenses}
                     onChange={(e) => setForm({ ...form, expenses: e.target.value })} />
                 </label>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <label className={label}>Fecha de emisión
+                <label className={label}>{t("inv_issue_date")}
                   <input type="date" className={input} value={form.issue_date}
                     onChange={(e) => setForm({ ...form, issue_date: e.target.value })} />
                 </label>
-                <label className={label}>Vencimiento
+                <label className={label}>{t("inv_due_date")}
                   <input type="date" className={input} value={form.due_date}
                     onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
                 </label>
               </div>
-              <label className={label}>Notas
+              <label className={label}>{t("inv_notes")}
                 <input className={input} value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })} />
               </label>
-              <label className={label}>Forma de pago (al cobrar)
-                <input className={input} placeholder="p. ej. transferencia" value={form.payment_method}
+              <label className={label}>{t("inv_payment")}
+                <input className={input} placeholder={t("inv_payment_ph")} value={form.payment_method}
                   onChange={(e) => setForm({ ...form, payment_method: e.target.value })} />
               </label>
             </>
@@ -120,26 +122,26 @@ export default function InvoiceDetailDialog({ open, onOpenChange, invoice, onDon
             <div className="text-sm space-y-1">
               <p className="break-words">{invoice.service_description || "—"}</p>
               <p className="text-muted-foreground">
-                Honorarios {formatMoney(invoice.amount)} · Tasas {formatMoney(invoice.government_fees)} · Gastos {formatMoney(invoice.expenses)}
+                {t("fees_word")} {formatMoney(invoice.amount)} · {t("gov_word")} {formatMoney(invoice.government_fees)} · {t("exp_word")} {formatMoney(invoice.expenses)}
               </p>
               <p className="text-muted-foreground">
-                Emitida {formatDate(invoice.issue_date)} · Vence {formatDate(invoice.due_date)}
+                {t("issued_word")} {formatDate(invoice.issue_date)} · {t("due_lbl")} {formatDate(invoice.due_date)}
               </p>
-              {invoice.payment_method && <p className="text-muted-foreground">Forma de pago: {invoice.payment_method}</p>}
-              {invoice.notes && <p className="text-muted-foreground break-words">Notas: {invoice.notes}</p>}
+              {invoice.payment_method && <p className="text-muted-foreground">{t("payment_method_word")} {invoice.payment_method}</p>}
+              {invoice.notes && <p className="text-muted-foreground break-words">{t("notes_word")} {invoice.notes}</p>}
             </div>
           )}
           {error && <p className="text-sm text-red-600 break-words">{error}</p>}
           {editable ? (
             <div className="flex flex-col sm:flex-row flex-wrap gap-2">
               <Button className="rounded-xl flex-1" onClick={save} disabled={busy}>
-                {busy ? "Guardando…" : "Guardar cambios"}
+                {busy ? t("saving") : t("save_changes")}
               </Button>
-              <Button variant="outline" className="rounded-xl" onClick={markPaid} disabled={busy}>Marcar cobrada</Button>
-              <Button variant="outline" className="rounded-xl text-red-700" onClick={voidInvoice} disabled={busy}>Anular</Button>
+              <Button variant="outline" className="rounded-xl" onClick={markPaid} disabled={busy}>{t("mark_paid_btn")}</Button>
+              <Button variant="outline" className="rounded-xl text-red-700" onClick={voidInvoice} disabled={busy}>{t("void_btn")}</Button>
             </div>
           ) : invoice.status === "void" ? (
-            <Button className="rounded-xl" onClick={reopen} disabled={busy}>Reabrir como borrador</Button>
+            <Button className="rounded-xl" onClick={reopen} disabled={busy}>{t("reopen_draft_btn")}</Button>
           ) : null}
         </div>
       </DialogContent>

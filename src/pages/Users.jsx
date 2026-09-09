@@ -4,6 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
+import { useI18n } from "@/lib/i18n";
 import { UserPlus, Search, ShieldCheck, Link2, UserX } from "lucide-react";
 import InviteUserDialog from "@/components/users/InviteUserDialog";
 import ChangeRoleDialog from "@/components/users/ChangeRoleDialog";
@@ -11,15 +12,19 @@ import LinkClientDialog from "@/components/users/LinkClientDialog";
 import DeactivateAccessDialog from "@/components/users/DeactivateAccessDialog";
 import InlineMessage from "@/components/InlineMessage";
 
-const RoleBadge = ({ role }) => (
-  <Badge variant="outline" className={role === "admin"
-    ? "bg-sky-50 text-sky-800 border-sky-200"
-    : "bg-stone-100 text-stone-700 border-stone-200"}>
-    {role === "admin" ? "Equipo" : "Cliente"}
-  </Badge>
-);
+const RoleBadge = ({ role }) => {
+  const { t } = useI18n();
+  return (
+    <Badge variant="outline" className={role === "admin"
+      ? "bg-sky-50 text-sky-800 border-sky-200"
+      : "bg-stone-100 text-stone-700 border-stone-200"}>
+      {role === "admin" ? t("role_team") : t("role_client")}
+    </Badge>
+  );
+};
 
 export default function Users() {
+  const { t } = useI18n();
   const { toast } = useToast();
   const [me, setMe] = useState(undefined);
   const [users, setUsers] = useState(null);
@@ -51,9 +56,9 @@ export default function Users() {
   if (!me || me.role !== "admin") return <Navigate to="/portal" replace />;
   if (usersError) return (
     <div className="card-soft p-6 space-y-3">
-      <p className="text-sm text-muted-foreground">No se pudo cargar la lista de usuarios.</p>
+      <p className="text-sm text-muted-foreground">{t("users_load_error")}</p>
       <Button size="sm" variant="outline" className="rounded-lg" onClick={reload}>
-        Reintentar
+        {t("retry")}
       </Button>
     </div>
   );
@@ -69,16 +74,16 @@ export default function Users() {
   const actions = (u) => (
     <div className="flex flex-wrap gap-1">
       <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setRoleTarget(u)}>
-        <ShieldCheck className="w-3.5 h-3.5 me-1" /> Rol
+        <ShieldCheck className="w-3.5 h-3.5 me-1" /> {t("role")}
       </Button>
       {u.role !== "admin" && (
         <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
-          <Link2 className="w-3.5 h-3.5 me-1" /> Vincular
+          <Link2 className="w-3.5 h-3.5 me-1" /> {t("link")}
         </Button>
       )}
       {u.id !== me.id && (
         <Button size="sm" variant="outline" className="rounded-lg text-destructive hover:text-destructive" onClick={() => setDeactivateTarget(u)}>
-          <UserX className="w-3.5 h-3.5 me-1" /> Desactivar
+          <UserX className="w-3.5 h-3.5 me-1" /> {t("deactivate")}
         </Button>
       )}
     </div>
@@ -87,24 +92,24 @@ export default function Users() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-3xl font-bold">Usuarios</h1>
+        <h1 className="font-heading text-3xl font-bold">{t("users_title")}</h1>
         <Button className="rounded-xl" onClick={() => setInviteOpen(true)}>
-          <UserPlus className="w-4 h-4 me-1" /> Invitar
+          <UserPlus className="w-4 h-4 me-1" /> {t("invite")}
         </Button>
       </div>
 
       <div className="relative max-w-sm">
         <Search className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input className="w-full h-10 ps-9 rounded-xl border border-input bg-card px-3 text-sm"
-          placeholder="Buscar por nombre o email" value={search} onChange={(e) => setSearch(e.target.value)} />
+          placeholder={t("search_users")} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
       <div className="card-soft hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-start text-xs text-muted-foreground border-b">
-              <th className="p-3 text-start">Usuario</th><th className="p-3 text-start">Rol</th>
-              <th className="p-3 text-start">Cliente vinculado</th><th className="p-3 text-start">Acciones</th>
+              <th className="p-3 text-start">{t("th_user")}</th><th className="p-3 text-start">{t("th_role")}</th>
+              <th className="p-3 text-start">{t("th_linked_client")}</th><th className="p-3 text-start">{t("th_actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -126,7 +131,7 @@ export default function Users() {
                 </tr>
               );
             })}
-            {!filtered.length && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">Sin usuarios.</td></tr>}
+            {!filtered.length && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">{t("no_users")}</td></tr>}
           </tbody>
         </table>
       </div>
@@ -144,13 +149,13 @@ export default function Users() {
               <p className="text-xs">
                 {c
                   ? <Link to={`/clients/${c.id}`} className="text-primary hover:underline break-words">{c.legal_name}</Link>
-                  : <span className="text-muted-foreground">Sin cliente vinculado</span>}
+                  : <span className="text-muted-foreground">{t("no_linked_client")}</span>}
               </p>
               {actions(u)}
             </div>
           );
         })}
-        {!filtered.length && <p className="text-sm text-muted-foreground p-4">Sin usuarios.</p>}
+        {!filtered.length && <p className="text-sm text-muted-foreground p-4">{t("no_users")}</p>}
       </div>
 
       <InviteUserDialog open={inviteOpen} onOpenChange={setInviteOpen} clients={clients} onDone={onDone} />

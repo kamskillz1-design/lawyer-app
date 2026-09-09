@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useI18n } from "@/lib/i18n";
 import { inputClass as input } from "@/lib/formStyles";
 
 export default function InviteUserDialog({ open, onOpenChange, clients, onDone }) {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("user");
   const [clientId, setClientId] = useState("");
@@ -20,31 +22,31 @@ export default function InviteUserDialog({ open, onOpenChange, clients, onDone }
       if (role === "user" && clientId) {
         await base44.entities.Client.update(clientId, { portal_email: email.trim() });
       }
-      onOpenChange(false); reset(); onDone("Invitación enviada");
+      onOpenChange(false); reset(); onDone(t("toast_invite_sent"));
     } catch (e) {
-      setError(e?.message || "No se pudo enviar la invitación.");
+      setError(e?.message || t("invite_error_default"));
     } finally { setBusy(false); }
   };
 
   return (
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset(); }}>
       <DialogContent>
-        <DialogHeader><DialogTitle>Invitar usuario</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{t("invite_user_title")}</DialogTitle></DialogHeader>
         <div className="grid gap-3">
           <select className={input} value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="user">Cliente (portal)</option>
-            <option value="admin">Equipo (admin)</option>
+            <option value="user">{t("opt_client_portal")}</option>
+            <option value="admin">{t("opt_team_admin")}</option>
           </select>
-          <input className={input} type="email" placeholder="Email *" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className={input} type="email" placeholder={t("ph_email")} value={email} onChange={(e) => setEmail(e.target.value)} />
           {role === "user" && (
             <select className={input} value={clientId} onChange={(e) => setClientId(e.target.value)}>
-              <option value="">Vincular cliente más tarde</option>
+              <option value="">{t("link_later")}</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
             </select>
           )}
           {error && <p className="text-sm text-red-600 break-words">{error}</p>}
           <Button className="rounded-xl" onClick={submit} disabled={busy || !email.trim()}>
-            {busy ? "Enviando…" : "Enviar invitación"}
+            {busy ? t("sending") : t("send_invite")}
           </Button>
         </div>
       </DialogContent>

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { CONFIDENCE_HINT } from "@/lib/constants";
+import { ArrowLeft } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { confidenceHint } from "@/lib/constants";
 import { getLanguage } from "@/lib/languages";
 import InlineMessage from "@/components/InlineMessage";
 import MessageList from "@/components/communication/MessageList";
@@ -11,9 +14,13 @@ import WhatsAppReplyDialog from "@/components/communication/WhatsAppReplyDialog"
 
 // Communications center: owns message data, translation and sending flows.
 // Presentation is delegated to MessageList, MessageDetail and ReplyComposer.
+// Below the lg breakpoint the list is replaced by the selected thread with a
+// Back button; at lg+ the two-pane layout is kept.
 export default function Communications() {
   const { toast } = useToast();
+  const { t } = useI18n();
   const [comms, setComms] = useState(null);
+  const [loadError, setLoadError] = useState(false);
   const [clients, setClients] = useState([]);
   const [selected, setSelected] = useState(null);
   const [reply, setReply] = useState("");
@@ -24,23 +31,39 @@ export default function Communications() {
   const [me, setMe] = useState(null);
 
   const reload = async () => {
-    const [cs, cls] = await Promise.all([
-      base44.entities.Communication.list("-created_date"),
-      base44.entities.Client.list(),
-    ]);
-    setComms(cs);
-    setClients(cls);
+    setLoadError(false);
+    try {
+      const [cs, cls] = await Promise.all([
+        base44.entities.Communication.list("-created_date"),
+        base44.entities.Client.list(),
+      ]);
+      setComms(cs);
+      setClients(cls);
+      return cs;
+    } catch {
+      setLoadError(true);
+      return null;
+    }
   };
   useEffect(() => {
     reload();
     base44.auth.me().then(setMe).catch(() => {});
   }, []);
 
+  // Keep the open thread pointing at the freshly loaded record so the detail
+  // panel never shows a stale copy after an action.
+  const syncSelected = (fresh, prev) => {
+    if (!prev || !fresh) return;
+    const updated = fresh.find((c) => c.id === prev.id);
+    if (updated) setSelected(updated);
+  };
+
   const select = (c) => {
     setSelected(c);
     setReply(c.reply_original || "");
     setDraft(c.reply_translation || "");
     setApproved(!!c.approved_by);
+    window.scrollTo({ top: 0 });
   };
 
   const clientOf = (c) => clients.find((x) => x.id === c?.client_id);
@@ -60,11 +83,11 @@ export default function Communications() {
         original_language: selected.original_language || source_language_detected || "",
         status: "pending_review",
       });
-      reload();
-      setSelected({ ...selected, staff_translation: translation, translation_confidence: confidence, status: "pending_review" });
-      toast({ title: "Traducción generada", description: CONFIDENCE_HINT[confidence] || "" });
+      const fresh = await reload();
+      syncSelected(fresh, selected);
+      toast({ title: t("toast_translation_ok"), description: confidenceHint(confidence, t) || "" });
     } catch (e) {
-      toast({ title: "Error de traducción", description: e.message, variant: "destructive" });
+      toast({ title: t("toast_translation_err"), description: e.message, variant: "destructive" });
     } finally {
       setBusy("");
     }
@@ -80,9 +103,9 @@ export default function Communications() {
         context: `Expediente: ${selected.matter_number || ""}; idioma del cliente: ${lang}`,
       });
       setDraft(res.data.translation);
-      toast({ title: `Borrador generado en ${getLanguage(lang).native}`, description: CONFIDENCE_HINT[res.data.confidence] || "" });
+      toast({ title: `${t("draft_generated_prefix")} ${getLanguage(lang).native}`, description: confidenceHint(res.data.confidence, t) || "" });
     } catch (e) {
-      toast({ title: "Error generando borrador", description: e.message, variant: "destructive" });
+      toast({ title: t("toast_draft_err"), description: e.message, variant: "destructive" });
     } finally {
       setBusy("");
     }
@@ -99,27 +122,26 @@ export default function Communications() {
       actor_name: me?.full_name || "Personal",
       summary: `Respuesta enviada a ${selected.client_name} (traducción IA revisada)`,
     });
-    reload();
-    select({ ...selected, status: "sent", reply_original: reply, reply_translation: draft });
-    toast({ title: "Respuesta enviada", description: "El cliente la verá en su portal en su idioma." });
+    const fresh = await reload();
+    syncSelected(fresh, selected);
+    toast({ title: t("toast_reply_sent"), description: t("toast_reply_sent_body") });
   };
 
   const handleWaSent = () => {
-    reload();
-    select({ ...selected, status: "sent", reply_original: reply, reply_translation: draft });
-    toast({ title: "Respuesta enviada por WhatsApp", description: "El cliente la recibirá en su chat de WhatsApp." });
+    reload().then((fresh) => syncSelected(fresh, selected));
+    toast({ title: t("toast_wa_sent"), description: t("toast_wa_sent_body") });
   };
 
   const escalate = async () => {
     await base44.entities.Communication.update(selected.id, { sensitivity: "lawyer_review", status: "lawyer_pending" });
-    reload();
-    select({ ...selected, sensitivity: "lawyer_review", status: "lawyer_pending" });
-    toast({ title: "Escalada a la letrada" });
+    const fresh = await reload();
+    syncSelected(fresh, selected);
+    toast({ title: t("toast_escalated") });
   };
 
   const approveAsLawyer = async () => {
     setApproved(true);
-    toast({ title: "Aprobación registrada", description: `${me?.full_name || ""} aprobó el contenido legal.` });
+    toast({ title: t("toast_approval"), description: `${me?.full_name || ""} ${t("toast_approval_body")}`.trim() });
   };
 
   const createTask = async () => {
@@ -129,33 +151,45 @@ export default function Communications() {
       matter_number: selected.matter_number || "", owner: me?.full_name || "",
       task_type: "general", status: "todo", priority: "high",
     });
-    toast({ title: "Tarea creada" });
+    toast({ title: t("toast_task_created") });
   };
 
   const changeSensitivity = async (value) => {
     await base44.entities.Communication.update(selected.id, { sensitivity: value });
-    select({ ...selected, sensitivity: value });
-    reload();
+    const fresh = await reload();
+    syncSelected(fresh, selected);
   };
 
-  const applyTranscription = (text) => {
-    select({ ...selected, original_content: text, transcription_status: "done" });
-    reload();
+  const applyTranscription = () => {
+    reload().then((fresh) => syncSelected(fresh, selected));
   };
 
+  if (loadError) return (
+    <div className="card-soft p-6 space-y-3">
+      <p className="text-sm text-muted-foreground">{t("load_error")}</p>
+      <Button size="sm" variant="outline" className="rounded-lg" onClick={reload}>{t("retry")}</Button>
+    </div>
+  );
   if (!comms) return <InlineMessage />;
 
   const pending = comms.filter((c) => c.status !== "sent" && c.status !== "internal_note");
 
   return (
     <div className="space-y-4">
-      <h1 className="font-heading text-3xl font-bold">Centro de mensajes y traducción</h1>
+      <h1 className="font-heading text-3xl font-bold">{t("msg_center_title")}</h1>
 
-      <div className="grid lg:grid-cols-[340px_1fr] gap-4">
-        <MessageList comms={comms} pending={pending} selected={selected} onSelect={select} />
+      <div className="grid lg:grid-cols-[340px_1fr] gap-4 items-start">
+        <div className={selected ? "hidden lg:block" : ""}>
+          <MessageList comms={comms} pending={pending} selected={selected} onSelect={select} />
+        </div>
 
         <div className="space-y-4">
-          {!selected && <div className="card-soft p-8 text-center text-muted-foreground">Seleccione un mensaje para gestionarlo.</div>}
+          {selected && (
+            <Button variant="outline" className="rounded-xl lg:hidden" onClick={() => setSelected(null)}>
+              <ArrowLeft className="w-4 h-4 me-1" /> {t("back_to_list")}
+            </Button>
+          )}
+          {!selected && <div className="card-soft p-8 text-center text-muted-foreground">{t("select_message")}</div>}
           {selected && (
             <>
               <MessageDetail

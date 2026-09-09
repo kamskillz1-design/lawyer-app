@@ -1,11 +1,13 @@
 import React from "react";
 import { base44 } from "@/api/base44Client";
+import { useI18n } from "@/lib/i18n";
 import {
   AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
 export default function DeactivateAccessDialog({ open, onOpenChange, user, client, onDone }) {
+  const { t } = useI18n();
   if (!user) return null;
   const isAdmin = user.role === "admin";
 
@@ -21,7 +23,7 @@ export default function DeactivateAccessDialog({ open, onOpenChange, user, clien
       entity_type: "User", entity_id: user.id, action: "deactivate_access",
       summary: `Acceso al portal desactivado para ${user.email}${client ? ` — desvinculado de ${client.legal_name}` : ""}.`,
     });
-    onDone("Acceso desactivado");
+    onDone(t("toast_access_deactivated"));
   };
 
   const demoteOnly = async () => {
@@ -30,7 +32,7 @@ export default function DeactivateAccessDialog({ open, onOpenChange, user, clien
       entity_type: "User", entity_id: user.id, action: "deactivate_access",
       summary: `Acceso de equipo desactivado para ${user.email} (rol cambiado a Cliente).`,
     });
-    onDone("Acceso de equipo desactivado");
+    onDone(t("toast_team_deactivated"));
   };
 
   const fullLockdown = async () => {
@@ -40,32 +42,32 @@ export default function DeactivateAccessDialog({ open, onOpenChange, user, clien
       entity_type: "User", entity_id: user.id, action: "deactivate_access",
       summary: `Bloqueo total para ${user.email}: rol cambiado a Cliente${client ? ` y portal de ${client.legal_name} desvinculado y bloqueado` : ""}.`,
     });
-    onDone("Cuenta bloqueada por completo");
+    onDone(t("toast_full_lockdown"));
   };
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{isAdmin ? "Desactivar cuenta de equipo" : "Desactivar acceso al portal"}</AlertDialogTitle>
+          <AlertDialogTitle>{isAdmin ? t("deactivate_team_title") : t("deactivate_portal_title")}</AlertDialogTitle>
           <AlertDialogDescription>
             {isAdmin
-              ? `${user.email} dejará de tener acceso al área de equipo. La cuenta y todo el historial se conservan.`
+              ? <>{user.email} {t("deact_admin_body")}</>
               : client
-                ? `La cuenta de ${user.email} se desvinculará del cliente ${client.legal_name} y su acceso al portal quedará bloqueado. La cuenta y todo el historial se conservan.`
-                : "Esta cuenta no tiene ningún cliente vinculado; se registrará la desactivación."}
-            {isAdmin && client && " El bloqueo total también desvinculará el cliente y bloqueará su portal."}
+                ? <>{t("deact_client_body_a")} {user.email} {t("deact_client_body_b")} {client.legal_name} {t("deact_client_body_c")}</>
+                : t("deact_none_body")}
+            {isAdmin && client && ` ${t("deact_admin_extra")}`}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           {isAdmin ? (
             <>
-              <AlertDialogAction className="mt-2 sm:mt-0" onClick={demoteOnly}>Solo quitar acceso de equipo</AlertDialogAction>
-              <AlertDialogAction className="mt-2 sm:mt-0 bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={fullLockdown}>Bloqueo total</AlertDialogAction>
+              <AlertDialogAction className="mt-2 sm:mt-0" onClick={demoteOnly}>{t("remove_team_only")}</AlertDialogAction>
+              <AlertDialogAction className="mt-2 sm:mt-0 bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={fullLockdown}>{t("full_lockdown")}</AlertDialogAction>
             </>
           ) : (
-            <AlertDialogAction onClick={deactivateClientRole}>Desactivar acceso</AlertDialogAction>
+            <AlertDialogAction onClick={deactivateClientRole}>{t("deactivate_access")}</AlertDialogAction>
           )}
         </AlertDialogFooter>
       </AlertDialogContent>

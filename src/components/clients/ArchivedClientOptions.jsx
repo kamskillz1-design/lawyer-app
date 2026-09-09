@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { ArchiveRestore, UserPlus } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
 
 const COPY_FIELDS = [
   "preferred_name", "date_of_birth", "country_of_birth", "nationalities",
@@ -14,6 +15,7 @@ const COPY_FIELDS = [
 
 export default function ArchivedClientOptions({ client, onDone }) {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const reactivate = async () => {
     await base44.entities.Client.update(client.id, {
@@ -27,7 +29,7 @@ export default function ArchivedClientOptions({ client, onDone }) {
       action: "reactivate",
       summary: `Cliente reactivado: ${client.legal_name}. Acceso al portal restaurado.`,
     });
-    onDone("Cliente reactivado");
+    onDone(t("toast_client_reactivated"));
   };
 
   const newRecord = async () => {
@@ -53,18 +55,15 @@ export default function ArchivedClientOptions({ client, onDone }) {
   return (
     <div className="card-soft p-5 space-y-4">
       <div>
-        <h3 className="font-heading font-semibold">Cliente archivado</h3>
-        <p className="text-sm text-muted-foreground">
-          Puede reactivarlo con todo su historial o crear un registro nuevo con la misma cuenta de
-          portal. El registro archivado se conserva en ambos casos.
-        </p>
+        <h3 className="font-heading font-semibold">{t("archived_client_title")}</h3>
+        <p className="text-sm text-muted-foreground">{t("archived_client_body")}</p>
       </div>
       <div className="flex flex-wrap gap-2">
         <Button className="rounded-xl" onClick={reactivate}>
-          <ArchiveRestore className="w-4 h-4 me-1" /> Reactivar cliente
+          <ArchiveRestore className="w-4 h-4 me-1" /> {t("reactivate_client")}
         </Button>
         <Button variant="outline" className="rounded-xl" onClick={newRecord}>
-          <UserPlus className="w-4 h-4 me-1" /> Nuevo registro con la misma cuenta
+          <UserPlus className="w-4 h-4 me-1" /> {t("new_record_same_account")}
         </Button>
       </div>
     </div>
