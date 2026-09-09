@@ -51,16 +51,17 @@ export default async function(req) {
         'Traduce cada uno de los siguientes textos del personal del despacho (idioma origen: ' + (source_language || 'es') +
         ') al idioma con código BCP 47: ' + target_language + '. Son títulos de tareas internas (frases cortas). ' +
         'Mantén sin cambios nombres propios, números de expediente y fechas. No añadas contenido nuevo. ' +
-        'Devuelve un objeto JSON con una única clave "translations" cuyo valor es un objeto con exactamente las mismas claves y la traducción fiel de cada texto.\n\n' + JSON.stringify(texts);
+        'Devuelve un objeto JSON con exactamente las mismas claves y la traducción fiel de cada texto.\n\n' + JSON.stringify(texts);
+      const properties = {};
+      for (const id of ids) properties[id] = { type: 'string' };
       const result = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt,
-        response_json_schema: {
-          type: 'object',
-          properties: { translations: { type: 'object' } },
-          required: ['translations'],
-        },
+        response_json_schema: { type: 'object', properties, required: ids },
       });
-      const translations = (result && result.translations && typeof result.translations === 'object') ? result.translations : {};
+      const translations = {};
+      for (const id of ids) {
+        if (result && typeof result[id] === 'string' && result[id]) translations[id] = result[id];
+      }
       return Response.json({ translations });
     }
 
