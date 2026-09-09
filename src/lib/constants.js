@@ -22,16 +22,53 @@ export const STAGES = [
 ];
 
 export const PROCEDURE_FAMILIES = [
-  "Residencia", "Trabajo y empleo", "Estudios", "Familia", "Nacionalidad", "Documentación (NIE/TIE)", "Otros"
+  { id: "Residencia", key: "pf_residence", label: "Residencia" },
+  { id: "Trabajo y empleo", key: "pf_work", label: "Trabajo y empleo" },
+  { id: "Estudios", key: "pf_studies", label: "Estudios" },
+  { id: "Familia", key: "pf_family", label: "Familia" },
+  { id: "Nacionalidad", key: "pf_nationality", label: "Nacionalidad" },
+  { id: "Documentación (NIE/TIE)", key: "pf_docs", label: "Documentación (NIE/TIE)" },
+  { id: "Otros", key: "pf_other", label: "Otros" },
 ];
 
 export const PROCEDURE_TYPES = [
-  "Renovación de residencia", "Residencia inicial (régimen general)", "Arraigo", "Residencia y trabajo por cuenta ajena",
-  "Residencia y trabajo por cuenta propia", "Trabajador transfronterizo", "Estudiante", "Estancia por estudios",
-  "Reagrupación familiar", "Tarjeta azul UE", "Residencia larga duración UE", "Nacionalidad española (residencia)",
-  "NIE (número de identidad de extranjero)", "TIE (tarjeta de identidad de extranjero)", "Cita toma de huellas TIE",
-  "Recurso de alzada / reposición", "Reconsideración", "Cambio de situación", "Reagrupación de ascendientes", "Otro"
+  { id: "Renovación de residencia", key: "pt_renewal", label: "Renovación de residencia" },
+  { id: "Residencia inicial (régimen general)", key: "pt_initial", label: "Residencia inicial (régimen general)" },
+  { id: "Arraigo", key: "pt_arraigo", label: "Arraigo" },
+  { id: "Residencia y trabajo por cuenta ajena", key: "pt_employed", label: "Residencia y trabajo por cuenta ajena" },
+  { id: "Residencia y trabajo por cuenta propia", key: "pt_self_employed", label: "Residencia y trabajo por cuenta propia" },
+  { id: "Trabajador transfronterizo", key: "pt_frontier", label: "Trabajador transfronterizo" },
+  { id: "Estudiante", key: "pt_student", label: "Estudiante" },
+  { id: "Estancia por estudios", key: "pt_study_stay", label: "Estancia por estudios" },
+  { id: "Reagrupación familiar", key: "pt_family_reunion", label: "Reagrupación familiar" },
+  { id: "Tarjeta azul UE", key: "pt_blue_card", label: "Tarjeta azul UE" },
+  { id: "Residencia larga duración UE", key: "pt_long_term", label: "Residencia larga duración UE" },
+  { id: "Nacionalidad española (residencia)", key: "pt_nationality", label: "Nacionalidad española (residencia)" },
+  { id: "NIE (número de identidad de extranjero)", key: "pt_nie", label: "NIE (número de identidad de extranjero)" },
+  { id: "TIE (tarjeta de identidad de extranjero)", key: "pt_tie", label: "TIE (tarjeta de identidad de extranjero)" },
+  { id: "Cita toma de huellas TIE", key: "pt_tie_fingerprint", label: "Cita toma de huellas TIE" },
+  { id: "Recurso de alzada / reposición", key: "pt_appeal", label: "Recurso de alzada / reposición" },
+  { id: "Reconsideración", key: "pt_reconsideration", label: "Reconsideración" },
+  { id: "Cambio de situación", key: "pt_change", label: "Cambio de situación" },
+  { id: "Reagrupación de ascendientes", key: "pt_ascendants", label: "Reagrupación de ascendientes" },
+  { id: "Otro", key: "pt_other", label: "Otro" },
 ];
+
+// Stored procedure values that are not part of the select lists (free-typed or
+// legacy data) but still need a dictionary translation.
+const PROCEDURE_KEY_ALIASES = {
+  "Arraigo laboral": "pt_arraigo_laboral",
+};
+
+// Resolves a stored procedure value to the interface language; falls back to
+// the stored Spanish value for anything unknown.
+export const procedureLabel = (value, t) => {
+  if (!value) return value || "";
+  const entry = PROCEDURE_TYPES.find((p) => p.id === value);
+  if (entry) return t ? t(entry.key) : entry.label;
+  const alias = PROCEDURE_KEY_ALIASES[value];
+  return t && alias ? t(alias) : value;
+};
 
 export const DOC_CATEGORIES = [
   { id: "passport", key: "cat_passport", label: "Pasaporte" },

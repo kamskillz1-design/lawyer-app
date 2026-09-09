@@ -9,7 +9,7 @@ import { useI18n } from "@/lib/i18n";
 import ExportArchiveDialog from "@/components/clients/ExportArchiveDialog";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
 import ArchivedClientOptions from "@/components/clients/ArchivedClientOptions";
-import { stageLabel } from "@/lib/constants";
+import { stageLabel, procedureLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import ClientEditForm from "@/components/clients/ClientEditForm";
 import InlineMessage from "@/components/InlineMessage";
@@ -124,7 +124,7 @@ export default function ClientDetail() {
         <div className="space-y-2">
           {matters.map((m) => (
             <Link key={m.id} to={`/matters/${m.id}`} className="flex flex-wrap items-center justify-between gap-2 p-3 rounded-xl hover:bg-secondary text-sm">
-              <span className="flex items-center gap-2 min-w-0 break-words"><FolderOpen className="w-4 h-4 text-primary shrink-0" /> {m.matter_number} · {m.procedure_type}</span>
+              <span className="flex items-center gap-2 min-w-0 break-words"><FolderOpen className="w-4 h-4 text-primary shrink-0" /> {m.matter_number} · {procedureLabel(m.procedure_type, t)}</span>
               <span className="text-xs text-muted-foreground text-end">{stageLabel(m.stage, t)} · {formatDate(m.next_deadline)}</span>
             </Link>
           ))}

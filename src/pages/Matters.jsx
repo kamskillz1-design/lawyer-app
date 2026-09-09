@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/components/ui/use-toast";
 import { Plus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { STAGES, PROCEDURE_FAMILIES, PROCEDURE_TYPES, stageLabel } from "@/lib/constants";
+import { STAGES, PROCEDURE_FAMILIES, PROCEDURE_TYPES, stageLabel, procedureLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import { inputClass as input } from "@/lib/formStyles";
@@ -25,7 +25,7 @@ export default function Matters() {
   const [clients, setClients] = useState([]);
   const [stageFilter, setStageFilter] = useState("all");
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ client_id: "", procedure_family: PROCEDURE_FAMILIES[0], procedure_type: PROCEDURE_TYPES[0], authority: "Subdelegación del Gobierno (Bizkaia)", province: "Bizkaia", urgency: "normal", assigned_lawyer: "", assigned_caseworker: "", next_action: "Solicitar documentos al cliente", next_action_owner: "staff", next_deadline: "", target_submission_date: "" });
+  const [form, setForm] = useState({ client_id: "", procedure_family: PROCEDURE_FAMILIES[0].id, procedure_type: PROCEDURE_TYPES[0].id, authority: "Subdelegación del Gobierno (Bizkaia)", province: "Bizkaia", urgency: "normal", assigned_lawyer: "", assigned_caseworker: "", next_action: "Solicitar documentos al cliente", next_action_owner: "staff", next_deadline: "", target_submission_date: "" });
 
   const reload = async () => {
     const [ms, cs] = await Promise.all([base44.entities.Matter.list("-created_date"), base44.entities.Client.list()]);
@@ -88,10 +88,10 @@ export default function Matters() {
                   {clients.map((c) => <option key={c.id} value={c.id}>{c.legal_name}</option>)}
                 </select>
                 <select className={input} value={form.procedure_family} onChange={(e) => setForm({ ...form, procedure_family: e.target.value })}>
-                  {PROCEDURE_FAMILIES.map((f) => <option key={f}>{f}</option>)}
+                  {PROCEDURE_FAMILIES.map((f) => <option key={f.id} value={f.id}>{t(f.key)}</option>)}
                 </select>
                 <select className={input} value={form.procedure_type} onChange={(e) => setForm({ ...form, procedure_type: e.target.value })}>
-                  {PROCEDURE_TYPES.map((p) => <option key={p}>{p}</option>)}
+                  {PROCEDURE_TYPES.map((p) => <option key={p.id} value={p.id}>{t(p.key)}</option>)}
                 </select>
                 <input className={input} placeholder={t("ph_authority")} value={form.authority} onChange={(e) => setForm({ ...form, authority: e.target.value })} />
                 <input className={input} placeholder={t("ph_lawyer")} value={form.assigned_lawyer} onChange={(e) => setForm({ ...form, assigned_lawyer: e.target.value })} />
@@ -127,7 +127,7 @@ export default function Matters() {
               <tr key={m.id} className="border-b last:border-0 hover:bg-secondary/50">
                 <td className="p-3">
                   <Link to={`/matters/${m.id}`} className="font-medium hover:text-primary">{m.matter_number}</Link>
-                  <p className="text-xs text-muted-foreground">{m.procedure_type}</p>
+                  <p className="text-xs text-muted-foreground">{procedureLabel(m.procedure_type, t)}</p>
                 </td>
                 <td className="p-3">{m.client_name}</td>
                 <td className="p-3 text-xs">{stageLabel(m.stage, t)}</td>
@@ -148,7 +148,7 @@ export default function Matters() {
               <p className="font-medium break-words">{m.matter_number}</p>
               <StatusBadge value={m.urgency} label={t("prio_" + m.urgency)} />
             </div>
-            <p className="text-xs text-muted-foreground break-words">{m.client_name} · {m.procedure_type}</p>
+            <p className="text-xs text-muted-foreground break-words">{m.client_name} · {procedureLabel(m.procedure_type, t)}</p>
             <p className="text-xs">{stageLabel(m.stage, t)}</p>
             <p className="text-xs text-muted-foreground break-words">{m.next_action || "—"} · {formatDate(m.next_deadline)}</p>
           </Link>

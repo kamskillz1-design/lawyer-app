@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { STAGES, stageLabel } from "@/lib/constants";
+import { STAGES, stageLabel, procedureLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import MatterChecklist from "@/components/matter/MatterChecklist";
 import MatterDocuments from "@/components/matter/MatterDocuments";
@@ -65,7 +65,7 @@ export default function MatterDetail() {
           <div className="min-w-0 flex-1">
             <h1 className="font-heading text-3xl font-bold">{matter.matter_number}</h1>
             <p className="text-muted-foreground text-sm break-words">
-              {matter.procedure_type} · <Link to={`/clients/${matter.client_id}`} className="hover:text-primary">{matter.client_name}</Link>
+              {procedureLabel(matter.procedure_type, t)} · <Link to={`/clients/${matter.client_id}`} className="hover:text-primary">{matter.client_name}</Link>
               {" · "}{matter.authority || "—"} · {t("opened")} {formatDate(matter.opened_date)}
             </p>
           </div>

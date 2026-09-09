@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Inbox, AlarmClock, MessageCircle, Receipt, Users, FolderOpen, CheckSquare, Zap } from "lucide-react";
-import { sensitivityLabel, leadLabel } from "@/lib/constants";
+import { sensitivityLabel, leadLabel, procedureLabel } from "@/lib/constants";
 import { formatDate, daysUntil, todayISO } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import useTaskTitles from "@/hooks/useTaskTitles";
@@ -96,7 +96,7 @@ export default function Home() {
         <CollapsibleSection icon={AlarmClock} iconClass="text-amber-600" title={t("dash_deadlines")} count={upcomingDeadlines.length} contentClass="space-y-2">
           {upcomingDeadlines.slice(0, 5).map((m) => (
             <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
-              <p className="font-medium break-words">{m.matter_number} · {m.procedure_type}</p>
+              <p className="font-medium break-words">{m.matter_number} · {procedureLabel(m.procedure_type, t)}</p>
               <p className="text-xs text-muted-foreground break-words">{m.client_name} · {formatDate(m.next_deadline)} ({daysUntil(m.next_deadline)} {t("days_unit")})</p>
             </Link>
           ))}

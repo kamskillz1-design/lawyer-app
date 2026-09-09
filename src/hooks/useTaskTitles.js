@@ -11,19 +11,23 @@ import { composeTaskTitle, parseTitleTranslations, taskFragment } from "@/lib/au
 //   the aiTranslate batch mode, cached on the task record (title_translations)
 //   and merged into local state. Spanish interface: originals are shown as
 //   typed, no LLM calls.
+// The in-memory cache is language-scoped: a translation cached for one
+// language is never reused or treated as fulfilled for another language.
 // Returns { [taskId]: { title, translating } }.
 export default function useTaskTitles(tasks) {
   const { lang, t } = useI18n();
-  const [local, setLocal] = useState({}); // id -> translated fragment
+  const [local, setLocal] = useState({}); // id -> { [lang]: translated fragment }
   const inflight = useRef(false);
   const isSpanish = !!lang && lang.startsWith("es");
   const list = tasks || [];
   const ids = useMemo(() => list.map((tk) => tk.id).join(","), [tasks]);
 
+  const localFrag = (tk) => (local[tk.id] ? local[tk.id][lang] : null);
+
   useEffect(() => {
     if (!ids || isSpanish || inflight.current) return;
     const pending = list.filter(
-      (tk) => taskFragment(tk) && !parseTitleTranslations(tk)[lang] && !local[tk.id]
+      (tk) => taskFragment(tk) && !parseTitleTranslations(tk)[lang] && !localFrag(tk)
     );
     if (!pending.length) return;
     inflight.current = true;
@@ -38,7 +42,13 @@ export default function useTaskTitles(tasks) {
             Object.entries(translations).filter(([, v]) => typeof v === "string" && v)
           );
           if (Object.keys(ok).length) {
-            setLocal((prev) => ({ ...prev, ...ok }));
+            setLocal((prev) => {
+              const next = { ...prev };
+              pending.forEach((tk) => {
+                if (ok[tk.id]) next[tk.id] = { ...(prev[tk.id] || {}), [lang]: ok[tk.id] };
+              });
+              return next;
+            });
             const updates = pending
               .filter((tk) => ok[tk.id])
               .map((tk) => ({
@@ -63,11 +73,11 @@ export default function useTaskTitles(tasks) {
       const fragText = frag
         ? isSpanish
           ? frag
-          : cached || local[tk.id] || frag
+          : cached || localFrag(tk) || frag
         : null;
       map[tk.id] = {
         title: composeTaskTitle(tk, t, fragText),
-        translating: !!frag && !isSpanish && !cached && !local[tk.id],
+        translating: !!frag && !isSpanish && !cached && !localFrag(tk),
       };
     });
     return map;

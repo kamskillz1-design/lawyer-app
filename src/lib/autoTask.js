@@ -1,3 +1,5 @@
+import { procedureLabel } from "@/lib/constants";
+
 // Automated-task display text. The daily reminder scan stores a structured
 // `payload` (JSON) on every automation task so the title/instructions can be
 // composed here from dictionary templates in the interface language — no
@@ -47,7 +49,7 @@ export const composeTaskTitle = (tk, t, fragment) => {
       return fill(t("tpl_deadline_" + suffix(n)), {
         n: Math.abs(n),
         matter: p.matter_number || "",
-        procedure: p.procedure_type || "",
+        procedure: procedureLabel(p.procedure_type, t),
       });
     }
     case "escalation":
