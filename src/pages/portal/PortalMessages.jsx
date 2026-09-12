@@ -12,6 +12,21 @@ import { formatDateTime } from "@/lib/format";
 import { getLanguage } from "@/lib/languages";
 import InlineMessage from "@/components/InlineMessage";
 
+async function translateToSpanish(text, sourceLanguage) {
+  if (!text || !String(text).trim()) return {};
+  try {
+    const res = await base44.functions.invoke("aiTranslate", {
+      mode: "translate",
+      text,
+      source_language: sourceLanguage || "",
+      target_language: "es",
+    });
+    return res.data || {};
+  } catch {
+    return {};
+  }
+}
+
 export default function PortalMessages() {
   const { t, lang } = useI18n();
   const { toast } = useToast();
@@ -38,11 +53,16 @@ export default function PortalMessages() {
     if (!text.trim() || !clientProfile) return;
     setSending(true);
     try {
+      const sourceLang = clientProfile.written_language || lang;
+      const tr = await translateToSpanish(text, sourceLang);
       await base44.entities.Communication.create({
         client_id: clientProfile.id, client_name: clientProfile.legal_name,
         portal_user_id: clientProfile.portal_user_id,
         direction: "inbound", channel: "portal", sender: clientProfile.legal_name,
-        original_language: clientProfile.written_language || lang, original_content: text,
+        original_language: sourceLang, original_content: text,
+        staff_translation: tr.translation || "",
+        translation_method: tr.translation ? "ai" : "",
+        translation_confidence: tr.translation ? (tr.confidence || "review_recommended") : "",
         status: "received", sensitivity: "routine", action_required: true,
       });
       setText("");
@@ -80,13 +100,18 @@ export default function PortalMessages() {
       }
 
       const failed = !!errorType;
+      const sourceLang = client.written_language || lang;
+      const tr = failed ? {} : await translateToSpanish(transcript, sourceLang);
       await base44.entities.Communication.create({
         client_id: client.id, client_name: client.legal_name, portal_user_id: me.id,
         direction: "inbound", channel: "portal", sender: client.legal_name,
-        original_language: client.written_language || lang,
+        original_language: sourceLang,
         original_content: failed ? t("voice_pending_note") : transcript,
         audio_url: file_url,
         transcription_status: failed ? "failed" : "done",
+        staff_translation: tr.translation || "",
+        translation_method: tr.translation ? "ai" : "",
+        translation_confidence: tr.translation ? (tr.confidence || "review_recommended") : "",
         status: "received", sensitivity: "routine", action_required: true,
       });
       toast({ title: failed ? t("voice_service_unavailable") : t("sent_success"), variant: failed ? "destructive" : "default" });
