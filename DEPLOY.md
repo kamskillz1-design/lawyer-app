@@ -22,4 +22,14 @@ SPA: Vite + React Router. Build: `vite` / `vite build`.
 - Public bucket: `documents`
 - Promote staff: `update public.profiles set role = 'admin' where email = 'you@firm.com';`
 
-See the repo README for local setup.
+## Speech-to-text (optional)
+
+Secret name must be exactly `GROQ_API_KEY` (Dashboard → Edge Functions → Secrets).
+
+Deploy the function (Dashboard → Edge Functions → Deploy a new function, name `transcribeVoiceNote`, paste `supabase/functions/transcribeVoiceNote/index.ts`) or:
+
+```bash
+npx supabase functions deploy transcribeVoiceNote --project-ref YOUR_PROJECT_REF
+```
+
+Verify JWT is enabled. Redeploy Vercel after `src/api/functions.js` is on `main`.
