@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ export default function PortalMessages() {
   const [clientProfile, setClientProfile] = useState(null);
 
   const load = async () => {
-    const me = await base44.auth.me();
+    const me = await authMe();
     const [comms, clients] = await Promise.all([
       base44.entities.Communication.filter({ portal_user_id: me.id }),
       base44.entities.Client.filter({ portal_user_id: me.id }),
@@ -59,7 +60,7 @@ export default function PortalMessages() {
     try {
       const file = new File([blob], "voice-note.webm", { type: blob.type || "audio/webm" });
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      const me = await base44.auth.me();
+      const me = await authMe();
       const client = clientProfile || (await base44.entities.Client.filter({ portal_user_id: me.id }))[0];
       if (!client) throw new Error("No linked client profile");
 
@@ -105,9 +106,7 @@ export default function PortalMessages() {
   return (
     <div className="space-y-6" dir={getLanguage(lang)?.rtl ? "rtl" : "ltr"}>
       <h1 className="font-heading text-3xl font-bold">{t("messages_title")}</h1>
-
       <WhatsAppConnectCard />
-
       <form onSubmit={send} className="card-soft p-5">
         <textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={t("message_placeholder")}
           className="w-full min-h-28 rounded-xl border border-input bg-card p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring/40" />
@@ -115,17 +114,12 @@ export default function PortalMessages() {
           <Button type="submit" className="rounded-xl" disabled={sending || !text.trim()}>
             <Send className="w-4 h-4 me-1" /> {sending ? t("loading") : t("send")}
           </Button>
-          <VoiceRecorder
-            busy={voiceBusy}
-            onRecorded={sendVoice}
-            labels={{
-              start: t("record_voice"), stop: t("stop_recording"),
-              sending: t("voice_sending"), noMic: t("voice_error"), micBlocked: t("mic_blocked"),
-            }}
-          />
+          <VoiceRecorder busy={voiceBusy} onRecorded={sendVoice} labels={{
+            start: t("record_voice"), stop: t("stop_recording"),
+            sending: t("voice_sending"), noMic: t("voice_error"), micBlocked: t("mic_blocked"),
+          }} />
         </div>
       </form>
-
       <div className="space-y-3">
         {data.map((c) => {
           const replyLang = getLanguage(c.original_language || lang);
