@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,7 @@ export default function PortalProfile() {
 
   useEffect(() => {
     const load = async () => {
-      const me = await base44.auth.me();
+      const me = await authMe();
       const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
       if (!clients[0]) { setNoAccess(true); return; }
       setClient(clients[0]);
@@ -69,7 +70,6 @@ export default function PortalProfile() {
           </Button>
         </div>
       </div>
-
       <div className="card-soft p-5">
         <h2 className="font-heading font-semibold mb-4">{t("contact_section")}</h2>
         <div className="grid md:grid-cols-2 gap-4">
@@ -81,7 +81,6 @@ export default function PortalProfile() {
             <input className={input} value={client.address || ""} onChange={(e) => set("address", e.target.value)} /></div>
         </div>
       </div>
-
       <div className="card-soft p-5">
         <h2 className="font-heading font-semibold mb-4">{t("language_section")}</h2>
         <div className="grid md:grid-cols-2 gap-4">
