@@ -1,4 +1,5 @@
 import { entities } from "@/api/entities";
+import { supabase } from "@/api/supabaseClient";
 
 async function aiTranslate(body = {}) {
   const mode = body.mode || "translate";
@@ -36,8 +37,16 @@ async function translateUi(body = {}) {
   return { dict: { ...strings, ...cachedDict } };
 }
 
-async function transcribeVoiceNote() {
-  return { transcript: "", error_type: "service_unavailable" };
+async function transcribeVoiceNote(body = {}) {
+  const { data, error } = await supabase.functions.invoke("transcribeVoiceNote", {
+    body: { file_url: body.file_url },
+  });
+  if (error) {
+    return { transcript: "", error_type: "service_unavailable" };
+  }
+  const transcript = (data && data.transcript) || "";
+  const errorType = data && data.error_type ? data.error_type : (transcript.trim() ? null : "empty_transcript");
+  return { transcript, error_type: errorType };
 }
 
 async function exportClientArchive() {
