@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
 import { CalendarDays, Receipt, ChevronRight } from "lucide-react";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format";
@@ -13,7 +14,7 @@ export default function PortalHome() {
 
   useEffect(() => {
     const load = async () => {
-      const me = await base44.auth.me();
+      const me = await authMe();
       const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
       const client = clients[0];
       if (!client) { setNoAccess(true); return; }
