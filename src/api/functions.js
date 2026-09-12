@@ -1,7 +1,7 @@
 import { entities } from "@/api/entities";
 import { supabase } from "@/api/supabaseClient";
 
-async function aiTranslate(body = {}) {
+function localTranslate(body = {}) {
   const mode = body.mode || "translate";
   if (mode === "translate") {
     return {
@@ -28,6 +28,16 @@ async function aiTranslate(body = {}) {
     return { translations };
   }
   throw new Error(`Unknown aiTranslate mode: ${mode}`);
+}
+
+async function aiTranslate(body = {}) {
+  try {
+    const { data, error } = await supabase.functions.invoke("aiTranslate", { body });
+    if (error || !data || data.error) return localTranslate(body);
+    return data;
+  } catch {
+    return localTranslate(body);
+  }
 }
 
 async function translateUi(body = {}) {
