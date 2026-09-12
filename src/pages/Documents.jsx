@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { categoryLabel, REVIEW_STATUSES, reviewLabel } from "@/lib/constants";
 import { formatDate, todayISO } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -24,14 +25,13 @@ export default function Documents() {
   useEffect(() => { reload(); }, []);
 
   const setReview = async (doc, status) => {
-    const me = await base44.auth.me();
+    const me = await authMe();
     await base44.entities.Document.update(doc.id, { review_status: status, review_notes: notes[doc.id] ?? doc.review_notes ?? "", reviewer: me.full_name });
     reload();
   };
 
   if (!docs) return <InlineMessage />;
   const today = todayISO();
-
   const filtered = docs.filter((d) => {
     if (filter === "review_queue") return ["uploaded", "under_review"].includes(d.review_status);
     if (filter === "expiring") return d.expiry_date && d.expiry_date >= today && d.expiry_date < new Date(Date.now() + 90 * 864e5).toISOString();
@@ -55,10 +55,8 @@ export default function Documents() {
           </Button>
         </div>
       </div>
-
       <UploadDocumentDialog open={uploadOpen} onOpenChange={setUploadOpen}
         onUploaded={() => { reload(); toast({ title: t("toast_doc_uploaded"), description: t("toast_doc_uploaded_body") }); }} />
-
       <div className="space-y-2">
         {filtered.map((doc) => (
           <div key={doc.id} className="card-soft p-4 flex flex-wrap items-center gap-3">
@@ -67,21 +65,14 @@ export default function Documents() {
               <p className="text-xs text-muted-foreground">
                 {doc.client_name} · {categoryLabel(doc.category, t)} · {t("uploaded_word")} {formatDate(doc.created_date)}
                 {doc.expiry_date ? ` · ${t("expires_word")} ${formatDate(doc.expiry_date)}` : ""}
-                {doc.legacy_source_path ? ` · ${doc.legacy_source_path}` : ""}
               </p>
-              {doc.review_notes && <p className="text-xs text-muted-foreground italic mt-1">{t("note_word")} {doc.review_notes}</p>}
             </div>
             <StatusBadge value={doc.review_status} label={reviewLabel(doc.review_status, t)} />
-            {doc.matter_id && (
-              <Link to={`/matters/${doc.matter_id}`} className="text-xs text-muted-foreground hover:text-primary">{doc.matter_number}</Link>
-            )}
+            {doc.matter_id && <Link to={`/matters/${doc.matter_id}`} className="text-xs text-muted-foreground hover:text-primary">{doc.matter_number}</Link>}
             <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">{t("view")}</a>
-            <div className="flex gap-1">
-              <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={doc.review_status}
-                onChange={(e) => setReview(doc, e.target.value)}>
-                {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{t(s.key)}</option>)}
-              </select>
-            </div>
+            <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={doc.review_status} onChange={(e) => setReview(doc, e.target.value)}>
+              {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{t(s.key)}</option>)}
+            </select>
             <input className={input + " h-8 text-xs w-full sm:w-40"} placeholder={t("ph_review_note")}
               value={notes[doc.id] ?? doc.review_notes ?? ""} onChange={(e) => setNotes({ ...notes, [doc.id]: e.target.value })}
               onBlur={() => setReview(doc, doc.review_status)} />
