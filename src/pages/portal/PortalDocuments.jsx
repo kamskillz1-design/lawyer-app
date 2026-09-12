@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/components/ui/use-toast";
 import { Upload, Download, FileCheck2, Info } from "lucide-react";
@@ -25,7 +26,7 @@ export default function PortalDocuments() {
   const [uploadingId, setUploadingId] = useState("");
 
   const load = async () => {
-    const me = await base44.auth.me();
+    const me = await authMe();
     const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
     const client = clients[0];
     if (!client) { setNoAccess(true); return; }
@@ -70,7 +71,6 @@ export default function PortalDocuments() {
     <div className="space-y-6" dir={getLanguage(lang)?.rtl ? "rtl" : "ltr"}>
       <h1 className="font-heading text-3xl font-bold">{t("checklist_title")}</h1>
       <p className="text-sm text-muted-foreground -mt-4">{t("upload_hint")}</p>
-
       {matters.map((m) => {
         const matterItems = items.filter((i) => i.matter_id === m.id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
         const matterDocs = docs.filter((d) => d.matter_id === m.id);
@@ -105,7 +105,6 @@ export default function PortalDocuments() {
               ))}
               {!matterItems.length && <p className="text-sm text-muted-foreground">—</p>}
             </div>
-
             {matterDocs.length > 0 && (
               <div className="mt-5">
                 <h3 className="text-sm font-semibold flex items-center gap-2 mb-2"><FileCheck2 className="w-4 h-4 text-primary" /> {t("nav_documents")}</h3>
