@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Upload, Download } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -26,7 +27,7 @@ export default function MatterDocuments({ matter }) {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       const category = prompt(t("doc_category_prompt"), "");
-      const doc = await base44.entities.Document.create({
+      await base44.entities.Document.create({
         title: file.name, client_id: matter.client_id, client_name: matter.client_name,
         matter_id: matter.id, matter_number: matter.matter_number, portal_user_id: matter.portal_user_id || "",
         category: category || "other", source: "staff", file_url, file_name: file.name,
@@ -44,7 +45,7 @@ export default function MatterDocuments({ matter }) {
 
   const review = async (doc, status) => {
     const notes = reviewNotes[doc.id] ?? doc.review_notes ?? "";
-    const reviewer = (await base44.auth.me()).full_name;
+    const reviewer = (await authMe()).full_name;
     await base44.entities.Document.update(doc.id, { review_status: status, review_notes: notes, reviewer });
     if (["accepted", "needs_correction"].includes(status)) {
       const items = await base44.entities.ChecklistItem.filter({ matter_id: matter.id, category: doc.category });
@@ -65,7 +66,6 @@ export default function MatterDocuments({ matter }) {
           <Upload className="w-4 h-4 me-1" /> {uploading ? t("uploading") : t("upload_doc_btn")}
         </Button>
       </div>
-
       {docs.map((doc) => {
         const expired = doc.expiry_date && doc.expiry_date < todayISO();
         return (
