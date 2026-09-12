@@ -12,7 +12,7 @@ import InlineMessage from "@/components/InlineMessage";
 const input = "w-full h-10 rounded-xl border border-input bg-card px-3 text-sm";
 
 export default function PortalProfile() {
-  const { t, setLang } = useI18n();
+  const { t } = useI18n();
   const { toast } = useToast();
   const [client, setClient] = useState(null);
   const [noAccess, setNoAccess] = useState(false);
@@ -24,7 +24,6 @@ export default function PortalProfile() {
       const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
       if (!clients[0]) { setNoAccess(true); return; }
       setClient(clients[0]);
-      if (clients[0].interface_language) setLang(clients[0].interface_language);
     };
     load().catch(() => setNoAccess(true));
   }, []);
@@ -40,7 +39,6 @@ export default function PortalProfile() {
         spoken_language: client.spoken_language, interpreter_required: !!client.interpreter_required,
         interpreter_language: client.interpreter_language || "",
       });
-      if (client.interface_language) setLang(client.interface_language);
       toast({ title: t("saved") });
     } finally {
       setSaving(false);
