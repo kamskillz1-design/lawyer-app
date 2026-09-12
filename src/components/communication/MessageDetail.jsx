@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Languages, Gavel, AlertTriangle, ListPlus, Mic, MessageCircle } from "lucide-react";
+import { Languages, Gavel, AlertTriangle, ListPlus, Mic, MessageCircle, Trash2 } from "lucide-react";
 import { SENSITIVITIES, confidenceHint } from "@/lib/constants";
 import { useI18n } from "@/lib/i18n";
 import { formatDateTime } from "@/lib/format";
@@ -8,11 +8,9 @@ import { getLanguage } from "@/lib/languages";
 import StatusBadge from "@/components/StatusBadge";
 import TranscribeManually from "@/components/communication/TranscribeManually";
 
-// Selected inbound message: original content, staff translation and
-// triage actions. All state and mutations stay in the parent page.
 export default function MessageDetail({
   selected, needsLawyer, approved, busy,
-  onTranslate, onSensitivityChange, onEscalate, onCreateTask, onTranscribed,
+  onTranslate, onSensitivityChange, onEscalate, onCreateTask, onTranscribed, onDelete,
 }) {
   const { t } = useI18n();
   return (
@@ -74,6 +72,11 @@ export default function MessageDetail({
         <Button size="sm" variant="outline" className="rounded-lg" onClick={onCreateTask}>
           <ListPlus className="w-3.5 h-3.5 me-1" /> {t("msg_create_task")}
         </Button>
+        {onDelete && (
+          <Button size="sm" variant="outline" className="rounded-lg text-destructive" onClick={onDelete}>
+            <Trash2 className="w-3.5 h-3.5 me-1" /> {t("archive") === "archive" ? "Eliminar" : t("archive")}
+          </Button>
+        )}
       </div>
     </div>
   );
