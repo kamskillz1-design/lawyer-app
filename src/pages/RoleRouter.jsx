@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 
 export default function RoleRouter() {
   const navigate = useNavigate();
 
   useEffect(() => {
     let cancelled = false;
-    base44.auth.me()
+    authMe()
       .then((me) => {
         if (cancelled) return;
         if (me && me.role === "admin") navigate("/dashboard", { replace: true });
