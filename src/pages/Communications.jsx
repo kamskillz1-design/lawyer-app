@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft } from "lucide-react";
@@ -12,10 +13,6 @@ import MessageDetail from "@/components/communication/MessageDetail";
 import ReplyComposer from "@/components/communication/ReplyComposer";
 import WhatsAppReplyDialog from "@/components/communication/WhatsAppReplyDialog";
 
-// Communications center: owns message data, translation and sending flows.
-// Presentation is delegated to MessageList, MessageDetail and ReplyComposer.
-// Below the lg breakpoint the list is replaced by the selected thread with a
-// Back button; at lg+ the two-pane layout is kept.
 export default function Communications() {
   const { toast } = useToast();
   const { t } = useI18n();
@@ -47,11 +44,9 @@ export default function Communications() {
   };
   useEffect(() => {
     reload();
-    base44.auth.me().then(setMe).catch(() => {});
+    authMe().then(setMe).catch(() => {});
   }, []);
 
-  // Keep the open thread pointing at the freshly loaded record so the detail
-  // panel never shows a stale copy after an action.
   const syncSelected = (fresh, prev) => {
     if (!prev || !fresh) return;
     const updated = fresh.find((c) => c.id === prev.id);
@@ -177,12 +172,10 @@ export default function Communications() {
   return (
     <div className="space-y-4">
       <h1 className="font-heading text-3xl font-bold">{t("msg_center_title")}</h1>
-
       <div className="grid lg:grid-cols-[340px_1fr] gap-4 items-start">
         <div className={selected ? "hidden lg:block" : ""}>
           <MessageList comms={comms} pending={pending} selected={selected} onSelect={select} />
         </div>
-
         <div className="space-y-4">
           {selected && (
             <Button variant="outline" className="rounded-xl lg:hidden" onClick={() => setSelected(null)}>
@@ -192,38 +185,16 @@ export default function Communications() {
           {!selected && <div className="card-soft p-8 text-center text-muted-foreground">{t("select_message")}</div>}
           {selected && (
             <>
-              <MessageDetail
-                selected={selected}
-                needsLawyer={needsLawyer}
-                approved={approved}
-                busy={busy}
-                onTranslate={translateIncoming}
-                onSensitivityChange={changeSensitivity}
-                onEscalate={escalate}
-                onCreateTask={createTask}
-                onTranscribed={applyTranscription}
-              />
-              <ReplyComposer
-                selected={selected}
-                client={clientOf(selected)}
-                reply={reply}
-                draft={draft}
-                busy={busy}
-                needsLawyer={needsLawyer}
-                approved={approved}
-                onReplyChange={setReply}
-                onGenerateDraft={generateDraft}
-                onApprove={approveAsLawyer}
-                onSend={send}
-                onWaOpen={() => setWaOpen(true)}
-              />
+              <MessageDetail selected={selected} needsLawyer={needsLawyer} approved={approved} busy={busy}
+                onTranslate={translateIncoming} onSensitivityChange={changeSensitivity} onEscalate={escalate}
+                onCreateTask={createTask} onTranscribed={applyTranscription} />
+              <ReplyComposer selected={selected} client={clientOf(selected)} reply={reply} draft={draft} busy={busy}
+                needsLawyer={needsLawyer} approved={approved} onReplyChange={setReply} onGenerateDraft={generateDraft}
+                onApprove={approveAsLawyer} onSend={send} onWaOpen={() => setWaOpen(true)} />
             </>
           )}
-          <WhatsAppReplyDialog
-            comm={selected} reply={reply} draft={draft}
-            approvedBy={me?.full_name || "Personal"}
-            open={waOpen} onOpenChange={setWaOpen} onSent={handleWaSent}
-          />
+          <WhatsAppReplyDialog comm={selected} reply={reply} draft={draft} approvedBy={me?.full_name || "Personal"}
+            open={waOpen} onOpenChange={setWaOpen} onSent={handleWaSent} />
         </div>
       </div>
     </div>
