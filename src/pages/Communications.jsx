@@ -51,6 +51,7 @@ export default function Communications() {
     if (!prev || !fresh) return;
     const updated = fresh.find((c) => c.id === prev.id);
     if (updated) setSelected(updated);
+    else setSelected(null);
   };
 
   const select = (c) => {
@@ -159,6 +160,19 @@ export default function Communications() {
     reload().then((fresh) => syncSelected(fresh, selected));
   };
 
+  const deleteSelected = async () => {
+    if (!selected) return;
+    if (!window.confirm("¿Eliminar este mensaje? / Delete this message?")) return;
+    try {
+      await base44.entities.Communication.delete(selected.id);
+      setSelected(null);
+      await reload();
+      toast({ title: t("saved") });
+    } catch (e) {
+      toast({ title: t("load_error"), description: e.message, variant: "destructive" });
+    }
+  };
+
   if (loadError) return (
     <div className="card-soft p-6 space-y-3">
       <p className="text-sm text-muted-foreground">{t("load_error")}</p>
@@ -187,7 +201,7 @@ export default function Communications() {
             <>
               <MessageDetail selected={selected} needsLawyer={needsLawyer} approved={approved} busy={busy}
                 onTranslate={translateIncoming} onSensitivityChange={changeSensitivity} onEscalate={escalate}
-                onCreateTask={createTask} onTranscribed={applyTranscription} />
+                onCreateTask={createTask} onTranscribed={applyTranscription} onDelete={deleteSelected} />
               <ReplyComposer selected={selected} client={clientOf(selected)} reply={reply} draft={draft} busy={busy}
                 needsLawyer={needsLawyer} approved={approved} onReplyChange={setReply} onGenerateDraft={generateDraft}
                 onApprove={approveAsLawyer} onSend={send} onWaOpen={() => setWaOpen(true)} />
