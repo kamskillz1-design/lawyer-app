@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,7 +28,7 @@ export default function MatterDetail() {
   const reload = () => base44.entities.Matter.get(id).then(setMatter);
   useEffect(() => {
     reload();
-    base44.auth.me().then(setMe).catch(() => {});
+    authMe().then(setMe).catch(() => {});
   }, [id]);
 
   const changeStage = async (stage) => {
@@ -82,7 +83,6 @@ export default function MatterDetail() {
           </div>
         </div>
       </div>
-
       <div className="grid md:grid-cols-3 gap-4">
         <div className="card-soft p-4">
           <p className="text-xs text-muted-foreground">{t("ph_next_action")}</p>
@@ -98,7 +98,6 @@ export default function MatterDetail() {
           <p className="font-heading text-lg font-bold mt-1">{t("prio_" + matter.urgency)}</p>
         </div>
       </div>
-
       <Tabs defaultValue="checklist">
         <TabsList className="bg-secondary rounded-xl h-auto w-full flex flex-wrap justify-start gap-1">
           <TabsTrigger value="checklist" className="rounded-lg data-[state=active]:bg-card">{t("tab_checklist")}</TabsTrigger>

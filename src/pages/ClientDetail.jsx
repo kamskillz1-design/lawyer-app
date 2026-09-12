@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { inviteUser } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
@@ -49,7 +50,7 @@ export default function ClientDetail() {
   const invitePortal = async () => {
     try {
       if (!client.email) throw new Error(t("client_needs_email"));
-      await base44.users.inviteUser(client.email, "user");
+      await inviteUser(client.email, "user");
       const users = await base44.entities.User.filter({ email: client.email });
       const userId = users?.[0]?.id;
       if (!userId) throw new Error(t("toast_invite_fail"));
@@ -112,13 +113,10 @@ export default function ClientDetail() {
           <Button className="rounded-xl" onClick={save} disabled={saving}><Save className="w-4 h-4 me-1" /> {saving ? t("saving") : t("save_changes")}</Button>
         </div>
       </div>
-
       {client.status === "archived" && (
         <ArchivedClientOptions client={client} onDone={(m) => { toast({ title: m }); reload(); }} />
       )}
-
       <ClientEditForm client={client} onFieldChange={set} />
-
       <div className="card-soft p-5">
         <h3 className="font-heading font-semibold mb-4">{t("nav_matters")} ({matters.length})</h3>
         <div className="space-y-2">
@@ -131,10 +129,8 @@ export default function ClientDetail() {
           {!matters.length && <p className="text-sm text-muted-foreground">{t("no_matters_yet")}</p>}
         </div>
       </div>
-
       <ArchiveClientDialog open={archiveOpen} onOpenChange={setArchiveOpen} client={client}
         onDone={(m) => { setArchiveOpen(false); toast({ title: m }); reload(); }} />
-
       <ExportArchiveDialog open={exportOpen} onOpenChange={setExportOpen} client={client}
         onDone={() => { toast({ title: t("toast_client_exported"), description: t("export_done_msg") }); reload(); }} />
     </div>
