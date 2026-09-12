@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
+import { inviteUser } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useI18n } from "@/lib/i18n";
@@ -18,7 +19,7 @@ export default function InviteUserDialog({ open, onOpenChange, clients, onDone }
   const submit = async () => {
     setBusy(true); setError("");
     try {
-      await base44.users.inviteUser(email.trim(), role);
+      await inviteUser(email.trim(), role);
       if (role === "user" && clientId) {
         await base44.entities.Client.update(clientId, { portal_email: email.trim() });
       }
