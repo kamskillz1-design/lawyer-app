@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { logout as signOut } from "@/api/auth";
 import { Scale, LayoutDashboard, Users, FolderOpen, CheckSquare, CalendarDays, FileText, MessageCircle, Receipt, Inbox, LogOut, Menu, UserRound, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
@@ -24,7 +24,8 @@ export default function Layout() {
   const [open, setOpen] = useState(false);
 
   const logout = async () => {
-    await base44.auth.logout();
+    await signOut();
+    window.location.href = "/login";
   };
 
   return (
