@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { me as authMe } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
@@ -48,7 +49,7 @@ export default function Users() {
   };
 
   useEffect(() => {
-    base44.auth.me().then((u) => setMe(u)).catch(() => setMe(null));
+    authMe().then((u) => setMe(u)).catch(() => setMe(null));
     reload();
   }, []);
 
