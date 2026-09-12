@@ -4,7 +4,7 @@ import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { Send, MessageCircle, Building2, Mic } from "lucide-react";
+import { Send, MessageCircle, Building2, Mic, Trash2 } from "lucide-react";
 import VoiceRecorder from "@/components/portal/VoiceRecorder";
 import WhatsAppConnectCard from "@/components/portal/WhatsAppConnectCard";
 import SpeakButton from "@/components/portal/SpeakButton";
@@ -123,6 +123,17 @@ export default function PortalMessages() {
     }
   };
 
+  const remove = async (id) => {
+    if (!window.confirm("¿Eliminar este mensaje? / Delete this message?")) return;
+    try {
+      await base44.entities.Communication.delete(id);
+      toast({ title: t("sent_success") });
+      load();
+    } catch (e) {
+      toast({ title: t("send_error"), variant: "destructive" });
+    }
+  };
+
   if (noAccess || (data && !clientProfile)) {
     return <InlineMessage className="p-6" text={t("no_client_profile")} />;
   }
@@ -153,6 +164,11 @@ export default function PortalMessages() {
               <div>
                 <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
                   <MessageCircle className="w-3.5 h-3.5" /> {c.channel === "whatsapp" ? "WhatsApp" : t("your_message")} · {formatDateTime(c.created_date)}
+                  <button type="button" onClick={() => remove(c.id)}
+                    className="ms-auto p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-secondary"
+                    title="Eliminar">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </p>
                 <div className="flex items-start gap-2">
                   <p className="text-sm bg-secondary/70 rounded-xl p-3 flex-1 min-w-0 break-words">{c.original_content}</p>
