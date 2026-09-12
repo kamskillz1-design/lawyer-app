@@ -8,14 +8,6 @@ returns trigger language plpgsql as $$
 begin new.updated_at = now(); return new; end;
 $$;
 
-create or replace function public.is_admin()
-returns boolean language sql stable as $$
-  select exists (
-    select 1 from public.profiles p
-    where p.id = (select auth.uid()) and p.role = 'admin'
-  );
-$$;
-
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text,
@@ -24,6 +16,14 @@ create table if not exists public.profiles (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+create or replace function public.is_admin()
+returns boolean language sql stable set search_path = public as $$
+  select exists (
+    select 1 from public.profiles p
+    where p.id = (select auth.uid()) and p.role = 'admin'
+  );
+$$;
 
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -348,43 +348,71 @@ alter table public.invoices enable row level security;
 alter table public.audit_logs enable row level security;
 alter table public.ui_dict_cache enable row level security;
 
+drop policy if exists profiles_select_own_or_admin on public.profiles;
 create policy profiles_select_own_or_admin on public.profiles for select to authenticated using (id = (select auth.uid()) or public.is_admin());
+drop policy if exists profiles_update_own on public.profiles;
 create policy profiles_update_own on public.profiles for update to authenticated using (id = (select auth.uid())) with check (id = (select auth.uid()) and role = (select p.role from public.profiles p where p.id = (select auth.uid())));
+drop policy if exists profiles_update_admin on public.profiles;
 create policy profiles_update_admin on public.profiles for update to authenticated using (public.is_admin()) with check (public.is_admin());
 
+drop policy if exists clients_admin_all on public.clients;
 create policy clients_admin_all on public.clients for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists clients_portal_select on public.clients;
 create policy clients_portal_select on public.clients for select to authenticated using (portal_user_id = (select auth.uid()));
+drop policy if exists clients_portal_update on public.clients;
 create policy clients_portal_update on public.clients for update to authenticated using (portal_user_id = (select auth.uid()) and coalesce(portal_access_enabled, true)) with check (portal_user_id = (select auth.uid()));
 
+drop policy if exists matters_admin_all on public.matters;
 create policy matters_admin_all on public.matters for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists matters_portal_select on public.matters;
 create policy matters_portal_select on public.matters for select to authenticated using (portal_user_id = (select auth.uid()));
 
+drop policy if exists checklist_items_admin_all on public.checklist_items;
 create policy checklist_items_admin_all on public.checklist_items for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists checklist_items_portal_select on public.checklist_items;
 create policy checklist_items_portal_select on public.checklist_items for select to authenticated using (portal_user_id = (select auth.uid()));
+drop policy if exists checklist_items_portal_update on public.checklist_items;
 create policy checklist_items_portal_update on public.checklist_items for update to authenticated using (portal_user_id = (select auth.uid())) with check (portal_user_id = (select auth.uid()));
 
+drop policy if exists documents_admin_all on public.documents;
 create policy documents_admin_all on public.documents for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists documents_portal_select on public.documents;
 create policy documents_portal_select on public.documents for select to authenticated using (portal_user_id = (select auth.uid()) and visibility = 'client');
+drop policy if exists documents_portal_insert on public.documents;
 create policy documents_portal_insert on public.documents for insert to authenticated with check (portal_user_id = (select auth.uid()));
 
+drop policy if exists communications_admin_all on public.communications;
 create policy communications_admin_all on public.communications for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists communications_portal_select on public.communications;
 create policy communications_portal_select on public.communications for select to authenticated using (portal_user_id = (select auth.uid()));
+drop policy if exists communications_portal_insert on public.communications;
 create policy communications_portal_insert on public.communications for insert to authenticated with check (portal_user_id = (select auth.uid()));
 
+drop policy if exists appointments_admin_all on public.appointments;
 create policy appointments_admin_all on public.appointments for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists appointments_portal_select on public.appointments;
 create policy appointments_portal_select on public.appointments for select to authenticated using (portal_user_id = (select auth.uid()));
 
+drop policy if exists tasks_admin_all on public.tasks;
 create policy tasks_admin_all on public.tasks for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
+drop policy if exists invoices_admin_all on public.invoices;
 create policy invoices_admin_all on public.invoices for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists invoices_portal_select on public.invoices;
 create policy invoices_portal_select on public.invoices for select to authenticated using (portal_user_id = (select auth.uid()));
 
+drop policy if exists leads_anon_insert on public.leads;
 create policy leads_anon_insert on public.leads for insert to anon with check (true);
+drop policy if exists leads_authenticated_insert on public.leads;
 create policy leads_authenticated_insert on public.leads for insert to authenticated with check (true);
+drop policy if exists leads_admin_all on public.leads;
 create policy leads_admin_all on public.leads for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
+drop policy if exists audit_logs_admin_all on public.audit_logs;
 create policy audit_logs_admin_all on public.audit_logs for all to authenticated using (public.is_admin()) with check (public.is_admin());
+drop policy if exists ui_dict_cache_select on public.ui_dict_cache;
 create policy ui_dict_cache_select on public.ui_dict_cache for select to authenticated using (true);
+drop policy if exists ui_dict_cache_admin_write on public.ui_dict_cache;
 create policy ui_dict_cache_admin_write on public.ui_dict_cache for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 grant usage on schema public to anon, authenticated;
