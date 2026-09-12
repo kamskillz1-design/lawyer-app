@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import { me as authMe, logout as signOut } from "@/api/auth";
 import { Scale, Home, FileText, MessageCircle, UserRound, LogOut, Lock, Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -13,7 +14,7 @@ export default function PortalLayout() {
   useEffect(() => {
     const check = async () => {
       try {
-        const me = await base44.auth.me();
+        const me = await authMe();
         const clients = await base44.entities.Client.filter({ portal_user_id: me.id });
         const client = clients[0];
         setState(client && client.portal_access_enabled === false ? "locked" : "ok");
@@ -50,7 +51,7 @@ export default function PortalLayout() {
             {brand}
             <div className="flex items-center gap-2 shrink-0">
               <LanguageSwitcher />
-              <button onClick={() => base44.auth.logout()} title={t("logout")}
+              <button onClick={async () => { await signOut(); window.location.href = "/login"; }} title={t("logout")}
                 className="p-2.5 rounded-lg hover:bg-secondary text-muted-foreground">
                 <LogOut className="w-4 h-4" />
               </button>
@@ -83,7 +84,7 @@ export default function PortalLayout() {
           {brand}
           <div className="flex items-center gap-2 shrink-0">
             <LanguageSwitcher />
-            <button onClick={() => base44.auth.logout()} title={t("logout")}
+            <button onClick={async () => { await signOut(); window.location.href = "/login"; }} title={t("logout")}
               className="p-2.5 rounded-lg hover:bg-secondary text-muted-foreground">
               <LogOut className="w-4 h-4" />
             </button>
