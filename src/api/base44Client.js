@@ -1,12 +1,28 @@
-import { createClient } from '@base44/sdk';
-import { appParams } from '@/lib/app-params';
+import { entities } from "@/api/entities";
+import { invoke } from "@/api/functions";
+import { uploadFile } from "@/api/uploads";
 
-const { appId, token, functionsVersion, appBaseUrl } = appParams;
+const WHATSAPP_CONNECT_URL = import.meta.env.VITE_WHATSAPP_CONNECT_URL || "";
 
-export const base44 = createClient({
-  appId,
-  token,
-  functionsVersion,
-  serverUrl: '',
-  appBaseUrl
-});
+export const base44 = {
+  entities,
+  integrations: {
+    Core: {
+      UploadFile: uploadFile,
+    },
+  },
+  functions: {
+    invoke,
+  },
+  agents: {
+    getWhatsAppConnectURL() {
+      return WHATSAPP_CONNECT_URL || "#";
+    },
+    async listConversations() {
+      return [];
+    },
+    async addMessage() {
+      throw new Error("WhatsApp provider is not configured");
+    },
+  },
+};
