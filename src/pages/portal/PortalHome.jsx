@@ -8,7 +8,7 @@ import { getLanguage } from "@/lib/languages";
 import InlineMessage from "@/components/InlineMessage";
 
 export default function PortalHome() {
-  const { t, stageText } = useI18n();
+  const { t, stageText, lang } = useI18n();
   const [data, setData] = useState(null);
   const [noAccess, setNoAccess] = useState(false);
 
@@ -38,7 +38,7 @@ export default function PortalHome() {
   const unpaid = invoices.filter((i) => ["sent", "overdue"].includes(i.status));
 
   return (
-    <div className="space-y-6" dir={getLanguage(client.interface_language)?.rtl ? "rtl" : "ltr"}>
+    <div className="space-y-6" dir={getLanguage(lang)?.rtl ? "rtl" : "ltr"}>
       <div>
         <h1 className="font-heading text-3xl font-bold">{t("welcome")}, {client.preferred_name || client.legal_name}</h1>
         <p className="text-muted-foreground text-sm mt-1">{t("my_cases")} · {matters.length}</p>
