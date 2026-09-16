@@ -15,6 +15,7 @@ export function mapAuthUser(sessionUser, profile) {
       sessionUser.user_metadata?.name ||
       "",
     role: profile?.role || sessionUser.user_metadata?.role || "user",
+    provider: sessionUser.app_metadata?.provider || sessionUser.app_metadata?.providers?.[0] || null,
   };
 }
 
@@ -68,11 +69,21 @@ export async function resendOtp(email) {
 
 export async function loginWithProvider(provider, returnTo = "/") {
   const path = returnTo && returnTo.startsWith("/") ? returnTo : "/";
-  const { error } = await supabase.auth.signInWithOAuth({
+  const redirectTo = `${origin()}/login?returnTo=${encodeURIComponent(path)}`;
+  const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
-    options: { redirectTo: `${origin()}${path}` },
+    options: {
+      redirectTo,
+      skipBrowserRedirect: false,
+      queryParams: {
+        access_type: "offline",
+        prompt: "select_account",
+      },
+      scopes: "openid email profile",
+    },
   });
   if (error) throw error;
+  return data;
 }
 
 export async function resetPasswordRequest(email) {

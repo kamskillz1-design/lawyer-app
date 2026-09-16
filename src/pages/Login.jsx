@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/api/supabaseClient";
 import { loginViaEmailPassword, loginWithProvider } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,25 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState(false);
   const returnTo = safeReturnTo();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthError = params.get("error_description") || params.get("error");
+    if (oauthError) {
+      setError(decodeURIComponent(oauthError.replace(/\+/g, " ")));
+    }
+
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!cancelled && session?.user) {
+        window.location.replace(returnTo || "/");
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [returnTo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,8 +49,15 @@ export default function Login() {
     }
   };
 
-  const handleGoogle = () => {
-    loginWithProvider("google", returnTo);
+  const handleGoogle = async () => {
+    setError("");
+    setOauthLoading(true);
+    try {
+      await loginWithProvider("google", returnTo);
+    } catch (err) {
+      setError(err.message || "Google sign-in is not available. Enable the Google provider in Supabase Auth.");
+      setOauthLoading(false);
+    }
   };
 
   return (
@@ -51,8 +77,8 @@ export default function Login() {
         </>
       }
     >
-      <Button variant="outline" className="w-full h-12 text-sm font-medium mb-6" onClick={handleGoogle}>
-        <GoogleIcon className="w-5 h-5 mr-2" />
+      <Button variant="outline" className="w-full h-12 text-sm font-medium mb-6" onClick={handleGoogle} disabled={oauthLoading}>
+        {oauthLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <GoogleIcon className="w-5 h-5 mr-2" />}
         Continue with Google
       </Button>
       <div className="relative mb-6">
