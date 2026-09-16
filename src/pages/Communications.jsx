@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { me as authMe } from "@/api/auth";
+import { supabase } from "@/api/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { confidenceHint } from "@/lib/constants";
 import { getLanguage } from "@/lib/languages";
@@ -12,10 +14,12 @@ import MessageList from "@/components/communication/MessageList";
 import MessageDetail from "@/components/communication/MessageDetail";
 import ReplyComposer from "@/components/communication/ReplyComposer";
 import WhatsAppReplyDialog from "@/components/communication/WhatsAppReplyDialog";
+import StaffComposeDialog from "@/components/communication/StaffComposeDialog";
 
 export default function Communications() {
   const { toast } = useToast();
   const { t } = useI18n();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [comms, setComms] = useState(null);
   const [loadError, setLoadError] = useState(false);
   const [clients, setClients] = useState([]);
@@ -25,7 +29,10 @@ export default function Communications() {
   const [busy, setBusy] = useState("");
   const [approved, setApproved] = useState(false);
   const [waOpen, setWaOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
   const [me, setMe] = useState(null);
+  const selectedRef = useRef(null);
+  selectedRef.current = selected;
 
   const reload = async () => {
     setLoadError(false);
@@ -45,6 +52,23 @@ export default function Communications() {
   useEffect(() => {
     reload();
     authMe().then(setMe).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const pre = searchParams.get("client");
+    if (pre) {
+      setComposeOpen(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("staff-communications")
+      .on("postgres_changes", { event: "*", schema: "public", table: "communications" }, () => {
+        reload().then((fresh) => syncSelected(fresh, selectedRef.current));
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const syncSelected = (fresh, prev) => {
@@ -185,7 +209,12 @@ export default function Communications() {
 
   return (
     <div className="space-y-4">
-      <h1 className="font-heading text-3xl font-bold">{t("msg_center_title")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-heading text-3xl font-bold">{t("msg_center_title")}</h1>
+        <Button className="rounded-xl" onClick={() => setComposeOpen(true)}>
+          <Plus className="w-4 h-4 me-1" /> {t("new_message")}
+        </Button>
+      </div>
       <div className="grid lg:grid-cols-[340px_1fr] gap-4 items-start">
         <div className={selected ? "hidden lg:block" : ""}>
           <MessageList comms={comms} pending={pending} selected={selected} onSelect={select} />
@@ -211,6 +240,20 @@ export default function Communications() {
             open={waOpen} onOpenChange={setWaOpen} onSent={handleWaSent} />
         </div>
       </div>
+      <StaffComposeDialog
+        open={composeOpen}
+        onOpenChange={(v) => {
+          setComposeOpen(v);
+          if (!v && searchParams.get("client")) {
+            searchParams.delete("client");
+            setSearchParams(searchParams, { replace: true });
+          }
+        }}
+        clients={clients}
+        preselectId={searchParams.get("client") || ""}
+        approvedBy={me?.full_name || "Personal"}
+        onSent={() => reload().then((fresh) => syncSelected(fresh, selectedRef.current))}
+      />
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { inviteUser } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, UserPlus, FolderOpen, Archive, HardDriveDownload } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, FolderOpen, Archive, HardDriveDownload, MessageSquare } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ExportArchiveDialog from "@/components/clients/ExportArchiveDialog";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
@@ -17,6 +17,7 @@ import InlineMessage from "@/components/InlineMessage";
 
 export default function ClientDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useI18n();
   const [client, setClient] = useState(null);
@@ -91,6 +92,11 @@ export default function ClientDetail() {
           <p className="text-sm text-muted-foreground">{client.preferred_name && `(${client.preferred_name}) `}{t("nie_lbl")} {client.nie_number || "—"} · {t("portal_colon")} {portalState}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {client.status !== "archived" && (
+            <Button variant="outline" className="rounded-xl" onClick={() => navigate(`/messages?client=${client.id}`)}>
+              <MessageSquare className="w-4 h-4 me-1" /> {t("send_message")}
+            </Button>
+          )}
           {client.status !== "archived" && !client.portal_user_id && (
             <Button variant="outline" className="rounded-xl" onClick={invitePortal}><UserPlus className="w-4 h-4 me-1" /> {t("invite_portal")}</Button>
           )}
