@@ -40,6 +40,19 @@ function throwIf(error) {
   if (error) throw error;
 }
 
+function sanitizeBody(payload) {
+  const body = { ...payload };
+  delete body.id;
+  delete body.created_date;
+  delete body.updated_date;
+  delete body.created_at;
+  delete body.updated_at;
+  for (const [key, value] of Object.entries(body)) {
+    if (value === "") body[key] = null;
+  }
+  return body;
+}
+
 export function createTableApi(table) {
   return {
     async list(sort) {
@@ -64,22 +77,20 @@ export function createTableApi(table) {
       return mapRow(data);
     },
     async create(payload) {
-      const body = { ...payload };
-      delete body.id;
-      delete body.created_date;
-      delete body.updated_date;
-      delete body.created_at;
-      delete body.updated_at;
-      const { data, error } = await supabase.from(table).insert(body).select("*").single();
+      const { data, error } = await supabase.from(table).insert(sanitizeBody(payload)).select("*").single();
       throwIf(error);
       return mapRow(data);
     },
+    async bulkCreate(rows) {
+      const list = (rows || []).map(sanitizeBody);
+      if (!list.length) return [];
+      const { data, error } = await supabase.from(table).insert(list).select("*");
+      throwIf(error);
+      return mapRows(data);
+    },
     async update(id, payload) {
-      const body = { ...payload };
+      const body = sanitizeBody(payload);
       delete body.id;
-      delete body.created_date;
-      delete body.updated_date;
-      delete body.created_at;
       const { data, error } = await supabase.from(table).update(body).eq("id", id).select("*").single();
       throwIf(error);
       return mapRow(data);
@@ -104,7 +115,7 @@ export function createTableApi(table) {
       return results;
     },
     async updateMany(filters, patch) {
-      const body = { ...(patch || {}) };
+      const body = sanitizeBody(patch || {});
       if (body.$unset && typeof body.$unset === "object") {
         Object.keys(body.$unset).forEach((key) => {
           body[key] = null;
@@ -112,9 +123,6 @@ export function createTableApi(table) {
         delete body.$unset;
       }
       delete body.id;
-      delete body.created_date;
-      delete body.updated_date;
-      delete body.created_at;
       let q = applyFilters(supabase.from(table).update(body), filters);
       const { error } = await q;
       throwIf(error);

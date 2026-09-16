@@ -25,6 +25,7 @@ export default function Matters() {
   const [clients, setClients] = useState([]);
   const [stageFilter, setStageFilter] = useState("all");
   const [open, setOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({ client_id: "", procedure_family: PROCEDURE_FAMILIES[0].id, procedure_type: PROCEDURE_TYPES[0].id, authority: "Subdelegación del Gobierno (Bizkaia)", province: "Bizkaia", urgency: "normal", assigned_lawyer: "", assigned_caseworker: "", next_action: "Solicitar documentos al cliente", next_action_owner: "staff", next_deadline: "", target_submission_date: "" });
 
   const reload = async () => {
@@ -36,33 +37,51 @@ export default function Matters() {
 
   const create = async () => {
     const client = clients.find((c) => c.id === form.client_id);
-    const count = (matters?.length || 0) + 1;
-    const matter_number = `M-${new Date().getFullYear()}-${String(count).padStart(3, "0")}`;
-    const matter = await base44.entities.Matter.create({
-      ...form,
-      matter_number,
-      client_id: client.id,
-      client_name: client.legal_name,
-      portal_user_id: client.portal_user_id || "",
-      stage: "open_documents_requested",
-      opened_date: todayISO(),
-    });
-    await base44.entities.ChecklistItem.bulkCreate(
-      DEFAULT_CHECKLIST.map((item, i) => ({
-        matter_id: matter.id, matter_number, client_id: client.id, client_name: client.legal_name,
-        portal_user_id: client.portal_user_id || "", sort_order: i, status: "needed", ...item,
-      }))
-    );
-    await base44.entities.Task.create({
-      title: form.next_action || "Solicitar documentos al cliente",
-      matter_id: matter.id, client_id: client.id, matter_number,
-      owner: form.assigned_caseworker || "Pendiente asignar",
-      due_date: form.next_deadline || "", priority: form.urgency, task_type: "client_document", status: "todo",
-    });
-    await base44.entities.AuditLog.create({ entity_type: "Matter", entity_id: matter.id, action: "created", summary: `Expediente ${matter_number} creado` });
-    setOpen(false);
-    reload();
-    toast({ title: t("toast_matter_created"), description: t("toast_checklist_generated") });
+    if (!client) {
+      toast({ title: t("ph_client_required"), variant: "destructive" });
+      return;
+    }
+    setCreating(true);
+    try {
+      const count = (matters?.length || 0) + 1;
+      const matter_number = `M-${new Date().getFullYear()}-${String(count).padStart(3, "0")}`;
+      const matter = await base44.entities.Matter.create({
+        ...form,
+        matter_number,
+        client_id: client.id,
+        client_name: client.legal_name,
+        portal_user_id: client.portal_user_id || null,
+        stage: "open_documents_requested",
+        opened_date: todayISO(),
+        next_deadline: form.next_deadline || null,
+        target_submission_date: form.target_submission_date || null,
+      });
+      await base44.entities.ChecklistItem.bulkCreate(
+        DEFAULT_CHECKLIST.map((item, i) => ({
+          matter_id: matter.id, matter_number, client_id: client.id, client_name: client.legal_name,
+          portal_user_id: client.portal_user_id || null, sort_order: i, status: "needed",
+          category: item.category, title: item.title, why_required: item.why,
+          translation_required: item.translation_required,
+        }))
+      );
+      await base44.entities.Task.create({
+        title: form.next_action || "Solicitar documentos al cliente",
+        matter_id: matter.id, client_id: client.id, matter_number,
+        owner: form.assigned_caseworker || "Pendiente asignar",
+        due_date: form.next_deadline || null,
+        priority: form.urgency === "normal" ? "medium" : form.urgency,
+        task_type: "client_document", status: "todo",
+      });
+      await base44.entities.AuditLog.create({ entity_type: "Matter", entity_id: matter.id, action: "created", summary: `Expediente ${matter_number} creado` });
+      setOpen(false);
+      setForm((f) => ({ ...f, client_id: "", next_deadline: "", target_submission_date: "" }));
+      await reload();
+      toast({ title: t("toast_matter_created"), description: t("toast_checklist_generated") });
+    } catch (e) {
+      toast({ title: t("toast_matter_fail") || t("load_error"), description: e.message, variant: "destructive" });
+    } finally {
+      setCreating(false);
+    }
   };
 
   if (!matters) return <InlineMessage />;
@@ -108,7 +127,9 @@ export default function Matters() {
                 <input type="date" className={input} value={form.next_deadline} onChange={(e) => setForm({ ...form, next_deadline: e.target.value })} />
                 <input type="date" className={input} value={form.target_submission_date} onChange={(e) => setForm({ ...form, target_submission_date: e.target.value })} />
               </div>
-              <Button className="w-full rounded-xl mt-2" onClick={create} disabled={!form.client_id}>{t("create_matter")}</Button>
+              <Button className="w-full rounded-xl mt-2" onClick={create} disabled={!form.client_id || creating}>
+                {creating ? t("saving") : t("create_matter")}
+              </Button>
             </DialogContent>
           </Dialog>
         </div>
