@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { inviteUser } from "@/api/auth";
+import { inviteUser, resendInvite } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, UserPlus, FolderOpen, Archive, HardDriveDownload, MessageSquare } from "lucide-react";
+import { ArrowLeft, Save, UserPlus, FolderOpen, Archive, HardDriveDownload, MessageSquare, Mail } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import ExportArchiveDialog from "@/components/clients/ExportArchiveDialog";
 import ArchiveClientDialog from "@/components/clients/ArchiveClientDialog";
@@ -23,6 +23,7 @@ export default function ClientDetail() {
   const [client, setClient] = useState(null);
   const [matters, setMatters] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [inviting, setInviting] = useState(false);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
 
@@ -49,6 +50,7 @@ export default function ClientDetail() {
   };
 
   const invitePortal = async () => {
+    setInviting(true);
     try {
       if (!client.email) throw new Error(t("client_needs_email"));
       await inviteUser(client.email, "user");
@@ -61,6 +63,29 @@ export default function ClientDetail() {
       reload();
     } catch (e) {
       toast({ title: t("toast_invite_fail"), description: e.message, variant: "destructive" });
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const resendPortalInvite = async () => {
+    const email = client.email || client.portal_email;
+    if (!email) {
+      toast({ title: t("resend_need_email"), variant: "destructive" });
+      return;
+    }
+    setInviting(true);
+    try {
+      await resendInvite(email, "user");
+      await base44.entities.AuditLog.create({
+        entity_type: "Client", entity_id: id, action: "invite_resent",
+        summary: `Invitación reenviada a ${email}`,
+      });
+      toast({ title: t("toast_invite_resent"), description: `${email} — ${t("toast_invite_resent_body")}` });
+    } catch (e) {
+      toast({ title: t("toast_invite_fail"), description: e.message, variant: "destructive" });
+    } finally {
+      setInviting(false);
     }
   };
 
@@ -98,13 +123,20 @@ export default function ClientDetail() {
             </Button>
           )}
           {client.status !== "archived" && !client.portal_user_id && (
-            <Button variant="outline" className="rounded-xl" onClick={invitePortal}><UserPlus className="w-4 h-4 me-1" /> {t("invite_portal")}</Button>
+            <Button variant="outline" className="rounded-xl" onClick={invitePortal} disabled={inviting}>
+              <UserPlus className="w-4 h-4 me-1" /> {inviting ? t("sending") : t("invite_portal")}
+            </Button>
           )}
           {client.status !== "archived" && client.portal_user_id && (
-            <label className="flex items-center gap-2 text-sm card-soft px-4 py-2 rounded-xl cursor-pointer">
-              <Switch checked={client.portal_access_enabled !== false} onCheckedChange={togglePortalAccess} />
-              {t("portal_access")}
-            </label>
+            <>
+              <Button variant="outline" className="rounded-xl" onClick={resendPortalInvite} disabled={inviting}>
+                <Mail className="w-4 h-4 me-1" /> {inviting ? t("sending") : t("resend_invite")}
+              </Button>
+              <label className="flex items-center gap-2 text-sm card-soft px-4 py-2 rounded-xl cursor-pointer">
+                <Switch checked={client.portal_access_enabled !== false} onCheckedChange={togglePortalAccess} />
+                {t("portal_access")}
+              </label>
+            </>
           )}
           {client.status !== "archived" && (
             <Button variant="outline" className="rounded-xl text-destructive hover:text-destructive" onClick={() => setArchiveOpen(true)}>

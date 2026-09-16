@@ -17,6 +17,10 @@ const EXTRA_DICT = {
     mf_procedure_family: "Procedure family",
     mf_procedure_type: "Procedure type",
     mf_province: "Province",
+    resend_invite: "Resend invitation",
+    toast_invite_resent: "Invitation resent",
+    toast_invite_resent_body: "They will receive a new sign-in email. Check spam if it does not arrive.",
+    resend_need_email: "An email address is required to resend the invitation.",
   },
   es: {
     new_message: "Nuevo mensaje",
@@ -31,6 +35,10 @@ const EXTRA_DICT = {
     mf_procedure_family: "Familia del procedimiento",
     mf_procedure_type: "Tipo de procedimiento",
     mf_province: "Provincia",
+    resend_invite: "Reenviar invitación",
+    toast_invite_resent: "Invitación reenviada",
+    toast_invite_resent_body: "Recibirán un nuevo correo de acceso. Revise el spam si no llega.",
+    resend_need_email: "Se necesita un correo electrónico para reenviar la invitación.",
   },
 };
 Object.assign(DICT.en, EXTRA_DICT.en);
@@ -40,7 +48,7 @@ const globalScope = typeof window !== "undefined" ? window : globalThis;
 const I18nContext = globalScope.__lexpath_i18n_context__ ||
   (globalScope.__lexpath_i18n_context__ = createContext(null));
 
-const DICT_CACHE_VERSION = 3;
+const DICT_CACHE_VERSION = 4;
 const cacheKey = (code) => `lexpath_dict_v${DICT_CACHE_VERSION}_${code}`;
 
 const STAGE_KEYS = {
