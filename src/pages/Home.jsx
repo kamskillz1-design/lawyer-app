@@ -83,9 +83,9 @@ export default function Home() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
-        <CollapsibleSection icon={AlarmClock} iconClass="text-red-600" title={t("dash_overdue")} count={overdue.length} contentClass="space-y-2">
+        <CollapsibleSection to="/tasks" icon={AlarmClock} iconClass="text-red-600" title={t("dash_overdue")} count={overdue.length} contentClass="space-y-2">
           {overdue.slice(0, 5).map((tk) => (
-            <Link key={tk.id} to={`/matters/${tk.matter_id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+            <Link key={tk.id} to={tk.matter_id ? `/matters/${tk.matter_id}` : "/tasks"} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium break-words">{titles[tk.id]?.title ?? tk.title}</p>
               <p className="text-xs text-red-600 break-words">{tk.matter_number} · {t("was_due")} {formatDate(tk.due_date)} · {tk.owner || t("unassigned")}</p>
             </Link>
@@ -93,7 +93,7 @@ export default function Home() {
           {!overdue.length && <p className="text-sm text-muted-foreground p-3">{t("dash_no_overdue")}</p>}
         </CollapsibleSection>
 
-        <CollapsibleSection icon={AlarmClock} iconClass="text-amber-600" title={t("dash_deadlines")} count={upcomingDeadlines.length} contentClass="space-y-2">
+        <CollapsibleSection to="/matters" icon={AlarmClock} iconClass="text-amber-600" title={t("dash_deadlines")} count={upcomingDeadlines.length} contentClass="space-y-2">
           {upcomingDeadlines.slice(0, 5).map((m) => (
             <Link key={m.id} to={`/matters/${m.id}`} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium break-words">{m.matter_number} · {procedureLabel(m.procedure_type, t)}</p>
@@ -103,7 +103,7 @@ export default function Home() {
           {!upcomingDeadlines.length && <p className="text-sm text-muted-foreground p-3">{t("dash_no_deadlines")}</p>}
         </CollapsibleSection>
 
-        <CollapsibleSection icon={MessageCircle} iconClass="text-sky-600" title={t("dash_pending_msgs")} count={pendingMsgs.length} contentClass="space-y-2">
+        <CollapsibleSection to="/messages" icon={MessageCircle} iconClass="text-sky-600" title={t("dash_pending_msgs")} count={pendingMsgs.length} contentClass="space-y-2">
           {pendingMsgs.slice(0, 5).map((c) => (
             <Link key={c.id} to="/messages" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium break-words">{c.client_name} · {c.original_language}</p>
@@ -114,7 +114,7 @@ export default function Home() {
           {!pendingMsgs.length && <p className="text-sm text-muted-foreground p-3">{t("dash_no_msgs")}</p>}
         </CollapsibleSection>
 
-        <CollapsibleSection icon={Receipt} iconClass="text-amber-600" title={t("dash_unpaid")} count={unpaid.length} contentClass="space-y-2">
+        <CollapsibleSection to="/billing" icon={Receipt} iconClass="text-amber-600" title={t("dash_unpaid")} count={unpaid.length} contentClass="space-y-2">
           {unpaid.slice(0, 5).map((i) => (
             <Link key={i.id} to="/billing" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium break-words">{i.number} · {i.client_name}</p>
@@ -124,7 +124,7 @@ export default function Home() {
           {!unpaid.length && <p className="text-sm text-muted-foreground p-3">{t("dash_no_unpaid")}</p>}
         </CollapsibleSection>
 
-        <CollapsibleSection icon={Inbox} iconClass="text-primary" title={t("dash_open_leads")} count={newLeads.length} className="md:col-span-2" contentClass="grid md:grid-cols-2 gap-2">
+        <CollapsibleSection to="/leads" icon={Inbox} iconClass="text-primary" title={t("dash_open_leads")} count={newLeads.length} className="md:col-span-2" contentClass="grid md:grid-cols-2 gap-2">
           {newLeads.slice(0, 6).map((l) => (
             <Link key={l.id} to="/leads" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium break-words">{l.full_name} · {l.preferred_language || "—"}</p>
@@ -135,11 +135,11 @@ export default function Home() {
           {!newLeads.length && <p className="text-sm text-muted-foreground p-3">{t("dash_no_leads")}</p>}
         </CollapsibleSection>
 
-        <CollapsibleSection icon={Zap} iconClass="text-primary" title={t("dash_auto")} count={autoReminders.length}
+        <CollapsibleSection to="/tasks" icon={Zap} iconClass="text-primary" title={t("dash_auto")} count={autoReminders.length}
           className="md:col-span-2 border-l-4 border-l-primary/30" contentClass="grid md:grid-cols-2 gap-2"
           titleExtra={<span className="text-xs text-muted-foreground font-normal w-full sm:w-auto">{t("dash_auto_note")}</span>}>
           {autoReminders.slice(0, 6).map((tk) => (
-            <Link key={tk.id} to="/tasks" className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
+            <Link key={tk.id} to={tk.matter_id ? `/matters/${tk.matter_id}` : "/tasks"} className="block p-3 rounded-xl hover:bg-secondary text-sm min-w-0">
               <p className="font-medium flex items-center gap-1.5 min-w-0">
                 <Zap className="w-3 h-3 text-primary shrink-0" /> <span className="min-w-0 break-words">{titles[tk.id]?.title ?? tk.title}</span>
               </p>
