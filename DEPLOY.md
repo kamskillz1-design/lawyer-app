@@ -10,6 +10,7 @@ SPA: Vite + React Router. Build: `vite` / `vite build`.
 - [ ] Auth via `src/api/auth.js` + AuthContext
 - [ ] Uploads: Storage bucket `documents`
 - [ ] Run `supabase/schema.sql` once
+- [ ] Run `supabase/patch_profiles_rls.sql` if role change errors with "infinite recursion detected in policy for relation profiles"
 - [ ] `vercel.json` SPA rewrites
 - [ ] `.env.example` only
 - [ ] `npm install` so lockfile does not pin `@base44/*`
