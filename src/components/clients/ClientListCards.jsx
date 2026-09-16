@@ -14,35 +14,39 @@ export default function ClientListCards({ clients, muted = false, onArchive, onE
   return (
     <div className="md:hidden space-y-2">
       {clients.map((c) => (
-        <div key={c.id} className={`card-soft p-4 space-y-1 ${muted ? "opacity-60" : ""}`}>
-          <Link to={`/clients/${c.id}`} className="font-medium hover:text-primary break-words">{c.legal_name}</Link>
-          <p className="text-xs text-muted-foreground break-words">{t("nie_lbl")}: {c.nie_number || "—"} · {c.phone || "—"} · {c.email || "—"}</p>
-          {c.legacy_dropbox_path && <p className="text-xs text-muted-foreground break-all">{t("dropbox_archive")} {c.legacy_dropbox_path}</p>}
-          <p className="text-xs text-muted-foreground break-words">{c.written_language || "es"} / {c.spoken_language || "—"}{c.interpreter_required ? ` · ${t("interpreter_short")}` : ""}</p>
-          <p className="text-xs text-muted-foreground break-words">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""} · {t("portal_colon")} {portal(c)}</p>
+        <div key={c.id} className={`card-soft p-4 space-y-1 relative ${muted ? "opacity-60" : ""} hover:bg-secondary/40`}>
+          <Link to={`/clients/${c.id}`} className="block space-y-1 pe-12">
+            <p className="font-medium hover:text-primary break-words">{c.legal_name}</p>
+            <p className="text-xs text-muted-foreground break-words">{t("nie_lbl")}: {c.nie_number || "—"} · {c.phone || "—"} · {c.email || "—"}</p>
+            {c.legacy_dropbox_path && <p className="text-xs text-muted-foreground break-all">{t("dropbox_archive")} {c.legacy_dropbox_path}</p>}
+            <p className="text-xs text-muted-foreground break-words">{c.written_language || "es"} / {c.spoken_language || "—"}{c.interpreter_required ? ` · ${t("interpreter_short")}` : ""}</p>
+            <p className="text-xs text-muted-foreground break-words">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""} · {t("portal_colon")} {portal(c)}</p>
+          </Link>
           {showActions && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-lg h-11 w-11" aria-label={t("actions")}>
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem className="h-11" asChild>
-                  <Link to={`/clients/${c.id}`}><Eye className="w-4 h-4" /> {t("view_detail")}</Link>
-                </DropdownMenuItem>
-                {onArchive && (
-                  <DropdownMenuItem className="h-11 text-destructive focus:text-destructive" onClick={() => onArchive(c)}>
-                    <Archive className="w-4 h-4" /> {t("archive")}
+            <div className="absolute top-2 end-2" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-lg h-11 w-11" aria-label={t("actions")}>
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="h-11" asChild>
+                    <Link to={`/clients/${c.id}`}><Eye className="w-4 h-4" /> {t("view_detail")}</Link>
                   </DropdownMenuItem>
-                )}
-                {onExport && c.status === "archived" && (
-                  <DropdownMenuItem className="h-11" onClick={() => onExport(c)}>
-                    <HardDriveDownload className="w-4 h-4" /> {t("export_archive")}
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  {onArchive && (
+                    <DropdownMenuItem className="h-11 text-destructive focus:text-destructive" onClick={() => onArchive(c)}>
+                      <Archive className="w-4 h-4" /> {t("archive")}
+                    </DropdownMenuItem>
+                  )}
+                  {onExport && c.status === "archived" && (
+                    <DropdownMenuItem className="h-11" onClick={() => onExport(c)}>
+                      <HardDriveDownload className="w-4 h-4" /> {t("export_archive")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           )}
         </div>
       ))}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Eye, Archive, HardDriveDownload } from "lucide-react";
@@ -7,6 +7,7 @@ import { useI18n } from "@/lib/i18n";
 
 export default function ClientListTable({ clients, muted = false, onArchive, onExport }) {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const showActions = !muted || !!onExport;
   const portal = (c) =>
     c.status === "archived" ? t("portal_state_archived") : c.portal_user_id ? t("portal_state_active") : "—";
@@ -23,9 +24,10 @@ export default function ClientListTable({ clients, muted = false, onArchive, onE
         </thead>
         <tbody>
           {clients.map((c) => (
-            <tr key={c.id} className={`border-b last:border-0 hover:bg-secondary/50 ${muted ? "opacity-60" : ""}`}>
+            <tr key={c.id} className={`border-b last:border-0 hover:bg-secondary/50 cursor-pointer ${muted ? "opacity-60" : ""}`}
+              onClick={() => navigate(`/clients/${c.id}`)}>
               <td className="p-3">
-                <Link to={`/clients/${c.id}`} className="font-medium hover:text-primary">{c.legal_name}</Link>
+                <span className="font-medium hover:text-primary">{c.legal_name}</span>
                 <p className="text-xs text-muted-foreground">{t("nie_lbl")}: {c.nie_number || "—"}</p>
                 {c.legacy_dropbox_path && <p className="text-xs text-muted-foreground break-all">{t("dropbox_archive")} {c.legacy_dropbox_path}</p>}
               </td>
@@ -34,7 +36,7 @@ export default function ClientListTable({ clients, muted = false, onArchive, onE
               <td className="p-3 text-xs">{c.engagement_status || "—"}{c.service_package ? ` · ${c.service_package}` : ""}</td>
               <td className="p-3 text-xs">{portal(c)}</td>
               {showActions && (
-                <td className="p-3">
+                <td className="p-3" onClick={(e) => e.stopPropagation()}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="rounded-lg h-11 w-11" aria-label={t("actions")}>
