@@ -29,7 +29,7 @@ export default function Appointments() {
     const c = clients.find((x) => x.id === form.client_id);
     await base44.entities.Appointment.create({
       ...form, client_name: c?.legal_name, client_language: c?.spoken_language || "es",
-      status: "scheduled", portal_user_id: c?.portal_user_id || "",
+      status: "scheduled", portal_user_id: c?.portal_user_id || null,
     });
     setAdding(false);
     setForm({ client_id: "", type: "consultation", date_time: "", location: "Oficina Bilbao", assigned_staff: "", interpreter_required: false });
@@ -73,8 +73,8 @@ export default function Appointments() {
 
       <div className="space-y-2">
         {upcoming.map((a) => (
-          <div key={a.id} className="card-soft p-4 flex flex-wrap items-center gap-3">
-            <div className="flex-1 min-w-52 cursor-pointer" onClick={() => setDetail(a)}>
+          <div key={a.id} className="card-soft p-4 flex flex-wrap items-center gap-3 cursor-pointer hover:bg-secondary/40" onClick={() => setDetail(a)}>
+            <div className="flex-1 min-w-52">
               <p className="font-medium text-sm">{appointmentLabel(a.type, t)} — {a.client_name}</p>
               <p className="text-xs text-muted-foreground">
                 {formatDateTime(a.date_time)} · {a.location}
@@ -83,7 +83,7 @@ export default function Appointments() {
               </p>
             </div>
             <StatusBadge value={a.status} label={a.status} />
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
               <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(a, "confirmed")}>{t("appt_confirm")}</Button>
               <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setStatus(a, "completed")}>{t("appt_completed")}</Button>
               <Button size="sm" variant="outline" className="rounded-lg text-red-700" onClick={() => setStatus(a, "cancelled")}>{t("appt_cancel")}</Button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { me as authMe } from "@/api/auth";
 import { useI18n } from "@/lib/i18n";
@@ -51,7 +52,7 @@ export default function PortalHome() {
           const missing = items.filter((i) => i.matter_id === m.id && i.status === "needed").length;
           const stage = stageText(m.stage);
           return (
-            <div key={m.id} className="card-soft p-5">
+            <Link key={m.id} to="/portal/documents" className="card-soft p-5 block hover:bg-secondary/40">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs text-muted-foreground">{m.matter_number} · {formatDate(m.opened_date)}</p>
@@ -64,13 +65,13 @@ export default function PortalHome() {
               <p className="mt-3 text-sm"><span className="font-medium">{t("next_step")}:</span> {stage}</p>
               {missing > 0 && (
                 <p className="mt-2 text-sm text-amber-700">
-                  {missing} {t("checklist_title").toLowerCase()} — {t("cl_needed")} →
+                  {missing} {t("checklist_title").toLowerCase()} — {t("cl_needed")}
                 </p>
               )}
-              <a href="/portal/documents" className="inline-flex items-center gap-1 text-sm text-primary font-medium mt-3">
+              <span className="inline-flex items-center gap-1 text-sm text-primary font-medium mt-3">
                 {t("nav_documents")} <ChevronRight className="w-4 h-4" />
-              </a>
-            </div>
+              </span>
+            </Link>
           );
         })}
       </div>

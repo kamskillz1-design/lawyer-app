@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Plus, CheckCircle2, Zap, Loader2 } from "lucide-react";
@@ -13,6 +13,7 @@ import InlineMessage from "@/components/InlineMessage";
 
 export default function Tasks() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState(null);
   const [matters, setMatters] = useState([]);
   const [filter, setFilter] = useState("open");
@@ -30,7 +31,7 @@ export default function Tasks() {
   const add = async () => {
     const m = matters.find((x) => x.id === form.matter_id);
     await base44.entities.Task.create({
-      ...form, matter_id: m?.id || "", client_id: m?.client_id || "", matter_number: m?.matter_number || "", status: "todo",
+      ...form, matter_id: m?.id || null, client_id: m?.client_id || null, matter_number: m?.matter_number || null, status: "todo",
     });
     setAdding(false);
     setForm({ title: "", matter_id: "", due_date: "", priority: "medium", task_type: "general", owner: "" });
@@ -90,8 +91,11 @@ export default function Tasks() {
       <div className="space-y-2">
         {filtered.map((tk) => {
           const overdue = tk.due_date && tk.due_date < today && tk.status !== "done";
+          const go = tk.matter_id ? `/matters/${tk.matter_id}` : (tk.client_id ? `/clients/${tk.client_id}` : "");
           return (
-            <div key={tk.id} className={`card-soft p-4 flex flex-wrap items-center gap-3 ${tk.status === "done" ? "opacity-60" : ""}`}>
+            <div key={tk.id}
+              className={`card-soft p-4 flex flex-wrap items-center gap-3 ${tk.status === "done" ? "opacity-60" : ""} ${go ? "cursor-pointer hover:bg-secondary/40" : ""}`}
+              onClick={() => go && navigate(go)}>
               <div className="flex-1 min-w-52">
                 <p className={`font-medium text-sm ${tk.status === "done" ? "line-through" : ""}`}>
                   {titles[tk.id]?.title ?? tk.title}
@@ -99,7 +103,7 @@ export default function Tasks() {
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {taskTypeLabel(tk.task_type, t)} · {tk.owner || t("unassigned")}
-                  {tk.matter_id && <> · <Link to={`/matters/${tk.matter_id}`} className="hover:text-primary">{tk.matter_number}</Link></>}
+                  {tk.matter_id && <> · <span className="hover:text-primary">{tk.matter_number}</span></>}
                   {tk.due_date && ` · ${formatDate(tk.due_date)}`}
                   {overdue && <span className="text-red-600 font-medium"> · {t("overdue_flag")}</span>}
                 </p>
@@ -111,7 +115,7 @@ export default function Tasks() {
                 </span>
               )}
               {tk.status !== "done" && (
-                <Button size="sm" variant="outline" className="rounded-lg" onClick={() => complete(tk)}>
+                <Button size="sm" variant="outline" className="rounded-lg" onClick={(e) => { e.stopPropagation(); complete(tk); }}>
                   <CheckCircle2 className="w-4 h-4 me-1" /> {t("complete_btn")}
                 </Button>
               )}

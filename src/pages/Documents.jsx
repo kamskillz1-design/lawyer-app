@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { me as authMe } from "@/api/auth";
 import { categoryLabel, REVIEW_STATUSES, reviewLabel } from "@/lib/constants";
@@ -15,6 +15,7 @@ import InlineMessage from "@/components/InlineMessage";
 
 export default function Documents() {
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [docs, setDocs] = useState(null);
   const [filter, setFilter] = useState("review_queue");
   const [notes, setNotes] = useState({});
@@ -28,6 +29,12 @@ export default function Documents() {
     const me = await authMe();
     await base44.entities.Document.update(doc.id, { review_status: status, review_notes: notes[doc.id] ?? doc.review_notes ?? "", reviewer: me.full_name });
     reload();
+  };
+
+  const openDoc = (doc) => {
+    if (doc.matter_id) navigate(`/matters/${doc.matter_id}`);
+    else if (doc.client_id) navigate(`/clients/${doc.client_id}`);
+    else if (doc.file_url) window.open(doc.file_url, "_blank", "noopener");
   };
 
   if (!docs) return <InlineMessage />;
@@ -59,7 +66,7 @@ export default function Documents() {
         onUploaded={() => { reload(); toast({ title: t("toast_doc_uploaded"), description: t("toast_doc_uploaded_body") }); }} />
       <div className="space-y-2">
         {filtered.map((doc) => (
-          <div key={doc.id} className="card-soft p-4 flex flex-wrap items-center gap-3">
+          <div key={doc.id} className="card-soft p-4 flex flex-wrap items-center gap-3 cursor-pointer hover:bg-secondary/40" onClick={() => openDoc(doc)}>
             <div className="flex-1 min-w-52">
               <p className="font-medium text-sm">{doc.title}</p>
               <p className="text-xs text-muted-foreground">
@@ -68,13 +75,16 @@ export default function Documents() {
               </p>
             </div>
             <StatusBadge value={doc.review_status} label={reviewLabel(doc.review_status, t)} />
-            {doc.matter_id && <Link to={`/matters/${doc.matter_id}`} className="text-xs text-muted-foreground hover:text-primary">{doc.matter_number}</Link>}
-            <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline">{t("view")}</a>
-            <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={doc.review_status} onChange={(e) => setReview(doc, e.target.value)}>
+            {doc.matter_id && <span className="text-xs text-muted-foreground">{doc.matter_number}</span>}
+            {doc.file_url && (
+              <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-xs text-primary hover:underline" onClick={(e) => e.stopPropagation()}>{t("view")}</a>
+            )}
+            <select className="h-8 rounded-md border border-input bg-card px-2 text-xs" value={doc.review_status} onClick={(e) => e.stopPropagation()} onChange={(e) => setReview(doc, e.target.value)}>
               {REVIEW_STATUSES.map((s) => <option key={s.id} value={s.id}>{t(s.key)}</option>)}
             </select>
             <input className={input + " h-8 text-xs w-full sm:w-40"} placeholder={t("ph_review_note")}
-              value={notes[doc.id] ?? doc.review_notes ?? ""} onChange={(e) => setNotes({ ...notes, [doc.id]: e.target.value })}
+              value={notes[doc.id] ?? doc.review_notes ?? ""} onClick={(e) => e.stopPropagation()}
+              onChange={(e) => setNotes({ ...notes, [doc.id]: e.target.value })}
               onBlur={() => setReview(doc, doc.review_status)} />
           </div>
         ))}
