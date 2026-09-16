@@ -54,14 +54,10 @@ export const PROCEDURE_TYPES = [
   { id: "Otro", key: "pt_other", label: "Otro" },
 ];
 
-// Stored procedure values that are not part of the select lists (free-typed or
-// legacy data) but still need a dictionary translation.
 const PROCEDURE_KEY_ALIASES = {
   "Arraigo laboral": "pt_arraigo_laboral",
 };
 
-// Resolves a stored procedure value to the interface language; falls back to
-// the stored Spanish value for anything unknown.
 export const procedureLabel = (value, t) => {
   if (!value) return value || "";
   const entry = PROCEDURE_TYPES.find((p) => p.id === value);
@@ -120,7 +116,6 @@ export const REVIEW_STATUSES = [
   { id: "archived", key: "rev_archived", label: "Archivado" },
 ];
 
-// Checklist statuses reuse the existing cl_* dictionary keys.
 export const CHECKLIST_STATUSES = [
   { id: "needed", key: "cl_needed", label: "Pendiente" },
   { id: "uploaded", key: "cl_uploaded", label: "Subido" },
@@ -184,8 +179,6 @@ export const INVOICE_STATUSES = [
   { id: "void", key: "inv_void", label: "Anulada" },
 ];
 
-// All label helpers accept an optional translate function; without one they
-// fall back to the Spanish label (previous behaviour).
 const byId = (list, id) => list.find((s) => s.id === id);
 export const stageLabel = (id, t) => { const s = byId(STAGES, id); return s ? (t ? t(s.key) : s.label) : id; };
 export const categoryLabel = (id, t) => { const s = byId(DOC_CATEGORIES, id); return s ? (t ? t(s.key) : s.label) : id; };
@@ -197,7 +190,13 @@ export const leadLabel = (id, t) => { const s = byId(LEAD_STATUSES, id); return 
 export const sensitivityLabel = (id, t) => { const s = byId(SENSITIVITIES, id); return s ? (t ? t(s.key) : s.label) : id; };
 export const invoiceLabel = (id, t) => { const s = byId(INVOICE_STATUSES, id); return s ? (t ? t(s.key) : s.label) : id; };
 
-// Staff hint shown next to AI translation confidence values.
+export const familyLabel = (id, t) => { const s = byId(PROCEDURE_FAMILIES, id); return s ? (t ? t(s.key) : s.label) : (id || ""); };
+export const ownerLabel = (id, t) => {
+  if (!id) return "";
+  const key = "owner_" + id;
+  return t ? (t(key) || id) : id;
+};
+
 export const CONFIDENCE_HINT = {
   normal: "Traducción fiable",
   review_recommended: "Revisar antes de enviar",

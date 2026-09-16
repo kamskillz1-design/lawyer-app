@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Save } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
-import { STAGES, stageLabel, procedureLabel } from "@/lib/constants";
+import { STAGES, stageLabel, procedureLabel, familyLabel, ownerLabel } from "@/lib/constants";
 import { formatDate } from "@/lib/format";
 import MatterChecklist from "@/components/matter/MatterChecklist";
 import MatterDocuments from "@/components/matter/MatterDocuments";
@@ -43,13 +43,49 @@ export default function MatterDetail() {
     toast({ title: t("stage_updated"), description: t("stage_updated_body") });
   };
 
+  const labelFor = (key, value) => {
+    if (key === "procedure_family") return familyLabel(value, t) || value || "—";
+    if (key === "procedure_type") return procedureLabel(value, t) || value || "—";
+    if (key === "next_action_owner") return ownerLabel(value, t) || value || "—";
+    if (key === "urgency") return value ? (t("prio_" + value) || value) : "—";
+    return value || "—";
+  };
+
+  const changeSummary = () => {
+    const labels = {
+      procedure_family: t("mf_procedure_family"),
+      procedure_type: t("mf_procedure_type"),
+      authority: t("ph_authority"),
+      province: t("mf_province"),
+      urgency: t("th_urgency"),
+      next_action: t("mf_next_action"),
+      next_action_owner: t("mf_next_owner"),
+      next_deadline: t("mf_next_deadline"),
+      target_submission_date: t("mf_target_date"),
+      submission_date: t("mf_submission_date"),
+      government_ref: t("mf_gov_ref"),
+      assigned_lawyer: t("mf_lawyer"),
+      assigned_caseworker: t("mf_caseworker"),
+      outcome: t("mf_outcome"),
+      renewal_due_date: t("mf_renewal"),
+      status_reason: t("mf_status_reason"),
+    };
+    const parts = Object.keys(draft).filter((k) => (draft[k] ?? "") !== (matter[k] ?? "")).map((k) => {
+      const name = labels[k] || k;
+      return `${name}: ${labelFor(k, matter[k])} → ${labelFor(k, draft[k])}`;
+    });
+    return parts.length ? parts.join("; ") : "Datos del expediente actualizados";
+  };
+
   const saveDraft = async () => {
+    const summary = changeSummary();
     await base44.entities.Matter.update(id, draft);
     await base44.entities.AuditLog.create({
       entity_type: "Matter", entity_id: id, action: "updated",
-      actor_name: me?.full_name || "Personal", summary: "Datos del expediente actualizados",
+      actor_name: me?.full_name || "Personal", summary,
     });
     setEditing(false);
+    setDraft({});
     reload();
     toast({ title: t("matter_saved") });
   };
@@ -87,7 +123,7 @@ export default function MatterDetail() {
         <div className="card-soft p-4">
           <p className="text-xs text-muted-foreground">{t("ph_next_action")}</p>
           <p className="font-medium mt-1">{matter.next_action || "—"}</p>
-          <p className="text-xs text-muted-foreground mt-1">{t("responsible_lbl")} {matter.next_action_owner || "—"}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("responsible_lbl")} {ownerLabel(matter.next_action_owner, t) || matter.next_action_owner || "—"}</p>
         </div>
         <div className="card-soft p-4">
           <p className="text-xs text-muted-foreground">{t("next_deadline_lbl")}</p>
