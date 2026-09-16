@@ -3,19 +3,44 @@ import { LANGUAGES, getLanguage } from "./languages";
 import { DICT } from "./dictionaries";
 import { base44 } from "@/api/base44Client";
 
-// The context object is stored on the global scope: when this module is
-// re-executed by a live-code update (HMR), a fresh createContext() would
-// create a *different* context object, leaving consumers with a null context
-// (the fallback with a no-op setLang — the switcher appears "stuck" on
-// English and selections do nothing). Reusing the same object keeps the
-// provider and all consumers connected across updates.
+const EXTRA_DICT = {
+  en: {
+    new_message: "New message",
+    send_message: "Send message",
+    compose_pick_client: "Client",
+    compose_spanish: "Message in Spanish",
+    compose_translate: "Translate into the client's language",
+    compose_send: "Send message",
+    compose_need_client: "Choose a client first",
+    compose_need_text: "Write the message in Spanish first",
+    compose_no_portal: "This client has no linked portal account. Invite them from their record before sending a portal message.",
+    mf_procedure_family: "Procedure family",
+    mf_procedure_type: "Procedure type",
+    mf_province: "Province",
+  },
+  es: {
+    new_message: "Nuevo mensaje",
+    send_message: "Enviar mensaje",
+    compose_pick_client: "Cliente",
+    compose_spanish: "Mensaje en español",
+    compose_translate: "Traducir al idioma del cliente",
+    compose_send: "Enviar mensaje",
+    compose_need_client: "Elija primero un cliente",
+    compose_need_text: "Escriba primero el mensaje en español",
+    compose_no_portal: "Este cliente no tiene cuenta de portal vinculada. Invítele desde su ficha antes de enviar un mensaje al portal.",
+    mf_procedure_family: "Familia del procedimiento",
+    mf_procedure_type: "Tipo de procedimiento",
+    mf_province: "Provincia",
+  },
+};
+Object.assign(DICT.en, EXTRA_DICT.en);
+Object.assign(DICT.es, EXTRA_DICT.es);
+
 const globalScope = typeof window !== "undefined" ? window : globalThis;
 const I18nContext = globalScope.__lexpath_i18n_context__ ||
   (globalScope.__lexpath_i18n_context__ = createContext(null));
 
-// Versioned cache key: bumping the version discards every previously cached
-// dictionary (localStorage) and rebuilds them cleanly on demand.
-const DICT_CACHE_VERSION = 2;
+const DICT_CACHE_VERSION = 3;
 const cacheKey = (code) => `lexpath_dict_v${DICT_CACHE_VERSION}_${code}`;
 
 const STAGE_KEYS = {
@@ -41,7 +66,6 @@ const CHECKLIST_KEYS = {
   not_required: "cl_not_required",
 };
 
-// English fallback so a consumer rendered outside the provider never crashes.
 const FALLBACK = {
   lang: "en",
   setLang: () => {},
@@ -70,7 +94,6 @@ export function I18nProvider({ children }) {
   const dictCache = useRef(new Map());
 
   const getDict = (code) => {
-    // English is the canonical source dictionary — never read it from cache.
     if (code === "en") return DICT.en;
     if (dictCache.current.has(code)) return dictCache.current.get(code);
     const parsed = readCachedDict(code);
@@ -90,16 +113,8 @@ export function I18nProvider({ children }) {
   }, [lang]);
 
   const inflight = useRef(new Set());
-
-  // Detect keys missing from a language's dictionary (vs. the English source)
   const BATCH_SIZE = 100;
 
-  // Detect keys missing from a language's dictionary (vs. the English source)
-  // and translate only those, merging the result into the existing dictionary.
-  // The translateUi function rejects payloads over 200 strings, so the missing
-  // keys are sent in sequential batches of BATCH_SIZE; each batch is merged and
-  // persisted as it arrives. On a batch failure we stop — whatever was merged
-  // stays cached and the remaining keys retry on the next language switch.
   const ensureComplete = async (code) => {
     if (code === "en" || inflight.current.has(code)) return;
     const dict = getDict(code) || {};
@@ -122,7 +137,6 @@ export function I18nProvider({ children }) {
         }
       }
     } catch (e) {
-      // Stop on the first failed batch; remaining keys retry next switch.
     } finally {
       inflight.current.delete(code);
       setTranslating(false);
@@ -144,7 +158,6 @@ export function I18nProvider({ children }) {
   };
 
   const stageText = (stage) => (STAGE_KEYS[stage] ? t(STAGE_KEYS[stage]) : null);
-
   const checklistText = (status) => (CHECKLIST_KEYS[status] ? t(CHECKLIST_KEYS[status]) : status);
 
   return (
