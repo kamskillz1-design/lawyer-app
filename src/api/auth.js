@@ -109,3 +109,8 @@ export async function inviteUser(email, role = "user") {
   });
   if (error) throw error;
 }
+
+/** Send a fresh magic-link email (lost invite, new device, deleted inbox). */
+export async function resendInvite(email, role = "user") {
+  return inviteUser(email, role);
+}

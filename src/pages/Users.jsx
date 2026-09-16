@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { me as authMe } from "@/api/auth";
+import { me as authMe, resendInvite } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { useI18n } from "@/lib/i18n";
-import { UserPlus, Search, ShieldCheck, Link2, UserX } from "lucide-react";
+import { UserPlus, Search, ShieldCheck, Link2, UserX, Mail } from "lucide-react";
 import InviteUserDialog from "@/components/users/InviteUserDialog";
 import ChangeRoleDialog from "@/components/users/ChangeRoleDialog";
 import LinkClientDialog from "@/components/users/LinkClientDialog";
@@ -36,6 +36,7 @@ export default function Users() {
   const [roleTarget, setRoleTarget] = useState(null);
   const [linkTarget, setLinkTarget] = useState(null);
   const [deactivateTarget, setDeactivateTarget] = useState(null);
+  const [resendingId, setResendingId] = useState("");
 
   const reload = async () => {
     try {
@@ -72,6 +73,28 @@ export default function Users() {
     || (u.email || "").toLowerCase().includes(q));
 
   const onDone = (msg) => { reload(); toast({ title: msg }); };
+
+  const resend = async (u) => {
+    if (!u?.email) {
+      toast({ title: t("resend_need_email"), variant: "destructive" });
+      return;
+    }
+    setResendingId(u.id);
+    try {
+      await resendInvite(u.email, u.role || "user");
+      await base44.entities.AuditLog.create({
+        entity_type: "User", entity_id: u.id, action: "invite_resent",
+        actor_name: me?.full_name || "Personal",
+        summary: `Invitación reenviada a ${u.email}`,
+      });
+      toast({ title: t("toast_invite_resent"), description: `${u.email} — ${t("toast_invite_resent_body")}` });
+    } catch (e) {
+      toast({ title: t("toast_invite_fail"), description: e.message, variant: "destructive" });
+    } finally {
+      setResendingId("");
+    }
+  };
+
   const actions = (u) => (
     <div className="flex flex-wrap gap-1">
       <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setRoleTarget(u)}>
@@ -80,6 +103,11 @@ export default function Users() {
       {u.role !== "admin" && (
         <Button size="sm" variant="outline" className="rounded-lg" onClick={() => setLinkTarget(u)}>
           <Link2 className="w-3.5 h-3.5 me-1" /> {t("link")}
+        </Button>
+      )}
+      {u.email && (
+        <Button size="sm" variant="outline" className="rounded-lg" onClick={() => resend(u)} disabled={resendingId === u.id}>
+          <Mail className="w-3.5 h-3.5 me-1" /> {resendingId === u.id ? t("sending") : t("resend_invite")}
         </Button>
       )}
       {u.id !== me.id && (
