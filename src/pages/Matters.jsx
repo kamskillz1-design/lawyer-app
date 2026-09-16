@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -21,6 +21,7 @@ const DEFAULT_CHECKLIST = [
 export default function Matters() {
   const { toast } = useToast();
   const { t } = useI18n();
+  const navigate = useNavigate();
   const [matters, setMatters] = useState(null);
   const [clients, setClients] = useState([]);
   const [stageFilter, setStageFilter] = useState("all");
@@ -145,9 +146,9 @@ export default function Matters() {
           </thead>
           <tbody>
             {filtered.map((m) => (
-              <tr key={m.id} className="border-b last:border-0 hover:bg-secondary/50">
+              <tr key={m.id} className="border-b last:border-0 hover:bg-secondary/50 cursor-pointer" onClick={() => navigate(`/matters/${m.id}`)}>
                 <td className="p-3">
-                  <Link to={`/matters/${m.id}`} className="font-medium hover:text-primary">{m.matter_number}</Link>
+                  <span className="font-medium hover:text-primary">{m.matter_number}</span>
                   <p className="text-xs text-muted-foreground">{procedureLabel(m.procedure_type, t)}</p>
                 </td>
                 <td className="p-3">{m.client_name}</td>
@@ -164,7 +165,7 @@ export default function Matters() {
 
       <div className="md:hidden space-y-2">
         {filtered.map((m) => (
-          <Link key={m.id} to={`/matters/${m.id}`} className="card-soft block p-4 space-y-1">
+          <Link key={m.id} to={`/matters/${m.id}`} className="card-soft block p-4 space-y-1 hover:bg-secondary/40">
             <div className="flex items-center justify-between gap-2">
               <p className="font-medium break-words">{m.matter_number}</p>
               <StatusBadge value={m.urgency} label={t("prio_" + m.urgency)} />
